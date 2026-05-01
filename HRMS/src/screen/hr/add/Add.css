@@ -1,0 +1,15 @@
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  border-color: #3b5bdb;
+}
+
+.btn-primary {
+  background-color: #3b5bdb;
+  border: none;
+  border-radius: 8px;
+}

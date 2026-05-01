@@ -4,7 +4,8 @@ import Home from './components/Home'
 import { Route, Routes } from 'react-router'
 import Login from './pages/login/Login'
 import Hrlogin from './screen/login-page/Hrlogin'
-import Hr from './screen/hr/hr'
+import Hr from './screen/hr/Hr'
+import Add from './screen/hr/add/Add'
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/hrlogin' element={<Hrlogin/>}/>
         <Route path='/hr' element={<Hr/>}/>
+        <Route path='/add' element={<Add/>}/>
       </Routes>
 
     </div>
