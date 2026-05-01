@@ -34,6 +34,7 @@ const Hr = () => {
                     <div className="topbar">
                         <input type="text" placeholder="Search..." />
                         <div className="icons">
+                            <span><button></button></span>
                             <span>🔔</span>
                             <span>⚙️</span>
                             <span>✉️</span>
@@ -89,6 +90,24 @@ const Hr = () => {
                                     <td><button className="action">Actions</button></td>
                                 </tr>
 
+                                <tr>
+                                    <td>Neha</td>
+                                    <td>10</td>
+                                    <td>22/04/22</td>
+                                    <td>02/05/22</td>
+                                    <td>Maternity</td>
+                                    <td>Family</td>
+                                    <td><button className="action">Actions</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Neha</td>
+                                    <td>10</td>
+                                    <td>22/04/22</td>
+                                    <td>02/05/22</td>
+                                    <td>Maternity</td>
+                                    <td>Family</td>
+                                    <td><button className="action">Actions</button></td>
+                                </tr>
                                 <tr>
                                     <td>Neha</td>
                                     <td>10</td>
