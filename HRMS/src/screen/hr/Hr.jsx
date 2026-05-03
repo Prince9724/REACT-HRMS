@@ -1,11 +1,15 @@
 import React from 'react'
+import { useNavigate } from 'react-router'
 import '../hr/hr.css'
-const Hr = () => {
-    return (
 
+const Hr = () => {
+
+    const navigate = useNavigate()
+
+    return (
         <div style={{ height: "100vh" }} className="main-container">
 
-
+            {/* Sidebar */}
             <div className="sidebar">
                 <h2 className="logo">XCELTECH</h2>
 
@@ -34,6 +38,9 @@ const Hr = () => {
                 <div className="topbar">
                     <input type="text" placeholder="Search..." />
                     <div className="icons">
+                        <span>
+                            <button onClick={() => navigate("/add")}>Add member</button>
+                        </span>
                         <span>🔔</span>
                         <span>⚙️</span>
                         <span>✉️</span>
@@ -105,7 +112,6 @@ const Hr = () => {
 
             </div>
         </div>
-
     )
 }
 
