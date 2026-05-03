@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import "../add/Add.css"
  import axios from 'axios'
- import employ from 'C:\Users\lenovo\OneDrive\Documents\GitHub\REACT-HRMS\hrms\utils\Api.js
- '
+//  import employ from '../../../../utils/Api'
 const Add = () => {
     const res = axios.post();
     const navigate = useNavigate();
