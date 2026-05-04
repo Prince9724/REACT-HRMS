@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import "../add/Add.css"
 import axios from 'axios'
-//  import employ from '../../../../utils/Api'
 const Add = () => {
 
     const navigate = useNavigate();
