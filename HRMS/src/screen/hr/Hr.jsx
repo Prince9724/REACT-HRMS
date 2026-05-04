@@ -23,7 +23,7 @@ const Hr = () => {
                     <li className="active">Dashboard</li>
                     <li>Messages</li>
                     <li>Jobs</li>
-                    <li><button>Candidates</button></li>
+                    <li><button onClick={()=> navigate("/user")}>Candidates</button></li>
                     <li>Employee Management</li>
                     <li>Leave Management</li>
                     <li>Performance</li>
