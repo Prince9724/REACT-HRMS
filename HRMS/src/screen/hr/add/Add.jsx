@@ -2,12 +2,17 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import "../add/Add.css"
- import axios from 'axios'
+import axios from 'axios'
 //  import employ from '../../../../utils/Api'
 const Add = () => {
-    const res = axios.post();
+
     const navigate = useNavigate();
-    const [member , setmember] = useState({});
+    const [member, setmember] = useState({});
+    const handlePost = async () => {
+        const res = await axios.post("http://localhost:3000/employe", member);
+        console.log(res.data)
+        alert("succesfull !! ")
+    }
     return (
         <div className="container-fluid d-flex justify-content-center align-items-center vh-100 bg-light">
 
@@ -20,35 +25,45 @@ const Add = () => {
 
                     <div className="col-md-6">
                         <label className="form-label text-primary">First Name</label>
-                        <input type="text" onChange={(e)=>setmember({...member, firstName: e.target.value})} className="form-control shadow-sm" />
+                        <input type="text" onChange={(e) => setmember({ ...member, firstName: e.target.value })} className="form-control shadow-sm" />
                     </div>
 
                     <div className="col-md-6">
-                        <label className="form-label text-primary">Last Name</label>
-                        <input type="text"
-                            onChange={(e)=>setmember({...member, lastName: e.target.value})}
-                        className="form-control shadow-sm" />
+                        <label className="form-label text-primary">Select role</label>
+
+                        <select
+                            className="form-control shadow-sm"
+                            value={member.role || ""}
+                            onChange={(e) =>
+                                setmember({ ...member, role: e.target.value })
+                            }
+                        >
+                            <option value="">-- Select Role </option>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="employee">Employee</option>
+                        </select>
                     </div>
 
                     <div className="col-md-6">
                         <label className="form-label text-primary">E-mail Address</label>
                         <input type="email"
-                            onChange={(e)=>setmember({...member, email: e.target.value})}
-                        className="form-control shadow-sm" />
+                            onChange={(e) => setmember({ ...member, email: e.target.value })}
+                            className="form-control shadow-sm" />
                     </div>
 
                     <div className="col-md-6">
                         <label className="form-label text-primary">Phone Number</label>
                         <input type="text"
-                          onChange={(e)=>setmember({...member, contact: e.target.value})}  
-                        className="form-control shadow-sm" />
+                            onChange={(e) => setmember({ ...member, contact: e.target.value })}
+                            className="form-control shadow-sm" />
                     </div>
 
                     <div className="col-md-6">
                         <label className="form-label text-primary">Password</label>
                         <input type="password"
-                            onChange={(e)=>setmember({...member, pasword: e.target.value})}
-                        className="form-control shadow-sm" />
+                            onChange={(e) => setmember({ ...member, pasword: e.target.value })}
+                            className="form-control shadow-sm" />
                     </div>
 
                     <div className="col-md-6">
@@ -76,7 +91,7 @@ const Add = () => {
                     </div>
 
                     <div className="col-12 mt-3">
-                        <button className="btn btn-primary px-5 py-2">
+                        <button className="btn btn-primary px-5 py-2" onClick={() => handlePost()}>
                             Create Account
                         </button>
                     </div>

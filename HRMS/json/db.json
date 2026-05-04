@@ -1,11 +1,33 @@
 {
-    "employe":[
-
-    ],
-    "manager":[
-
-    ],
-    "Admin":[
-        
-    ]
+  "employe": [
+    {
+      "id": 1
+    },
+    {
+      "firstName": "Prince",
+      "lastName": "Gond",
+      "email": "Prince@gmail.com",
+      "contact": "1234567890",
+      "pasword": "1234",
+      "id": 2
+    },
+    {
+      "firstName": "gaurav",
+      "role": "manager",
+      "email": "gaurav@gmal.com",
+      "contact": "1234567890",
+      "pasword": "1234",
+      "id": 3
+    },
+    {
+      "firstName": "xyz",
+      "role": "employee",
+      "email": "xyz@gmail.com",
+      "contact": "1234567890",
+      "pasword": "1234",
+      "id": 4
+    }
+  ],
+  "manager": [],
+  "Admin": []
 }
