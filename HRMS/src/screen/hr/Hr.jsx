@@ -20,7 +20,7 @@ const Hr = () => {
                 </div>
 
                 <ul>
-                    <li className="active">Dashboard</li>
+                    <li className="active"><button onClick={()=>navigate("/hrdashboard")}>Dashboard</button></li>
                     <li>Messages</li>
                     <li>Jobs</li>
                     <li><button onClick={()=> navigate("/user")}>Candidates</button></li>

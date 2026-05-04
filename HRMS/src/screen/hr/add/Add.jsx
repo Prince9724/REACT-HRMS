@@ -61,7 +61,7 @@ const Add = () => {
                     <div className="col-md-6">
                         <label className="form-label text-primary">Password</label>
                         <input type="password"
-                            onChange={(e) => setmember({ ...member, pasword: e.target.value })}
+                            onChange={(e) => setmember({ ...member, password: e.target.value })}
                             className="form-control shadow-sm" />
                     </div>
 

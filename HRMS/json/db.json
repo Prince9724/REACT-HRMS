@@ -1,41 +1,48 @@
 {
   "employe": [
     {
-      "id": 1
-    },
-    {
+      "id": 1,
       "firstName": "Prince",
       "lastName": "Gond",
-      "email": "Prince@gmail.com",
-      "contact": "1234567890",
-      "pasword": "1234",
-      "id": 2
+      "email": "prince@gmail.com",
+      "contact": "9724672317",
+      "password": "9090",
+      "role": "hr"
     },
     {
-      "firstName": "gaurav",
-      "role": "manager",
-      "email": "gaurav@gmal.com",
-      "contact": "1234567890",
-      "pasword": "1234",
-      "id": 3
-    },
-    {
-      "firstName": "xyz",
+      "firstName": "darshan",
       "role": "employee",
-      "email": "xyz@gmail.com",
-      "contact": "1234567890",
-      "pasword": "1234",
+      "email": "dp@12gmail.com",
+      "contact": "2222222222",
+      "password": "2222",
       "id": 4
     },
     {
-      "firstName": "aaaaaaaaaaaaa",
-      "role": "manager",
-      "email": "aaaaaaaa@gmail.com",
-      "contact": "1234567890",
-      "pasword": "1234",
+      "firstName": "roshan",
+      "role": "employee",
+      "email": "roshan@gmail.com",
+      "contact": "0000000000",
+      "password": "0000",
       "id": 5
+    },
+    {
+      "firstName": "gaurav",
+      "role": "employee",
+      "email": "gaurav@gmail.com",
+      "contact": "1111111111",
+      "password": "1111",
+      "id": 6
     }
   ],
-  "manager": [],
-  "Admin": []
+  "leaves": [
+    {
+      "id": 1,
+      "name": "darshan",
+      "contact": "2222222222",
+      "reason": "Sick",
+      "status": "rejected",
+      "date": "04/05/2026"
+    }
+  ],
+  "attendance": []
 }
