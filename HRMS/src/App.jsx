@@ -10,6 +10,7 @@ import Employees from './pages/employees/Employees'
 import Profile from './pages/profile/Profile'
 import HrDashboard from './pages/dashboard/HrDashboard'
 import View from './pages/view/View'
+import Manager from './screen/Manager/Manager'
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/hrlogin' element={<Hrlogin/>}/>
         <Route path='/hr' element={<Hr/>}/>
+        <Route path='/Manager' element={<Manager/>}/>
         <Route path='/add' element={<Add/>}/>
         <Route path='/user' element={<Employees />}/>
         <Route path='/profile' element ={<Profile/>}/>

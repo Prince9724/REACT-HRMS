@@ -1,23 +1,6 @@
 {
   "employe": [
     {
-      "id": 1,
-      "firstName": "Prince",
-      "lastName": "Gond",
-      "email": "prince@gmail.com",
-      "contact": "9724672317",
-      "password": "9090",
-      "role": "hr"
-    },
-    {
-      "firstName": "darshan",
-      "role": "employee",
-      "email": "dp@12gmail.com",
-      "contact": "2222222222",
-      "password": "2222",
-      "id": 4
-    },
-    {
       "firstName": "roshan",
       "role": "employee",
       "email": "roshan@gmail.com",
