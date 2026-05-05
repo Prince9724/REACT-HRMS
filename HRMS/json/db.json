@@ -23,15 +23,8 @@
       "email": "roshan@gmail.com",
       "contact": "0000000000",
       "password": "0000",
-      "id": 5
-    },
-    {
-      "firstName": "gaurav",
-      "role": "employee",
-      "email": "gaurav@gmail.com",
-      "contact": "1111111111",
-      "password": "1111",
-      "id": 6
+      "id": 5,
+      "lastName": "bhai"
     }
   ],
   "leaves": [
@@ -42,6 +35,18 @@
       "reason": "Sick",
       "status": "rejected",
       "date": "04/05/2026"
+    },
+    {
+      "userId": 5,
+      "name": "roshan",
+      "contact": "0000000000",
+      "reason": "gaav jaana hia mujhe ",
+      "type": "casual",
+      "start": "2026-05-05",
+      "end": "2026-05-08",
+      "days": 4,
+      "status": "pending",
+      "id": 2
     }
   ],
   "attendance": []

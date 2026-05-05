@@ -9,6 +9,7 @@ import Add from './screen/hr/add/Add'
 import Employees from './pages/employees/Employees'
 import Profile from './pages/profile/Profile'
 import HrDashboard from './pages/dashboard/HrDashboard'
+import View from './pages/view/View'
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path='/user' element={<Employees />}/>
         <Route path='/profile' element ={<Profile/>}/>
         <Route path='/hrdashboard' element={<HrDashboard/>}/>
+        <Route path='/view' element={<View/>}/>
       </Routes>
 
     </div>

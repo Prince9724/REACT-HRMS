@@ -7,7 +7,7 @@ const Hr = () => {
     const navigate = useNavigate()
 
     return (
-        <div style={{ height: "100vh" }} className="main-container">
+        <div className="main-container">
 
             {/* Sidebar */}
             <div className="sidebar">
@@ -16,18 +16,16 @@ const Hr = () => {
                 <div className="profile">
                     <img src="https://i.pravatar.cc/80" alt="" />
                     <h4>Aman Admin</h4>
-                    <p>Admin</p>
+                    <p>HR Panel</p>
                 </div>
 
                 <ul>
-                    <li className="active"><button onClick={()=>navigate("/hrdashboard")}>Dashboard</button></li>
-                    <li>Messages</li>
-                    <li>Jobs</li>
-                    <li><button onClick={()=> navigate("/user")}>Candidates</button></li>
-                    <li>Employee Management</li>
-                    <li>Leave Management</li>
-                    <li>Performance</li>
+                    <li className="active" onClick={()=>navigate("/hrdashboard")}>Dashboard</li>
+                    <li onClick={()=> navigate("/user")}>Employees</li>
+                    <li>Attendance</li>
+                    <li>Leave</li>
                     <li>Payroll</li>
+                    <li>Performance</li>
                 </ul>
             </div>
 
@@ -36,29 +34,44 @@ const Hr = () => {
 
                 {/* Topbar */}
                 <div className="topbar">
-                    <input type="text" placeholder="Search..." />
+                    <input type="text" placeholder="Search employee..." />
+
                     <div className="icons">
-                        <span>
-                            <button onClick={() => navigate("/add")}>Add member</button>
-                        </span>
+                        <button onClick={() => navigate("/add")} className="add-btn">
+                            + Add Employee
+                        </button>
                         <span>🔔</span>
                         <span>⚙️</span>
-                        <span>✉️</span>
                     </div>
                 </div>
 
-                {/* Buttons */}
-                <div className="buttons">
-                    <button>Leave Settings</button>
-                    <button>Leave Recall</button>
-                    <button className="active-btn">Leave History</button>
-                    <button>Relief Officers</button>
+                {/* 🔥 Dashboard Cards */}
+                <div className="cards">
+                    <div className="card">
+                        <h3>Total Employees</h3>
+                        <p>120</p>
+                    </div>
+
+                    <div className="card">
+                        <h3>On Leave</h3>
+                        <p>8</p>
+                    </div>
+
+                    <div className="card">
+                        <h3>New Joinees</h3>
+                        <p>5</p>
+                    </div>
+
+                    <div className="card">
+                        <h3>Pending Requests</h3>
+                        <p>3</p>
+                    </div>
                 </div>
 
-                {/* Table */}
+                {/* Table Section */}
                 <div className="table-box">
                     <div className="table-header">
-                        <h3>Leave History</h3>
+                        <h3>Leave Requests</h3>
                         <button className="export">Export</button>
                     </div>
 
@@ -71,6 +84,7 @@ const Hr = () => {
                                 <th>End</th>
                                 <th>Type</th>
                                 <th>Reason</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -83,7 +97,11 @@ const Hr = () => {
                                 <td>28/04/22</td>
                                 <td>Sick</td>
                                 <td>Personal</td>
-                                <td><button className="action">Actions</button></td>
+                                <td><span className="pending">Pending</span></td>
+                                <td>
+                                    <button className="approve">Approve</button>
+                                    <button className="reject">Reject</button>
+                                </td>
                             </tr>
 
                             <tr>
@@ -93,7 +111,8 @@ const Hr = () => {
                                 <td>30/04/22</td>
                                 <td>Exam</td>
                                 <td>Study</td>
-                                <td><button className="action">Actions</button></td>
+                                <td><span className="approved">Approved</span></td>
+                                <td>-</td>
                             </tr>
 
                             <tr>
@@ -103,10 +122,10 @@ const Hr = () => {
                                 <td>02/05/22</td>
                                 <td>Maternity</td>
                                 <td>Family</td>
-                                <td><button className="action">Actions</button></td>
+                                <td><span className="rejected">Rejected</span></td>
+                                <td>-</td>
                             </tr>
                         </tbody>
-
                     </table>
                 </div>
 
