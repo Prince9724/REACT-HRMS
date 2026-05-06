@@ -6,11 +6,13 @@ import Login from './pages/login/Login'
 import Hrlogin from './screen/login-page/Hrlogin'
 import Hr from './screen/hr/Hr'
 import Add from './screen/hr/add/Add'
-import Employees from './pages/employees/Employees'
+import Employees from './pages/employees/Employees' 
 import Profile from './pages/profile/Profile'
-import HrDashboard from './pages/dashboard/HrDashboard'
-import View from './pages/view/View'
+import HrDashboard from './screen/hr/Leave'
+ 
 import Manager from './screen/Manager/Manager'
+import ViewEmployee from './pages/employees/VeiwEmploye'
+import Attendance from './screen/hr/attendence/Attendence'
 
 const App = () => {
   return (
@@ -27,7 +29,8 @@ const App = () => {
         <Route path='/user' element={<Employees />}/>
         <Route path='/profile' element ={<Profile/>}/>
         <Route path='/hrdashboard' element={<HrDashboard/>}/>
-        <Route path='/view' element={<View/>}/>
+        <Route path='/view/:id' element={<ViewEmployee/>}/>
+        <Route path = '/attendance' element={<Attendance/>}/>
       </Routes>
 
     </div>

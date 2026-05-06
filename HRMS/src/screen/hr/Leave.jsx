@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-
+import { useNavigate } from 'react-router'
 const HrDashboard = () => {
-
+  const navigate =  useNavigate();
   const [leaves, setLeaves] = useState([])
 
   // ✅ FETCH DATA
@@ -45,10 +45,10 @@ const HrDashboard = () => {
 
       {/* TOP BUTTONS */}
       <div className="d-flex gap-3 mb-3">
-        <button className="btn btn-primary">Leave Settings</button>
-        <button className="btn btn-primary">Leave Recall</button>
-        <button className="btn btn-warning">Leave History</button>
-        <button className="btn btn-primary">Relief Officers</button>
+         
+       
+        <button className="btn btn-warning" >Leave History</button>
+        <button className="btn btn-primary"onClick={()=>navigate("/hr")}>back to home page</button>
       </div>
 
       {/* CARD */}

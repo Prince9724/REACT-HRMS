@@ -5,7 +5,7 @@ const Profile = () => {
 
   const [user, setUser] = useState(null)
 
-  // Attendance (temporary localStorage)
+  // Attendance states
   const [checkInTime, setCheckInTime] = useState("")
   const [checkOutTime, setCheckOutTime] = useState("")
 
@@ -20,69 +20,91 @@ const Profile = () => {
     const data = JSON.parse(localStorage.getItem("user"))
     setUser(data)
 
-    // 🔥 attendance (localStorage)
-    const attendance = JSON.parse(localStorage.getItem("attendance")) || []
-    const today = new Date().toLocaleDateString()
+    // 🔥 Attendance fetch (API se)
+    const fetchAttendance = async () => {
+      const today = new Date().toLocaleDateString()
 
-    const todayData = attendance.find(
-      (a) => a.contact === data?.contact && a.date === today
-    )
+      const res = await axios.get("http://localhost:3000/attendance")
 
-    if (todayData) {
-      setCheckInTime(todayData.checkIn)
-      setCheckOutTime(todayData.checkOut)
+      const todayData = res.data.find(
+        (a) => a.userId === data?.id && a.date === today
+      )
+
+      if (todayData) {
+        setCheckInTime(todayData.checkIn)
+        setCheckOutTime(todayData.checkOut)
+      }
     }
 
-    // 🔥 leave status (API)
+    // 🔥 Leave status
     const fetchLeave = async () => {
       const res = await axios.get("http://localhost:3000/leaves")
       const myLeave = res.data.find(l => l.userId === data?.id)
       if (myLeave) setLeaveStatus(myLeave.status)
     }
 
+    fetchAttendance()
     fetchLeave()
 
   }, [])
 
   if (!user) return <h3>No user logged in</h3>
 
-  // ✅ CHECK IN
-  const handleCheckIn = () => {
-    const time = new Date().toLocaleTimeString()
-    setCheckInTime(time)
 
-    const attendance = JSON.parse(localStorage.getItem("attendance")) || []
+  // 🔥 ✅ CHECK IN (API BASED)
+  const handleCheckIn = async () => {
+    const time = new Date().toLocaleTimeString()
     const today = new Date().toLocaleDateString()
 
-    attendance.push({
+    const res = await axios.get("http://localhost:3000/attendance")
+
+    const already = res.data.find(
+      a => a.userId === user.id && a.date === today
+    )
+
+    if (already) {
+      alert("Already checked in")
+      return
+    }
+
+    await axios.post("http://localhost:3000/attendance", {
+      userId: user.id,
+      name: user.firstName,
       contact: user.contact,
       date: today,
       checkIn: time,
       checkOut: ""
     })
 
-    localStorage.setItem("attendance", JSON.stringify(attendance))
+    setCheckInTime(time)
   }
 
-  // ✅ CHECK OUT
-  const handleCheckOut = () => {
-    const time = new Date().toLocaleTimeString()
-    setCheckOutTime(time)
 
-    let attendance = JSON.parse(localStorage.getItem("attendance")) || []
+  // 🔥 ✅ CHECK OUT (API BASED)
+  const handleCheckOut = async () => {
+    const time = new Date().toLocaleTimeString()
     const today = new Date().toLocaleDateString()
 
-    attendance = attendance.map((a) => {
-      if (a.contact === user.contact && a.date === today) {
-        return { ...a, checkOut: time }
-      }
-      return a
+    const res = await axios.get("http://localhost:3000/attendance")
+
+    const record = res.data.find(
+      a => a.userId === user.id && a.date === today
+    )
+
+    if (!record) {
+      alert("Please check in first")
+      return
+    }
+
+    await axios.patch(`http://localhost:3000/attendance/${record.id}`, {
+      checkOut: time
     })
 
-    localStorage.setItem("attendance", JSON.stringify(attendance))
+    setCheckOutTime(time)
   }
 
-  // ✅ APPLY LEAVE (API BASED)
+
+  // ✅ APPLY LEAVE
   const handleLeaveApply = async () => {
 
     if (!start || !end || !type || !leaveReason) {
@@ -124,15 +146,17 @@ const Profile = () => {
         <p>{user.contact}</p>
       </div>
 
-      {/* Attendance */}
+      {/* 🔥 Attendance */}
       <div className="card p-4 mb-3">
         <h5>Attendance</h5>
+
         <p>Check In: {checkInTime || "--"}</p>
         <p>Check Out: {checkOutTime || "--"}</p>
 
         <button onClick={handleCheckIn} className="btn btn-success me-2">
           Check In
         </button>
+
         <button onClick={handleCheckOut} className="btn btn-danger">
           Check Out
         </button>

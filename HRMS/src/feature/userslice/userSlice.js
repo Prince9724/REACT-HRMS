@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
+const API = "http://localhost:3000/employe"
+
 // ✅ GET
 export const fetchUser = createAsyncThunk(
     "user/fetch",
     async () => {
-        const res = await axios.get("http://localhost:3000/employe")
+        const res = await axios.get(API)
         return res.data
     }
 )
@@ -14,7 +16,7 @@ export const fetchUser = createAsyncThunk(
 export const deleteUser = createAsyncThunk(
     "user/delete",
     async (id) => {
-        await axios.delete(`http://localhost:3000/employe/${id}`)
+        await axios.delete(`${API}/${id}`)
         return id
     }
 )
@@ -23,10 +25,7 @@ export const deleteUser = createAsyncThunk(
 export const updateUser = createAsyncThunk(
     "user/update",
     async (updatedUser) => {
-        const res = await axios.put(
-            `http://localhost:3000/employe/${updatedUser.id}`,
-            updatedUser
-        )
+        const res = await axios.put(`${API}/${updatedUser.id}`, updatedUser)
         return res.data
     }
 )
@@ -46,8 +45,12 @@ const userSlice = createSlice({
                 state.status = "loading"
             })
             .addCase(fetchUser.fulfilled, (state, action) => {
-                state.user = action.payload
                 state.status = "succeeded"
+
+                // 🔥 IMPORTANT FIX
+                state.user = (action.payload || []).filter(
+                    (u) => u && typeof u === "object"
+                )
             })
             .addCase(fetchUser.rejected, (state, action) => {
                 state.error = action.error.message
