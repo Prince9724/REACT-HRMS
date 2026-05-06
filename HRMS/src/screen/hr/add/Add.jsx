@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router'
 import "../add/Add.css"
 import axios from 'axios'
 
+ 
+import { calculateAge } from "../../../../utils/Age.js"
+
 const Add = () => {
 
     const navigate = useNavigate();
@@ -12,40 +15,30 @@ const Add = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const phoneRegex = /^[0-9]{10}$/
 
-    // 🔥 AGE VALIDATION (15+)
-    const isValidAge = (dob) => {
-        const today = new Date()
-        const birthDate = new Date(dob)
-
-        let age = today.getFullYear() - birthDate.getFullYear()
-        const m = today.getMonth() - birthDate.getMonth()
-
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--
-        }
-
-        return age >= 15
-    }
-
     const handlePost = async () => {
 
-        // 🔥 VALIDATION
+        // 🔥 BASIC VALIDATION
         if (!member.firstName || !member.email || !member.salary || !member.role || !member.contact || !member.birthdate) {
             alert("Please fill all required fields")
             return
         }
 
+        // 🔥 EMAIL VALIDATION
         if (!emailRegex.test(member.email)) {
             alert("Invalid Email Format")
             return
         }
 
+        // 🔥 PHONE VALIDATION
         if (!phoneRegex.test(member.contact)) {
             alert("Phone must be 10 digits only")
             return
         }
 
-        if (!isValidAge(member.birthdate)) {
+        // 🔥 AGE VALIDATION (UTILS)
+        const age = calculateAge(member.birthdate)
+
+        if (age < 15) {
             alert("Age must be at least 15 years")
             return
         }
@@ -56,7 +49,7 @@ const Add = () => {
                 ...member,
                 salary: Number(member.salary),
 
-                // 🔥 JOINING DATE AUTO
+                // 🔥 AUTO JOINING DATE
                 joiningDate: new Date().toLocaleString()
             })
 
