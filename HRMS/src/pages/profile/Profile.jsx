@@ -5,22 +5,42 @@ const Profile = () => {
 
   const [user, setUser] = useState(null)
 
-  // Attendance states
   const [checkInTime, setCheckInTime] = useState("")
   const [checkOutTime, setCheckOutTime] = useState("")
 
-  // Leave states
   const [leaveReason, setLeaveReason] = useState("")
   const [leaveStatus, setLeaveStatus] = useState("")
   const [start, setStart] = useState("")
   const [end, setEnd] = useState("")
   const [type, setType] = useState("")
 
+  // 🔥 Salary Info
+  const [salaryInfo, setSalaryInfo] = useState({
+    perHour: 0,
+    workedHours: 0,
+    todayEarning: 0
+  })
+
+  // 🔥 TIME FIX FUNCTION (VERY IMPORTANT)
+  const convertTime = (timeStr) => {
+    if (!timeStr) return null
+    return new Date(`1970-01-01 ${timeStr}`)
+  }
+
+  const calculateHours = (checkIn, checkOut) => {
+    const start = convertTime(checkIn)
+    const end = convertTime(checkOut)
+
+    if (!start || !end) return 0
+
+    const diff = (end - start) / (1000 * 60 * 60)
+    return diff > 0 ? diff : 0
+  }
+
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("user"))
     setUser(data)
 
-    // 🔥 Attendance fetch (API se)
     const fetchAttendance = async () => {
       const today = new Date().toLocaleDateString()
 
@@ -36,7 +56,6 @@ const Profile = () => {
       }
     }
 
-    // 🔥 Leave status
     const fetchLeave = async () => {
       const res = await axios.get("http://localhost:3000/leaves")
       const myLeave = res.data.find(l => l.userId === data?.id)
@@ -48,10 +67,28 @@ const Profile = () => {
 
   }, [])
 
+  // 🔥 SALARY CALCULATION
+  useEffect(() => {
+    if (!user || !checkInTime || !checkOutTime) return
+
+    const perDay = user.salary / 30
+    const perHour = perDay / 8
+
+    const hours = calculateHours(checkInTime, checkOutTime)
+
+    const earning = hours * perHour
+
+    setSalaryInfo({
+      perHour: perHour.toFixed(2),
+      workedHours: hours.toFixed(2),
+      todayEarning: earning.toFixed(2)
+    })
+
+  }, [checkOutTime, user])
+
   if (!user) return <h3>No user logged in</h3>
 
-
-  // 🔥 ✅ CHECK IN (API BASED)
+  // 🔥 CHECK IN
   const handleCheckIn = async () => {
     const time = new Date().toLocaleTimeString()
     const today = new Date().toLocaleDateString()
@@ -79,8 +116,7 @@ const Profile = () => {
     setCheckInTime(time)
   }
 
-
-  // 🔥 ✅ CHECK OUT (API BASED)
+  // 🔥 CHECK OUT
   const handleCheckOut = async () => {
     const time = new Date().toLocaleTimeString()
     const today = new Date().toLocaleDateString()
@@ -103,8 +139,7 @@ const Profile = () => {
     setCheckOutTime(time)
   }
 
-
-  // ✅ APPLY LEAVE
+  // 🔥 APPLY LEAVE
   const handleLeaveApply = async () => {
 
     if (!start || !end || !type || !leaveReason) {
@@ -144,9 +179,10 @@ const Profile = () => {
         <p>{user.firstName} {user.lastName}</p>
         <p>{user.email}</p>
         <p>{user.contact}</p>
+        <p>Salary: ₹ {user.salary}</p>
       </div>
 
-      {/* 🔥 Attendance */}
+      {/* Attendance */}
       <div className="card p-4 mb-3">
         <h5>Attendance</h5>
 
@@ -160,23 +196,30 @@ const Profile = () => {
         <button onClick={handleCheckOut} className="btn btn-danger">
           Check Out
         </button>
+
+        {/* 🔥 SALARY DISPLAY */}
+        <div className="mt-3">
+          <p>Per Hour Salary: ₹ {salaryInfo.perHour}</p>
+          <p>Worked Hours: {salaryInfo.workedHours}</p>
+          <p>Today Earning: ₹ {salaryInfo.todayEarning}</p>
+        </div>
       </div>
 
-      {/* Leave Apply */}
+      {/* Leave */}
       <div className="card p-4 mb-3">
         <h5>Apply Leave</h5>
 
-        <input
+        {/* <input
           type="text"
           placeholder="Reason"
           value={leaveReason}
           onChange={(e) => setLeaveReason(e.target.value)}
           className="form-control mb-2"
-        />
+        /> */}
 
         <input
           type="text"
-          placeholder="Type (Sick / Casual)"
+          placeholder="Type/reason"
           value={type}
           onChange={(e) => setType(e.target.value)}
           className="form-control mb-2"
@@ -195,15 +238,6 @@ const Profile = () => {
           onChange={(e) => setEnd(e.target.value)}
           className="form-control mb-2"
         />
-
-        <p>
-          Days: {
-            start && end
-              ? (new Date(end) - new Date(start)) /
-                (1000 * 60 * 60 * 24) + 1
-              : 0
-          }
-        </p>
 
         <button onClick={handleLeaveApply} className="btn btn-primary">
           Apply Leave

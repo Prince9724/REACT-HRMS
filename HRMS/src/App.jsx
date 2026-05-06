@@ -13,6 +13,7 @@ import HrDashboard from './screen/hr/Leave'
 import Manager from './screen/Manager/Manager'
 import ViewEmployee from './pages/employees/VeiwEmploye'
 import Attendance from './screen/hr/attendence/Attendence'
+import Payroll from './screen/hr/payroll/Payroll'
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
         <Route path='/hrdashboard' element={<HrDashboard/>}/>
         <Route path='/view/:id' element={<ViewEmployee/>}/>
         <Route path = '/attendance' element={<Attendance/>}/>
+        <Route path='/payroll' element ={<Payroll/>}/>
       </Routes>
 
     </div>

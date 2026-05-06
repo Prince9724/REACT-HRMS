@@ -45,7 +45,7 @@ const Hr = () => {
     })
 
     return (
-        <div className="main-container">
+        <div className="main-container overflow-y-scroll"  style={{ height: "100vh", overflowY: "auto" }}>
 
             {/* Sidebar */}
             <div className="sidebar">
@@ -61,6 +61,7 @@ const Hr = () => {
                     <li onClick={()=> navigate("/user")}>Employees</li>
                     <li onClick={()=> navigate("/attendance")}>Attendance</li>
                     <li onClick={()=>navigate("/hrdashboard")}>Leave</li>
+                     <li onClick={()=>navigate("/payroll")}>Payroll</li>
                 </ul>
             </div>
 

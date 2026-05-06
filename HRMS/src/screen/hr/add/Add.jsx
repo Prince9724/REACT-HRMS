@@ -1,17 +1,74 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { useState } from 'react'
 import "../add/Add.css"
 import axios from 'axios'
+
 const Add = () => {
 
     const navigate = useNavigate();
     const [member, setmember] = useState({});
-    const handlePost = async () => {
-        const res = await axios.post("http://localhost:3000/employe", member);
-        console.log(res.data)
-        alert("succesfull !! ")
+
+    // 🔥 REGEX
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const phoneRegex = /^[0-9]{10}$/
+
+    // 🔥 AGE VALIDATION (15+)
+    const isValidAge = (dob) => {
+        const today = new Date()
+        const birthDate = new Date(dob)
+
+        let age = today.getFullYear() - birthDate.getFullYear()
+        const m = today.getMonth() - birthDate.getMonth()
+
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--
+        }
+
+        return age >= 15
     }
+
+    const handlePost = async () => {
+
+        // 🔥 VALIDATION
+        if (!member.firstName || !member.email || !member.salary || !member.role || !member.contact || !member.birthdate) {
+            alert("Please fill all required fields")
+            return
+        }
+
+        if (!emailRegex.test(member.email)) {
+            alert("Invalid Email Format")
+            return
+        }
+
+        if (!phoneRegex.test(member.contact)) {
+            alert("Phone must be 10 digits only")
+            return
+        }
+
+        if (!isValidAge(member.birthdate)) {
+            alert("Age must be at least 15 years")
+            return
+        }
+
+        try {
+
+            const res = await axios.post("http://localhost:3000/employe", {
+                ...member,
+                salary: Number(member.salary),
+
+                // 🔥 JOINING DATE AUTO
+                joiningDate: new Date().toLocaleString()
+            })
+
+            console.log(res.data)
+            alert("Successful !!")
+            navigate("/hr")
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
         <div className="container-fluid d-flex justify-content-center align-items-center vh-100 bg-light">
 
@@ -22,75 +79,87 @@ const Add = () => {
 
                 <div className="row g-3">
 
+                    {/* First Name */}
                     <div className="col-md-6">
-                        <label className="form-label text-primary">First Name</label>
-                        <input type="text" onChange={(e) => setmember({ ...member, firstName: e.target.value })} className="form-control shadow-sm" />
+                        <label>First Name</label>
+                        <input type="text"
+                            onChange={(e) => setmember({ ...member, firstName: e.target.value })}
+                            className="form-control" />
                     </div>
 
+                    {/* Role */}
                     <div className="col-md-6">
-                        <label className="form-label text-primary">Select role</label>
-
+                        <label>Role</label>
                         <select
-                            className="form-control shadow-sm"
+                            className="form-control"
                             value={member.role || ""}
-                            onChange={(e) =>
-                                setmember({ ...member, role: e.target.value })
-                            }
+                            onChange={(e) => setmember({ ...member, role: e.target.value })}
                         >
-                            <option value="">-- Select Role </option>
-                            <option value="admin">Admin</option>
+                            <option value="">Select Role</option>
                             <option value="manager">Manager</option>
                             <option value="employee">Employee</option>
                         </select>
                     </div>
 
+                    {/* Department */}
                     <div className="col-md-6">
-                        <label className="form-label text-primary">E-mail Address</label>
+                        <label>Department</label>
+                        <select
+                            className="form-control"
+                            value={member.department || ""}
+                            onChange={(e) => setmember({ ...member, department: e.target.value })}
+                        >
+                            <option value="">Select Department</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Graphic Designer">Graphic Designer</option>
+                            <option value="AI/ML">AI / ML</option>
+                            <option value="Flutter">Flutter</option>
+                        </select>
+                    </div>
+
+                    {/* Salary */}
+                    <div className="col-md-6">
+                        <label>Salary</label>
+                        <input type="number"
+                            onChange={(e) => setmember({ ...member, salary: e.target.value })}
+                            className="form-control" />
+                    </div>
+
+                    {/* Email */}
+                    <div className="col-md-6">
+                        <label>Email</label>
                         <input type="email"
                             onChange={(e) => setmember({ ...member, email: e.target.value })}
-                            className="form-control shadow-sm" />
+                            className="form-control" />
                     </div>
 
+                    {/* Phone */}
                     <div className="col-md-6">
-                        <label className="form-label text-primary">Phone Number</label>
+                        <label>Phone</label>
                         <input type="text"
                             onChange={(e) => setmember({ ...member, contact: e.target.value })}
-                            className="form-control shadow-sm" />
+                            className="form-control" />
                     </div>
 
+                    {/* Birthdate */}
                     <div className="col-md-6">
-                        <label className="form-label text-primary">Password</label>
+                        <label>Birthdate</label>
+                        <input type="date"
+                            onChange={(e) => setmember({ ...member, birthdate: e.target.value })}
+                            className="form-control" />
+                    </div>
+
+                    {/* Password */}
+                    <div className="col-md-6">
+                        <label>Password</label>
                         <input type="password"
                             onChange={(e) => setmember({ ...member, password: e.target.value })}
-                            className="form-control shadow-sm" />
+                            className="form-control" />
                     </div>
 
-                    <div className="col-md-6">
-                        <label className="form-label text-primary">Confirm Password</label>
-                        <input type="password" className="form-control shadow-sm" />
-                    </div>
-
+                    {/* Button */}
                     <div className="col-12 mt-3">
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" />
-                            <label className="form-check-label text-muted">
-                                Yes, I want to receive KPIS newsletters
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="col-12">
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" />
-                            <label className="form-check-label text-muted">
-                                I agree to all the <span className="text-primary">Terms</span>,{" "}
-                                <span className="text-primary">Privacy Policy</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="col-12 mt-3">
-                        <button className="btn btn-primary px-5 py-2" onClick={() => handlePost()}>
+                        <button className="btn btn-primary" onClick={handlePost}>
                             Create Account
                         </button>
                     </div>

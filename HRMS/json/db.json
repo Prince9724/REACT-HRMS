@@ -7,7 +7,9 @@
       "email": "prince@gmail.com",
       "contact": "9000000001",
       "password": "1234",
-      "role": "hr"
+      "role": "hr",
+      "department": "Human Resources",
+      "salary": 55000
     },
     {
       "id": 2,
@@ -16,7 +18,9 @@
       "email": "roshan@gmail.com",
       "contact": "9000000002",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Web Development",
+      "salary": 32000
     },
     {
       "id": 3,
@@ -25,7 +29,9 @@
       "email": "manager@gmail.com",
       "contact": "9000000003",
       "password": "1234",
-      "role": "manager"
+      "role": "manager",
+      "department": "Operations",
+      "salary": 75000
     },
     {
       "id": 4,
@@ -34,7 +40,9 @@
       "email": "vikas4@gmail.com",
       "contact": "9000000004",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "ai Ml",
+      "salary": 30000
     },
     {
       "id": 5,
@@ -43,7 +51,9 @@
       "email": "neha5@gmail.com",
       "contact": "9000000005",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Marketing",
+      "salary": 35000
     },
     {
       "id": 6,
@@ -52,7 +62,9 @@
       "email": "pooja6@gmail.com",
       "contact": "9000000006",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Web Development",
+      "salary": 42000
     },
     {
       "id": 7,
@@ -61,7 +73,9 @@
       "email": "rahul7@gmail.c",
       "contact": "9000000007",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Sales",
+      "salary": 25000
     },
     {
       "id": 8,
@@ -70,7 +84,9 @@
       "email": "ankit8@gmail.com",
       "contact": "9000000008",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "App Development",
+      "salary": 48000
     },
     {
       "id": 9,
@@ -79,7 +95,9 @@
       "email": "deepak9@gmail.com",
       "contact": "9000000009",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Finance",
+      "salary": 38000
     },
     {
       "id": 10,
@@ -88,7 +106,9 @@
       "email": "kiran10@gmail.com",
       "contact": "9000000010",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Customer Support",
+      "salary": 22000
     },
     {
       "id": 11,
@@ -97,7 +117,9 @@
       "email": "manager1@gmail.com",
       "contact": "9000000011",
       "password": "1111",
-      "role": "manager"
+      "role": "manager",
+      "department": "Web Development",
+      "salary": 80000
     },
     {
       "id": 12,
@@ -106,7 +128,9 @@
       "email": "manager2@gmail.com",
       "contact": "9000000012",
       "password": "1111",
-      "role": "manager"
+      "role": "manager",
+      "department": "Marketing",
+      "salary": 78000
     },
     {
       "id": 13,
@@ -115,7 +139,9 @@
       "email": "ajay13@gmail.com",
       "contact": "9000000013",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Design",
+      "salary": 31000
     },
     {
       "id": 14,
@@ -124,7 +150,9 @@
       "email": "sunil14@gmail.com",
       "contact": "9000000014",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "App Development",
+      "salary": 45000
     },
     {
       "id": 15,
@@ -133,7 +161,9 @@
       "email": "ramesh15@gmail.com",
       "contact": "9000000015",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Operations",
+      "salary": 29000
     },
     {
       "id": 16,
@@ -142,7 +172,9 @@
       "email": "priya16@gmail.com",
       "contact": "9000000016",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Marketing",
+      "salary": 36000
     },
     {
       "id": 17,
@@ -151,7 +183,9 @@
       "email": "sneha17@gmail.com",
       "contact": "9000000017",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Finance",
+      "salary": 40000
     },
     {
       "id": 18,
@@ -160,7 +194,9 @@
       "email": "arjun18@gmail.com",
       "contact": "9000000018",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "IT Support",
+      "salary": 27000
     },
     {
       "id": 19,
@@ -169,7 +205,9 @@
       "email": "varun19@gmail.com",
       "contact": "9000000019",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Sales",
+      "salary": 24000
     },
     {
       "id": 20,
@@ -178,7 +216,31 @@
       "email": "ritu20@gmail.com",
       "contact": "9000000020",
       "password": "1234",
-      "role": "employee"
+      "role": "employee",
+      "department": "Design",
+      "salary": 33000
+    },
+    {
+      "id": 21,
+      "firstName": "shiva",
+      "role": "employee",
+      "department": "Web Development",
+      "salary": 20000,
+      "email": "shiva@gmail.com",
+      "contact": "8888888888",
+      "password": "1234"
+    },
+    {
+      "firstName": "deepu",
+      "role": "employee",
+      "department": "Web Development",
+      "salary": 15000,
+      "email": "deepu@gmail.com",
+      "contact": "1234567890",
+      "birthdate": "2007-05-05",
+      "password": "1234",
+      "joiningDate": "5/6/2026, 6:36:37 PM",
+      "id": 22
     }
   ],
   "leaves": [
@@ -211,7 +273,7 @@
       "start": "2026-05-07",
       "end": "2026-05-24",
       "days": 18,
-      "status": "rejected",
+      "status": "approved",
       "id": 3
     },
     {
@@ -223,7 +285,7 @@
       "start": "2026-05-15",
       "end": "2026-05-26",
       "days": 12,
-      "status": "rejected",
+      "status": "approved",
       "id": 4
     },
     {
@@ -271,7 +333,7 @@
       "start": "2026-05-08",
       "end": "2026-05-15",
       "days": 8,
-      "status": "pending",
+      "status": "approved",
       "id": 8
     }
   ],
@@ -300,8 +362,27 @@
       "contact": "9000000007",
       "date": "5/6/2026",
       "checkIn": "3:50:12 PM",
-      "checkOut": "3:51:26 PM",
+      "checkOut": "6:08:17 PM",
       "id": 3
+    },
+    {
+      "userId": 21,
+      "name": "shiva",
+      "contact": "8888888888",
+      "date": "5/6/2026",
+      "checkIn": "4:33:04 PM",
+      "checkOut": "4:33:06 PM",
+      "id": 4
+    }
+  ],
+  "holidays": [
+    {
+      "date": "2026-08-15",
+      "name": "Independence Day"
+    },
+    {
+      "date": "2026-10-24",
+      "name": "Diwali"
     }
   ]
 }
