@@ -8,7 +8,7 @@
       "contact": "9000000001",
       "password": "1234",
       "role": "hr",
-      "department": "Human Resources",
+      "department": "Web Development",
       "salary": 55000
     },
     {
@@ -19,7 +19,7 @@
       "contact": "9000000002",
       "password": "1234",
       "role": "employee",
-      "department": "Web Development",
+      "department": "Graphic Designer",
       "salary": 32000
     },
     {
@@ -30,7 +30,7 @@
       "contact": "9000000003",
       "password": "1234",
       "role": "manager",
-      "department": "Operations",
+      "department": "AI/ML",
       "salary": 75000
     },
     {
@@ -41,7 +41,7 @@
       "contact": "9000000004",
       "password": "1234",
       "role": "employee",
-      "department": "ai Ml",
+      "department": "Flutter",
       "salary": 30000
     },
     {
@@ -52,7 +52,7 @@
       "contact": "9000000005",
       "password": "1234",
       "role": "employee",
-      "department": "Marketing",
+      "department": "Web Development",
       "salary": 35000
     },
     {
@@ -63,7 +63,7 @@
       "contact": "9000000006",
       "password": "1234",
       "role": "employee",
-      "department": "Web Development",
+      "department": "Graphic Designer",
       "salary": 42000
     },
     {
@@ -74,7 +74,7 @@
       "contact": "9000000007",
       "password": "1234",
       "role": "employee",
-      "department": "Sales",
+      "department": "AI/ML",
       "salary": 25000
     },
     {
@@ -85,7 +85,7 @@
       "contact": "9000000008",
       "password": "1234",
       "role": "employee",
-      "department": "App Development",
+      "department": "Flutter",
       "salary": 48000
     },
     {
@@ -96,7 +96,7 @@
       "contact": "9000000009",
       "password": "1234",
       "role": "employee",
-      "department": "Finance",
+      "department": "Web Development",
       "salary": 38000
     },
     {
@@ -107,7 +107,7 @@
       "contact": "9000000010",
       "password": "1234",
       "role": "employee",
-      "department": "Customer Support",
+      "department": "Graphic Designer",
       "salary": 22000
     },
     {
@@ -118,7 +118,7 @@
       "contact": "9000000011",
       "password": "1111",
       "role": "manager",
-      "department": "Web Development",
+      "department": "AI/ML",
       "salary": 80000
     },
     {
@@ -129,7 +129,7 @@
       "contact": "9000000012",
       "password": "1111",
       "role": "manager",
-      "department": "Marketing",
+      "department": "Flutter",
       "salary": 78000
     },
     {
@@ -140,7 +140,7 @@
       "contact": "9000000013",
       "password": "1234",
       "role": "employee",
-      "department": "Design",
+      "department": "Web Development",
       "salary": 31000
     },
     {
@@ -151,7 +151,7 @@
       "contact": "9000000014",
       "password": "1234",
       "role": "employee",
-      "department": "App Development",
+      "department": "Graphic Designer",
       "salary": 45000
     },
     {
@@ -162,7 +162,7 @@
       "contact": "9000000015",
       "password": "1234",
       "role": "employee",
-      "department": "Operations",
+      "department": "AI/ML",
       "salary": 29000
     },
     {
@@ -173,7 +173,7 @@
       "contact": "9000000016",
       "password": "1234",
       "role": "employee",
-      "department": "Marketing",
+      "department": "Flutter",
       "salary": 36000
     },
     {
@@ -184,7 +184,7 @@
       "contact": "9000000017",
       "password": "1234",
       "role": "employee",
-      "department": "Finance",
+      "department": "Web Development",
       "salary": 40000
     },
     {
@@ -195,7 +195,7 @@
       "contact": "9000000018",
       "password": "1234",
       "role": "employee",
-      "department": "IT Support",
+      "department": "Graphic Designer",
       "salary": 27000
     },
     {
@@ -206,7 +206,7 @@
       "contact": "9000000019",
       "password": "1234",
       "role": "employee",
-      "department": "Sales",
+      "department": "AI/ML",
       "salary": 24000
     },
     {
@@ -217,7 +217,7 @@
       "contact": "9000000020",
       "password": "1234",
       "role": "employee",
-      "department": "Design",
+      "department": "Flutter",
       "salary": 33000
     },
     {
@@ -233,7 +233,7 @@
     {
       "firstName": "deepu",
       "role": "employee",
-      "department": "Web Development",
+      "department": "Graphic Designer",
       "salary": 15000,
       "email": "deepu@gmail.com",
       "contact": "1234567890",
@@ -245,7 +245,7 @@
     {
       "firstName": "vishal ",
       "role": "employee",
-      "department": "Web Development",
+      "department": "AI/ML",
       "salary": 30000,
       "email": "vishal@gmail.com",
       "contact": "1111111112",
@@ -253,6 +253,18 @@
       "password": "1234",
       "joiningDate": "5/6/2026, 6:45:49 PM",
       "id": 23
+    },
+    {
+      "firstName": "aaaaa",
+      "role": "employee",
+      "department": "Flutter",
+      "salary": 12000,
+      "email": "aaa@gmail.com",
+      "contact": "1111111100",
+      "birthdate": "2007-04-01",
+      "password": "1234",
+      "joiningDate": "5/7/2026, 2:30:32 PM",
+      "id": 24
     }
   ],
   "leaves": [
@@ -419,8 +431,43 @@
       "contact": "9000000002",
       "date": "5/7/2026",
       "checkIn": "2:11:34 PM",
+      "checkOut": "3:08:33 PM",
+      "id": 8,
+      "halfDayCut": true,
+      "cutReason": "Forgot to checkout"
+    },
+    {
+      "userId": 1,
+      "name": "Prince",
+      "contact": "9000000001",
+      "department": "Human Resources",
+      "salary": 55000,
+      "date": "5/7/2026",
+      "checkIn": "2:53:55 PM",
       "checkOut": "",
-      "id": 8
+      "id": 9
+    },
+    {
+      "userId": 7,
+      "name": "Rahul",
+      "contact": "9000000007",
+      "date": "5/7/2026",
+      "checkIn": "3:06:21 PM",
+      "checkOut": "Auto Checkout",
+      "id": 10,
+      "halfDayCut": true,
+      "cutReason": "Forgot to checkout"
+    },
+    {
+      "userId": 8,
+      "name": "Ankit",
+      "contact": "9000000008",
+      "date": "5/7/2026",
+      "checkIn": "3:06:23 PM",
+      "checkOut": "Auto Checkout",
+      "id": 11,
+      "halfDayCut": true,
+      "cutReason": "Forgot to checkout"
     }
   ],
   "holidays": [
