@@ -167,6 +167,50 @@
       "checkIn": "5:32:36 PM",
       "checkOut": "",
       "id": 1
+    },
+    {
+      "userId": 3,
+      "name": "Suresh",
+      "contact": "1000000002",
+      "department": "Web Development",
+      "salary": 45000,
+      "date": "5/7/2026",
+      "checkIn": "6:41:41 PM",
+      "checkOut": "",
+      "id": 2
+    },
+    {
+      "userId": 6,
+      "name": "Rajesh",
+      "contact": "1000000005",
+      "department": "Graphic Designer",
+      "salary": 38000,
+      "date": "5/7/2026",
+      "checkIn": "6:42:27 PM",
+      "checkOut": "",
+      "id": 3
+    },
+    {
+      "userId": 7,
+      "name": "Kavita",
+      "contact": "1000000006",
+      "department": "Web Development",
+      "salary": 42000,
+      "date": "5/7/2026",
+      "checkIn": "6:42:56 PM",
+      "checkOut": "",
+      "id": 4
+    },
+    {
+      "userId": 8,
+      "name": "Manoj",
+      "contact": "1000000007",
+      "department": "AI/ML",
+      "salary": 58000,
+      "date": "5/7/2026",
+      "checkIn": "6:43:24 PM",
+      "checkOut": "",
+      "id": 5
     }
   ],
   "holidays": [
