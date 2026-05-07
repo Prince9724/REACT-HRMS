@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchUser, deleteUser, updateUser } from "../../feature/userslice/userSlice"
 import { useNavigate } from "react-router-dom"
+import { calculateAge } from "../../../utils/Age.js"
 import "../employees/Employe.css"
 
 const Employees = () => {
@@ -11,7 +12,7 @@ const Employees = () => {
 
   const [editUser, setEditUser] = useState(null)
 
-  // 🔥 NEW STATES
+  // 🔥 Search + Filter
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
 
@@ -120,6 +121,15 @@ const Employees = () => {
                     className="form-control mb-1"
                   />
 
+                  {/* 🔥 Birthdate edit */}
+                  <input 
+                    type="date"
+                    name="birthdate"
+                    value={editUser.birthdate || ""}
+                    onChange={handleChange}
+                    className="form-control mb-1"
+                  />
+
                   <button className="btn btn-success mt-2" onClick={handleUpdate}>
                     Save
                   </button>
@@ -131,6 +141,14 @@ const Employees = () => {
                   <p>📱 {u.contact}</p>
                   <p>🏢 {u.department || "N/A"}</p>
                   <p>💰 ₹ {u.salary ? u.salary.toLocaleString() : 0}</p>
+
+                  {/* 🔥 AGE */}
+                  <p>
+                    🎂 Age:{" "}
+                    <span className="fw-bold text-primary">
+                      {u.birthdate ? calculateAge(u.birthdate) : "N/A"}
+                    </span>
+                  </p>
 
                   {/* 🔥 ACTION BUTTONS */}
                   <div className="mt-2">
