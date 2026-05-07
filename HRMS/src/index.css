@@ -1,9 +1,58 @@
-
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:sans-serif;
 }
-body {
-  overflow-y: auto;
+
+html,
+body,
+#root{
+  width:100%;
+  min-height:100vh;
+  overflow-x:hidden;
+  background:#f4f7fc;
+}
+
+/* GLOBAL PAGE */
+.page-container{
+  width:100%;
+  min-height:100vh;
+  padding:20px;
+}
+
+/* SCROLL */
+.scroll-container{
+  width:100%;
+  overflow-x:auto;
+}
+
+/* CARD */
+.custom-card{
+  border:none;
+  border-radius:15px;
+  background:white;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* TABLE */
+.table th{
+  white-space:nowrap;
+}
+
+/* BUTTON */
+.custom-btn{
+  border:none;
+  border-radius:10px;
+  padding:10px 15px;
+  font-weight:600;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+
+  .page-container{
+    padding:10px;
+  }
+
 }

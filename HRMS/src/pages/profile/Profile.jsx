@@ -18,103 +18,104 @@ const Profile = () => {
   const [salaryInfo, setSalaryInfo] = useState({
     perHour: 0,
     workedHours: 0,
-    todayEarning: 0,
-    pfCut: 0,
-    finalSalary: 0,
-    halfDayCut: false,
-    cutReason: ""
+    todayEarning: 0
   })
 
   // 🔥 TIME CONVERT
-  const convertTime = (timeStr) => {
+  const convertToMinutes = (time) => {
 
-    if (!timeStr || timeStr === "Auto Checkout") return null
+    if (!time) return 0
 
-    return new Date(`1970-01-01 ${timeStr}`)
+    try {
+
+      const [timePart, modifier] = time.split(" ")
+
+      let [hours, minutes] = timePart.split(":")
+
+      hours = parseInt(hours)
+      minutes = parseInt(minutes)
+
+      // PM FIX
+      if (modifier === "PM" && hours !== 12) {
+        hours += 12
+      }
+
+      // 12 AM FIX
+      if (modifier === "AM" && hours === 12) {
+        hours = 0
+      }
+
+      return hours * 60 + minutes
+
+    } catch (error) {
+
+      return 0
+    }
   }
 
-  // 🔥 HOURS CALCULATION
+  // 🔥 CALCULATE HOURS
   const calculateHours = (checkIn, checkOut) => {
 
-    const start = convertTime(checkIn)
-    const end = convertTime(checkOut)
+    if (!checkIn || !checkOut) return 0
 
-    if (!start || !end) return 0
+    const inMinutes =
+      convertToMinutes(checkIn)
 
-    const diff = (end - start) / (1000 * 60 * 60)
+    const outMinutes =
+      convertToMinutes(checkOut)
 
-    return diff > 0 ? diff : 0
+    let diff =
+      (outMinutes - inMinutes) / 60
+
+    // invalid fix
+    if (diff < 0 || isNaN(diff)) {
+      return 0
+    }
+
+    // MAX 8 HOURS
+    if (diff > 8) {
+      diff = 8
+    }
+
+    return diff
   }
 
+  // 🔥 FETCH USER DATA
   useEffect(() => {
 
-    const data = JSON.parse(localStorage.getItem("user"))
+    const data =
+      JSON.parse(localStorage.getItem("user"))
 
     setUser(data)
 
     const fetchAttendance = async () => {
 
-      const today = new Date().toLocaleDateString()
+      const today =
+        new Date().toLocaleDateString()
 
-      const res = await axios.get("http://localhost:3000/attendance")
-
-      const todayData = res.data.find(
-        (a) => a.userId === data?.id && a.date === today
+      const res = await axios.get(
+        "http://localhost:3000/attendance"
       )
 
-      // 🔥 AUTO CHECKOUT SYSTEM
-      if (
-        todayData &&
-        todayData.checkIn &&
-        !todayData.checkOut
-      ) {
-
-        const now = new Date()
-        const currentHour = now.getHours()
-
-        // 🔥 AFTER 12 AM AUTO CHECKOUT
-        if (currentHour >= 0) {
-
-          await axios.patch(
-            `http://localhost:3000/attendance/${todayData.id}`,
-            {
-              checkOut: "Auto Checkout",
-              halfDayCut: true,
-              cutReason: "Forgot to checkout"
-            }
-          )
-
-          todayData.checkOut = "Auto Checkout"
-          todayData.halfDayCut = true
-          todayData.cutReason = "Forgot to checkout"
-        }
-      }
+      const todayData = res.data.find(
+        (a) =>
+          a.userId === data?.id &&
+          a.date === today
+      )
 
       if (todayData) {
 
         setCheckInTime(todayData.checkIn)
+
         setCheckOutTime(todayData.checkOut)
-
-        // 🔥 HALF DAY CUT
-        if (todayData.halfDayCut) {
-
-          const perDay = data.salary / 30
-          const halfCut = perDay / 2
-
-          setSalaryInfo((prev) => ({
-            ...prev,
-            halfDayCut: true,
-            cutReason: todayData.cutReason,
-            todayEarning: 0,
-            finalSalary: (perDay - halfCut).toFixed(2)
-          }))
-        }
       }
     }
 
     const fetchLeave = async () => {
 
-      const res = await axios.get("http://localhost:3000/leaves")
+      const res = await axios.get(
+        "http://localhost:3000/leaves"
+      )
 
       const myLeave = res.data.find(
         l => l.userId === data?.id
@@ -135,73 +136,109 @@ const Profile = () => {
 
     if (!user || !checkInTime || !checkOutTime) return
 
-    // 🔥 AUTO CHECKOUT CASE
-    if (checkOutTime === "Auto Checkout") {
+    const perDay =
+      user.salary / 30
 
-      const perDay = user.salary / 30
-      const halfCut = perDay / 2
+    const perHour =
+      perDay / 8
 
-      setSalaryInfo((prev) => ({
-        ...prev,
-        perHour: (perDay / 8).toFixed(2),
-        workedHours: "0.00",
-        todayEarning: "0.00",
-        pfCut: ((user.salary * 12) / 100 / 30).toFixed(2),
-        finalSalary: (perDay - halfCut).toFixed(2),
-        halfDayCut: true,
-        cutReason: "Forgot to checkout"
-      }))
+    const hours =
+      calculateHours(
+        checkInTime,
+        checkOutTime
+      )
 
-      return
-    }
-
-    const perDay = user.salary / 30
-
-    const perHour = perDay / 8
-
-    const hours = calculateHours(
-      checkInTime,
-      checkOutTime
-    )
-
-    const earning = hours * perHour
-
-    // 🔥 PF CUT 12%
-    const pfCut = (user.salary * 12) / 100 / 30
-
-    const finalSalary = earning - pfCut
+    const earning =
+      hours * perHour
 
     setSalaryInfo({
       perHour: perHour.toFixed(2),
       workedHours: hours.toFixed(2),
-      todayEarning: earning.toFixed(2),
-      pfCut: pfCut.toFixed(2),
-      finalSalary: finalSalary.toFixed(2),
-      halfDayCut: false,
-      cutReason: ""
+      todayEarning: earning.toFixed(2)
     })
 
   }, [checkOutTime, user])
 
-  if (!user) return <h3>No user logged in</h3>
+  // 🔥 AUTO CHECKOUT
+  useEffect(() => {
+
+    if (!checkInTime || checkOutTime || !user) return
+
+    const interval = setInterval(async () => {
+
+      const currentTime =
+        new Date().toLocaleTimeString()
+
+      const hours =
+        calculateHours(
+          checkInTime,
+          currentTime
+        )
+
+      // 🔥 AUTO CHECKOUT AFTER 8 HOURS
+      if (hours >= 8) {
+
+        const today =
+          new Date().toLocaleDateString()
+
+        const res = await axios.get(
+          "http://localhost:3000/attendance"
+        )
+
+        const record = res.data.find(
+          a =>
+            a.userId === user.id &&
+            a.date === today
+        )
+
+        if (record && !record.checkOut) {
+
+          await axios.patch(
+            `http://localhost:3000/attendance/${record.id}`,
+            {
+              checkOut: currentTime
+            }
+          )
+
+          setCheckOutTime(currentTime)
+
+          alert("Auto checkout completed")
+        }
+      }
+
+    }, 60000)
+
+    return () => clearInterval(interval)
+
+  }, [checkInTime, checkOutTime, user])
+
+  if (!user) {
+    return <h3>No user logged in</h3>
+  }
 
   // 🔥 CHECK IN
   const handleCheckIn = async () => {
 
-    const time = new Date().toLocaleTimeString()
+    const time =
+      new Date().toLocaleTimeString()
 
-    const today = new Date().toLocaleDateString()
+    const today =
+      new Date().toLocaleDateString()
 
     const res = await axios.get(
       "http://localhost:3000/attendance"
     )
 
     const already = res.data.find(
-      a => a.userId === user.id && a.date === today
+      a =>
+        a.userId === user.id &&
+        a.date === today
     )
 
     if (already) {
+
       alert("Already checked in")
+
       return
     }
 
@@ -225,26 +262,26 @@ const Profile = () => {
   // 🔥 CHECK OUT
   const handleCheckOut = async () => {
 
-    const time = new Date().toLocaleTimeString()
+    const time =
+      new Date().toLocaleTimeString()
 
-    const today = new Date().toLocaleDateString()
+    const today =
+      new Date().toLocaleDateString()
 
     const res = await axios.get(
       "http://localhost:3000/attendance"
     )
 
     const record = res.data.find(
-      a => a.userId === user.id && a.date === today
+      a =>
+        a.userId === user.id &&
+        a.date === today
     )
 
     if (!record) {
-      alert("Please check in first")
-      return
-    }
 
-    // 🔥 ALREADY CHECKOUT CONDITION
-    if (record.checkOut) {
-      alert("Already checked out")
+      alert("Please check in first")
+
       return
     }
 
@@ -262,7 +299,9 @@ const Profile = () => {
   const handleLeaveApply = async () => {
 
     if (!start || !end || !type) {
+
       alert("Please fill all fields")
+
       return
     }
 
@@ -303,64 +342,26 @@ const Profile = () => {
       }}
     >
 
-      {/* 🔥 PROFILE */}
+      {/* PROFILE */}
       <div className="card p-4 shadow-sm mb-4">
 
-        <h3 className="text-primary">
-          {user.role}
-        </h3>
+        <h3>{user.role}</h3>
 
         <p>
-          <strong>Name:</strong>
-          {" "}
           {user.firstName} {user.lastName}
         </p>
 
-        <p>
-          <strong>Email:</strong>
-          {" "}
-          {user.email}
-        </p>
+        <p>{user.email}</p>
+
+        <p>{user.contact}</p>
 
         <p>
-          <strong>Contact:</strong>
-          {" "}
-          {user.contact}
-        </p>
-
-        <p>
-          <strong>Department:</strong>
-          {" "}
-          {user.department}
-        </p>
-
-        <p>
-          <strong>Salary:</strong>
-          {" "}
-          ₹ {user.salary}
-        </p>
-
-        <p>
-          <strong>Age:</strong>
-          {" "}
-          {user.age}
-        </p>
-
-        <p>
-          <strong>Birthdate:</strong>
-          {" "}
-          {user.birthdate}
-        </p>
-
-        <p>
-          <strong>Joining Date:</strong>
-          {" "}
-          {user.joiningDate}
+          Salary: ₹ {user.salary}
         </p>
 
       </div>
 
-      {/* 🔥 ATTENDANCE */}
+      {/* ATTENDANCE */}
       <div className="card p-4 mb-3">
 
         <h5>Attendance</h5>
@@ -380,6 +381,7 @@ const Profile = () => {
         <button
           onClick={handleCheckIn}
           className="btn btn-success me-2"
+          disabled={checkInTime}
         >
           Check In
         </button>
@@ -387,92 +389,63 @@ const Profile = () => {
         <button
           onClick={handleCheckOut}
           className="btn btn-danger"
+          disabled={!checkInTime || checkOutTime}
         >
           Check Out
         </button>
 
-        {/* 🔥 SALARY */}
-        <div className="mt-4">
-
-          <h5>Salary Details</h5>
+        {/* SALARY */}
+        <div className="mt-3">
 
           <p>
             Per Hour Salary:
-            {" "}
             ₹ {salaryInfo.perHour}
           </p>
 
           <p>
             Worked Hours:
-            {" "}
             {salaryInfo.workedHours}
           </p>
 
           <p>
             Today Earning:
-            {" "}
             ₹ {salaryInfo.todayEarning}
           </p>
-
-          <p className="text-danger">
-            PF Cut (12%):
-            {" "}
-            ₹ {salaryInfo.pfCut}
-          </p>
-
-          <p className="fw-bold text-success">
-            Final Salary:
-            {" "}
-            ₹ {salaryInfo.finalSalary}
-          </p>
-
-          {/* 🔥 HALF DAY WARNING */}
-          {
-            salaryInfo.halfDayCut && (
-              <div className="alert alert-danger mt-3">
-
-                <h6>
-                  ⚠ Half Day Salary Cut
-                </h6>
-
-                <p>
-                  Reason:
-                  {" "}
-                  {salaryInfo.cutReason}
-                </p>
-
-              </div>
-            )
-          }
 
         </div>
 
       </div>
 
-      {/* 🔥 LEAVE */}
-      <div className="card p-4 mb-5">
+      {/* LEAVE */}
+      <div className="card p-4 mb-3">
 
         <h5>Apply Leave</h5>
 
         <input
           type="text"
-          placeholder="Type / Reason"
+          placeholder="Type/reason"
           value={type}
-          onChange={(e) => setType(e.target.value)}
+          onChange={(e) =>
+            setType(e.target.value)
+          }
           className="form-control mb-2"
         />
 
         <input
           type="date"
           value={start}
-          onChange={(e) => setStart(e.target.value)}
+          onChange={(e) =>
+            setStart(e.target.value)
+          }
           className="form-control mb-2"
         />
 
         <input
           type="date"
           value={end}
-          onChange={(e) => setEnd(e.target.value)}
+          onChange={(e) =>
+            setEnd(e.target.value)
+          }
           className="form-control mb-2"
         />
 
