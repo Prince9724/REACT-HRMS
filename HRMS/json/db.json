@@ -211,6 +211,105 @@
       "checkIn": "6:43:24 PM",
       "checkOut": "",
       "id": 5
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "department": "AI/ML",
+      "salary": 65000,
+      "date": "08/05/2026",
+      "checkIn": "15:34:50",
+      "checkOut": "",
+      "id": 6
+    },
+    {
+      "userId": 3,
+      "name": "Suresh",
+      "contact": "1000000002",
+      "department": "Web Development",
+      "salary": 45000,
+      "date": "08/05/2026",
+      "checkIn": "15:36:18",
+      "checkOut": "",
+      "id": 7
+    },
+    {
+      "userId": 4,
+      "name": "Priyanka",
+      "contact": "1000000003",
+      "department": "Flutter",
+      "salary": 85000,
+      "date": "08/05/2026",
+      "checkIn": "15:37:19",
+      "checkOut": "",
+      "id": 8
+    },
+    {
+      "userId": 6,
+      "name": "Rajesh",
+      "contact": "1000000005",
+      "department": "Graphic Designer",
+      "salary": 38000,
+      "date": "08/05/2026",
+      "checkIn": "15:39:11",
+      "checkOut": "",
+      "id": 9
+    },
+    {
+      "userId": 7,
+      "name": "Kavita",
+      "contact": "1000000006",
+      "department": "Web Development",
+      "salary": 42000,
+      "date": "08/05/2026",
+      "checkIn": "15:39:46",
+      "checkOut": "",
+      "id": 10
+    },
+    {
+      "userId": 8,
+      "name": "Manoj",
+      "contact": "1000000007",
+      "department": "AI/ML",
+      "salary": 58000,
+      "date": "08/05/2026",
+      "checkIn": "15:40:35",
+      "checkOut": "",
+      "id": 11
+    },
+    {
+      "userId": 9,
+      "name": "Deepika",
+      "contact": "1000000008",
+      "department": "Flutter",
+      "salary": 42000,
+      "date": "08/05/2026",
+      "checkIn": "15:41:20",
+      "checkOut": "",
+      "id": 12
+    },
+    {
+      "userId": 10,
+      "name": "Sanjay",
+      "contact": "1000000009",
+      "department": "Graphic Designer",
+      "salary": 35000,
+      "date": "08/05/2026",
+      "checkIn": "15:41:56",
+      "checkOut": "",
+      "id": 13
+    },
+    {
+      "userId": 12,
+      "name": "pooja",
+      "contact": "1000000011",
+      "department": "Web Development",
+      "salary": 40000,
+      "date": "08/05/2026",
+      "checkIn": "15:42:32",
+      "checkOut": "",
+      "id": 14
     }
   ],
   "holidays": [
