@@ -1,0 +1,30 @@
+.front-container {
+  height: 100vh;
+  background: darkgray;
+}
+
+/* Card Design */
+.role-card {
+  width: 260px;
+  padding: 20px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  transition: 0.3s;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.role-card:hover {
+  transform: translateY(-10px) scale(1.05);
+}
+
+/* Button Gradient */
+.btn-primary {
+  background: linear-gradient(45deg, #6a11cb, #2575fc);
+  border: none;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
