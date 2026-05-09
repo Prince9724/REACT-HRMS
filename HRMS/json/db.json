@@ -992,7 +992,7 @@
       "salary": 42000,
       "date": "5/9/2026",
       "checkIn": "06:48 PM",
-      "checkOut": "",
+      "checkOut": "Auto Checkout",
       "id": 80
     }
   ],
