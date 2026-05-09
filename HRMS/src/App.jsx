@@ -14,6 +14,7 @@ import Manager from './screen/Manager/Manager'
 import ViewEmployee from './pages/employees/VeiwEmploye'
 import Attendance from './screen/hr/attendence/Attendence'
 import Payroll from './screen/hr/payroll/Payroll'
+import SalaryHistory from './components/salary/SalaryHistory'
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
         <Route path='/view/:id' element={<ViewEmployee/>}/>
         <Route path = '/attendance' element={<Attendance/>}/>
         <Route path='/payroll' element ={<Payroll/>}/>
+        <Route path='/salary-history' element={<SalaryHistory/>}/>
       </Routes>
 
     </div>

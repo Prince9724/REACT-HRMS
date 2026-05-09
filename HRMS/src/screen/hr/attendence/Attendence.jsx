@@ -16,31 +16,24 @@ const Attendance = () => {
     (state) => state.attendance || {}
   )
 
-  // 🔥 ALL EMPLOYEES
+  // 🔥 EMPLOYEES
   const [employees, setEmployees] = useState([])
 
-  // 🔥 STATES
+  // 🔥 FILTER STATES
   const [search, setSearch] = useState("")
-  const [searchText, setSearchText] = useState("")
   const [selectedDate, setSelectedDate] = useState("")
   const [showHistory, setShowHistory] = useState(false)
   const [departmentFilter, setDepartmentFilter] = useState("all")
 
-  // 🔥 SEARCH BUTTON
-  const handleSearch = () => {
-    setSearch(searchText)
-  }
-
+  // 🔥 FETCH DATA
   useEffect(() => {
 
     dispatch(fetchAttendance())
 
-    // 🔥 FETCH EMPLOYEES
     fetch("http://localhost:3000/employe")
       .then((res) => res.json())
       .then((data) => {
 
-        // ONLY EMPLOYEES
         const onlyEmployees =
           data.filter(
             (emp) => emp.role === "employee"
@@ -51,7 +44,7 @@ const Attendance = () => {
 
   }, [dispatch])
 
-  // 🔥 TODAY
+  // 🔥 TODAY DATE
   const today =
     new Date().toLocaleDateString()
 
@@ -60,7 +53,6 @@ const Attendance = () => {
 
     if (!time) return 0
 
-    // AUTO CHECKOUT FIX
     if (time === "Auto Checkout") {
       return 0
     }
@@ -76,7 +68,6 @@ const Attendance = () => {
       hours = parseInt(hours)
       minutes = parseInt(minutes)
 
-      // PM FIX
       if (
         modifier === "PM" &&
         hours !== 12
@@ -84,7 +75,6 @@ const Attendance = () => {
         hours += 12
       }
 
-      // 12 AM FIX
       if (
         modifier === "AM" &&
         hours === 12
@@ -100,13 +90,14 @@ const Attendance = () => {
     }
   }
 
-  // 🔥 CALCULATE HOURS
+  // 🔥 HOURS
   const calculateHours = (
     checkIn,
     checkOut
   ) => {
 
-    // STILL WORKING
+    if (!checkIn) return 0
+
     if (!checkOut) {
 
       const currentTime =
@@ -115,7 +106,6 @@ const Attendance = () => {
       checkOut = currentTime
     }
 
-    // AUTO CHECKOUT
     if (checkOut === "Auto Checkout") {
       return 4
     }
@@ -129,12 +119,10 @@ const Attendance = () => {
     let diff =
       (outMinutes - inMinutes) / 60
 
-    // INVALID FIX
     if (diff < 0 || isNaN(diff)) {
       return 0
     }
 
-    // MAX 8 HOURS
     if (diff > 8) {
       diff = 8
     }
@@ -145,29 +133,35 @@ const Attendance = () => {
   // 🔥 STATUS
   const getStatus = (a) => {
 
-    // WORKING
-    if (!a.checkOut) {
-      return "Working"
+    // ❌ No checkin
+    if (!a.checkIn) {
+      return "Absent"
     }
 
-    // AUTO CHECKOUT
+    // ✅ Checkin hote hi present
+    if (a.checkIn && !a.checkOut) {
+      return "Present"
+    }
+
+    // 🔥 Auto checkout
     if (a.checkOut === "Auto Checkout") {
       return "Half Day"
     }
 
-    const hours = Number(
-      calculateHours(
-        a.checkIn,
-        a.checkOut
+    const hours =
+      Number(
+        calculateHours(
+          a.checkIn,
+          a.checkOut
+        )
       )
-    )
 
-    // FULL DAY
+    // ✅ Full day
     if (hours >= 8) {
       return "Present"
     }
 
-    // HALF DAY
+    // ✅ Half day
     if (hours >= 4) {
       return "Half Day"
     }
@@ -178,24 +172,32 @@ const Attendance = () => {
   // 🔥 SALARY CUT
   const calculateCut = (a) => {
 
-    // NO SALARY
     if (!a.salary) return 0
 
-    // STILL WORKING
-    if (!a.checkOut) {
+    if (!a.checkIn) {
+
+      return Math.round(
+        a.salary / 30
+      )
+    }
+
+    const hours =
+      Number(
+        calculateHours(
+          a.checkIn,
+          a.checkOut
+        )
+      )
+
+    if (hours >= 8) {
       return 0
     }
 
-    const hours = Number(
-      calculateHours(
-        a.checkIn,
-        a.checkOut
-      )
-    )
+    if (a.checkOut === "Auto Checkout") {
 
-    // FULL DAY
-    if (hours >= 8) {
-      return 0
+      return Math.round(
+        a.salary / 30 / 2
+      )
     }
 
     const perHour =
@@ -209,38 +211,50 @@ const Attendance = () => {
     )
   }
 
-  // 🔥 TODAY ATTENDANCE
-  const todayAttendance =
-    attendance.filter(
-      (a) => a.date === today
-    )
+  // 🔥 SELECTED DATE
+  const selectedHistoryDate =
+    selectedDate
+      ? new Date(selectedDate).toLocaleDateString()
+      : today
 
-  // 🔥 PRESENT IDS
-  const presentIds =
-    todayAttendance.map(
-      (a) => a.userId
-    )
+  // 🔥 STATS DATA
+  const statsAttendance =
+    attendance.filter((a) => {
 
-  // 🔥 TOTAL EMPLOYEE
+      if (showHistory) {
+        return a.date === selectedHistoryDate
+      }
+
+      return a.date === today
+    })
+
+  // 🔥 TOTAL EMPLOYEES
   const totalEmployees =
     employees.length
 
   // 🔥 PRESENT
   const presentCount =
-    presentIds.length
-
-  // 🔥 ABSENT
-  const absentCount =
-    totalEmployees - presentCount
+    statsAttendance.filter(
+      (a) =>
+        getStatus(a) === "Present"
+    ).length
 
   // 🔥 HALF DAY
   const halfDayCount =
-    todayAttendance.filter(
+    statsAttendance.filter(
       (a) =>
         getStatus(a) === "Half Day"
     ).length
 
-  // 🔥 FILTER
+  // 🔥 ABSENT
+  const absentCount =
+    totalEmployees -
+    (
+      presentCount +
+      halfDayCount
+    )
+
+  // 🔥 FILTER DATA
   const filteredAttendance =
     attendance.filter((a) => {
 
@@ -288,7 +302,7 @@ const Attendance = () => {
 
   return (
 
-    <div className="container-fluid page-container">
+    <div className="container-fluid p-4">
 
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -324,7 +338,9 @@ const Attendance = () => {
 
           <button
             className="btn btn-primary ms-2"
-            onClick={() => navigate("/hr")}
+            onClick={() =>
+              navigate("/hr")
+            }
           >
             Go To HR
           </button>
@@ -333,7 +349,7 @@ const Attendance = () => {
 
       </div>
 
-      {/* SEARCH + FILTER */}
+      {/* FILTER */}
       <div className="card p-3 shadow-sm mb-4">
 
         <div className="row">
@@ -341,47 +357,43 @@ const Attendance = () => {
           {/* SEARCH */}
           <div className="col-md-4 mb-2">
 
-            <div className="d-flex">
-
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search employee..."
-                value={searchText}
-                onChange={(e) =>
-                  setSearchText(
-                    e.target.value
-                  )
-                }
-              />
-
-
-
-            </div>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search employee..."
+              value={search}
+              onChange={(e) =>
+                setSearch(
+                  e.target.value
+                )
+              }
+            />
 
           </div>
 
           {/* DATE */}
-          {showHistory && (
+          {
+            showHistory && (
 
-            <div className="col-md-4 mb-2">
+              <div className="col-md-4 mb-2">
 
-              <input
-                type="date"
-                className="form-control"
-                value={selectedDate}
-                onChange={(e) =>
-                  setSelectedDate(
-                    e.target.value
-                  )
-                }
-              />
+                <input
+                  type="date"
+                  className="form-control"
+                  value={selectedDate}
+                  onChange={(e) =>
+                    setSelectedDate(
+                      e.target.value
+                    )
+                  }
+                />
 
-            </div>
-          )}
+              </div>
+            )
+          }
 
           {/* DEPARTMENT */}
-          <div className="col-md-4 mb-2 d-flex">
+          <div className="col-md-4 mb-2">
 
             <select
               className="form-control"
@@ -417,15 +429,18 @@ const Attendance = () => {
                 Flutter
               </option>
 
+              <option value="Backend">
+                Backend
+              </option>
+
+              <option value="QA Testing">
+                QA Testing
+              </option>
+
             </select>
-            <button
-              className="btn btn-primary ms-2"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
+
           </div>
-          
+
         </div>
 
       </div>
@@ -433,7 +448,6 @@ const Attendance = () => {
       {/* STATS */}
       <div className="row mb-4">
 
-        {/* TOTAL */}
         <div className="col-md-3 mb-2">
 
           <div className="card p-3 shadow-sm">
@@ -448,14 +462,13 @@ const Attendance = () => {
 
         </div>
 
-        {/* PRESENT */}
         <div className="col-md-3 mb-2">
 
           <div className="card p-3 shadow-sm">
 
             <h6>Present</h6>
 
-            <h3>
+            <h3 className="text-success">
               {presentCount}
             </h3>
 
@@ -463,14 +476,13 @@ const Attendance = () => {
 
         </div>
 
-        {/* ABSENT */}
         <div className="col-md-3 mb-2">
 
           <div className="card p-3 shadow-sm">
 
             <h6>Absent</h6>
 
-            <h3>
+            <h3 className="text-danger">
               {absentCount}
             </h3>
 
@@ -478,14 +490,13 @@ const Attendance = () => {
 
         </div>
 
-        {/* HALF DAY */}
         <div className="col-md-3 mb-2">
 
           <div className="card p-3 shadow-sm">
 
             <h6>Half Day</h6>
 
-            <h3>
+            <h3 className="text-warning">
               {halfDayCount}
             </h3>
 
@@ -498,15 +509,17 @@ const Attendance = () => {
       {/* TABLE */}
       <div className="card shadow-sm p-3">
 
-        {status === "loading" && (
+        {
+          status === "loading" &&
           <p>Loading...</p>
-        )}
+        }
 
-        {status === "failed" && (
+        {
+          status === "failed" &&
           <p>{error}</p>
-        )}
+        }
 
-        <div className="table-responsive scroll-container">
+        <div className="table-responsive">
 
           <table className="table table-hover align-middle">
 
@@ -562,19 +575,19 @@ const Attendance = () => {
 
                           <td>
                             {
-                              a.department ||
-                              "N/A"
+                              a.department || "N/A"
                             }
                           </td>
 
                           <td>
-                            {a.checkIn}
+                            {
+                              a.checkIn || "--"
+                            }
                           </td>
 
                           <td>
                             {
-                              a.checkOut ||
-                              "--"
+                              a.checkOut || "--"
                             }
                           </td>
 
@@ -591,23 +604,19 @@ const Attendance = () => {
                                     Present
                                   </span>
                                 )
+
                                 : status === "Half Day"
                                   ? (
                                     <span className="badge bg-warning text-dark">
                                       Half Day
                                     </span>
                                   )
-                                  : status === "Working"
-                                    ? (
-                                      <span className="badge bg-primary">
-                                        Working
-                                      </span>
-                                    )
-                                    : (
-                                      <span className="badge bg-danger">
-                                        Absent
-                                      </span>
-                                    )
+
+                                  : (
+                                    <span className="badge bg-danger">
+                                      Absent
+                                    </span>
+                                  )
                             }
 
                           </td>
@@ -624,7 +633,9 @@ const Attendance = () => {
                       )
                     })
                   )
+
                   : (
+
                     <tr>
 
                       <td

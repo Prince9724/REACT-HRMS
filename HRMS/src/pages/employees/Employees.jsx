@@ -12,9 +12,10 @@ const Employees = () => {
 
   const [editUser, setEditUser] = useState(null)
 
-  // 🔥 Search + Filter
+  // 🔥 Search + Role Filter + Department Filter
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
+  const [departmentFilter, setDepartmentFilter] = useState("all") // 🆕 Department filter
 
   useEffect(() => {
     dispatch(fetchUser())
@@ -47,9 +48,10 @@ const Employees = () => {
     navigate(`/view/${id}`)
   }
 
-  // 🔥 FILTER LOGIC
+  // 🔥 FILTER LOGIC (Role + Department + Search)
   const filteredUsers = user
     ?.filter(u => u && (roleFilter === "all" || u.role === roleFilter))
+    ?.filter(u => departmentFilter === "all" || u.department === departmentFilter) // 🆕 Department filter
     ?.filter(u =>
       `${u.firstName} ${u.lastName}`
         .toLowerCase()
@@ -57,7 +59,7 @@ const Employees = () => {
     )
 
   return (
-    <div  className="container-fluid page-container">
+    <div className="container-fluid page-container">
 
       {/* 🔥 TOP BAR */}
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -68,25 +70,44 @@ const Employees = () => {
         </button>
       </div>
 
-      {/* 🔥 SEARCH + FILTER */}
-      <div className="d-flex gap-2 mb-3">
-        <input
-          type="text"
-          placeholder="Search by name..."
-          className="form-control"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* 🔥 SEARCH + ROLE FILTER + DEPARTMENT FILTER */}
+      <div className="row mb-3">
+        <div className="col-md-4">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            className="form-control"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-        <select
-          className="form-control"
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="employee">Employee</option>
-          <option value="manager">Manager</option>
-        </select>
+        <div className="col-md-4">
+          <select
+            className="form-control"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+          >
+            <option value="all">All Roles</option>
+            <option value="employee">Employee</option>
+            <option value="manager">Manager</option>
+          </select>
+        </div>
+
+        {/* 🆕 Department Filter Dropdown */}
+        <div className="col-md-4">
+          <select
+            className="form-control"
+            value={departmentFilter}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
+          >
+            <option value="all">All Departments</option>
+            <option value="AI/ML">AI/ML</option>
+            <option value="Web Development">Web Development</option>
+            <option value="Graphic Designer">Graphic Designer</option>
+            <option value="Flutter">Flutter</option>
+          </select>
+        </div>
       </div>
 
       {status === "loading" && <p>Loading...</p>}
@@ -104,13 +125,19 @@ const Employees = () => {
                   <input name="lastName" value={editUser.lastName} onChange={handleChange} className="form-control mb-1" />
                   <input name="contact" value={editUser.contact} onChange={handleChange} className="form-control mb-1" />
 
-                  <input 
+                  {/* 🆕 Department dropdown in edit mode */}
+                  <select 
                     name="department" 
                     value={editUser.department || ""} 
-                    onChange={handleChange} 
-                    placeholder="Department"
+                    onChange={handleChange}
                     className="form-control mb-1"
-                  />
+                  >
+                    <option value="">Select Department</option>
+                    <option value="AI/ML">AI/ML</option>
+                    <option value="Web Developement">Web Development</option>
+                    <option value="Graphic Designer">Graphic Designer</option>
+                    <option value="Flutter">Flutter</option>
+                  </select>
 
                   <input 
                     name="salary" 

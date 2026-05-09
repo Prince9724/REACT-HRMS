@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import { useNavigate } from "react-router"
 
 const Profile = () => {
+
+  const navigate = useNavigate()
 
   const [user, setUser] = useState(null)
 
@@ -14,7 +17,6 @@ const Profile = () => {
   const [end, setEnd] = useState("")
   const [type, setType] = useState("")
 
-  // 🔥 SALARY SLIP
   const [salaryData, setSalaryData] = useState({
     present: 0,
     absent: 0,
@@ -25,13 +27,20 @@ const Profile = () => {
     pf: 0,
     professionalTax: 200,
     leaveCut: 0,
+    attendanceCut: 0,
     performance: "Average"
   })
 
   // 🔥 TIME CONVERT
   const convertToMinutes = (time) => {
 
-    if (!time || time === "Auto Checkout") return 0
+    if (
+      !time ||
+      time === "Auto Checkout" ||
+      time === "Leave"
+    ) {
+      return 0
+    }
 
     try {
 
@@ -72,11 +81,13 @@ const Profile = () => {
     checkOut
   ) => {
 
-    if (!checkIn || !checkOut) return 0
+    if (!checkIn) return 0
 
     if (checkOut === "Auto Checkout") {
       return 4
     }
+
+    if (!checkOut) return 0
 
     const inMinutes =
       convertToMinutes(checkIn)
@@ -98,7 +109,7 @@ const Profile = () => {
     return diff
   }
 
-  // 🔥 FETCH USER
+  // 🔥 LOAD USER
   useEffect(() => {
 
     const data =
@@ -120,29 +131,36 @@ const Profile = () => {
   const fetchAttendance =
     async (data) => {
 
-      const today =
-        new Date().toLocaleDateString()
+      try {
 
-      const res = await axios.get(
-        "http://localhost:3000/attendance"
-      )
+        const today =
+          new Date().toLocaleDateString()
 
-      const todayData =
-        res.data.find(
-          (a) =>
-            a.userId === data.id &&
-            a.date === today
+        const res = await axios.get(
+          "http://localhost:3000/attendance"
         )
 
-      if (todayData) {
+        const todayData =
+          res.data.find(
+            (a) =>
+              a.userId === data.id &&
+              a.date === today
+          )
 
-        setCheckInTime(
-          todayData.checkIn
-        )
+        if (todayData) {
 
-        setCheckOutTime(
-          todayData.checkOut
-        )
+          setCheckInTime(
+            todayData.checkIn
+          )
+
+          setCheckOutTime(
+            todayData.checkOut
+          )
+        }
+
+      } catch (error) {
+
+        console.log(error)
       }
     }
 
@@ -150,393 +168,447 @@ const Profile = () => {
   const fetchLeave =
     async (data) => {
 
-      const res = await axios.get(
-        "http://localhost:3000/leaves"
-      )
+      try {
 
-      const myLeave =
-        res.data.find(
-          (l) =>
-            l.userId === data.id
-        )
-
-      if (myLeave) {
-        setLeaveStatus(
-          myLeave.status
-        )
-      }
-    }
-
-  // 🔥 FETCH SALARY SLIP
-  const fetchSalarySlip =
-    async (data) => {
-
-      const attendanceRes =
-        await axios.get(
-          "http://localhost:3000/attendance"
-        )
-
-      const leaveRes =
-        await axios.get(
+        const res = await axios.get(
           "http://localhost:3000/leaves"
         )
 
-      const myAttendance =
-        attendanceRes.data.filter(
-          (a) => a.userId === data.id
-        )
-
-      const myLeaves =
-        leaveRes.data.filter(
-          (l) =>
-            l.userId === data.id &&
-            l.status === "approved"
-        )
-
-      let present = 0
-      let absent = 0
-      let halfDay = 0
-
-      let attendanceCut = 0
-      let leaveCut = 0
-
-      myAttendance.forEach((a) => {
-
-        const hours =
-          calculateHours(
-            a.checkIn,
-            a.checkOut
+        const myLeave =
+          res.data.find(
+            (l) =>
+              l.userId === data.id
           )
 
-        if (hours >= 8) {
+        if (myLeave) {
 
-          present++
-
+          setLeaveStatus(
+            myLeave.status
+          )
         }
 
-        else if (hours >= 4) {
+      } catch (error) {
 
-          halfDay++
+        console.log(error)
+      }
+    }
 
-          attendanceCut +=
-            data.salary / 30 / 2
+  // 🔥 FETCH SALARY
+  const fetchSalarySlip =
+    async (data) => {
+
+      try {
+
+        const attendanceRes =
+          await axios.get(
+            "http://localhost:3000/attendance"
+          )
+
+        const leaveRes =
+          await axios.get(
+            "http://localhost:3000/leaves"
+          )
+
+        const myAttendance =
+          attendanceRes.data.filter(
+            (a) =>
+              a.userId === data.id
+          )
+
+        const myLeaves =
+          leaveRes.data.filter(
+            (l) =>
+              l.userId === data.id &&
+              l.status === "approved"
+          )
+
+        let present = 0
+        let absent = 0
+        let halfDay = 0
+
+        let attendanceCut = 0
+        let leaveCut = 0
+
+        myAttendance.forEach((a) => {
+
+          if (
+            a.checkIn === "Leave"
+          ) {
+
+            absent++
+
+            attendanceCut +=
+              data.salary / 30
+
+            return
+          }
+
+          const hours =
+            calculateHours(
+              a.checkIn,
+              a.checkOut
+            )
+
+          if (hours >= 8) {
+
+            present++
+          }
+
+          else if (hours >= 4) {
+
+            halfDay++
+
+            attendanceCut +=
+              data.salary / 30 / 2
+          }
+
+          else {
+
+            absent++
+
+            attendanceCut +=
+              data.salary / 30
+          }
+        })
+
+        let totalLeaves = 0
+
+        myLeaves.forEach((l) => {
+
+          totalLeaves += l.days
+        })
+
+        // 🔥 FIRST LEAVE FREE
+        if (totalLeaves > 1) {
+
+          const extraLeaves =
+            totalLeaves - 1
+
+          leaveCut =
+            extraLeaves *
+            (data.salary / 30)
         }
 
-        else {
+        const pf =
+          data.salary * 0.12
 
-          absent++
+        const professionalTax = 200
 
-          attendanceCut +=
-            data.salary / 30
+        const totalCut =
+          attendanceCut +
+          leaveCut +
+          pf +
+          professionalTax
+
+        const netSalary =
+          data.salary - totalCut
+
+        let performance = "Poor"
+
+        if (present >= 26) {
+
+          performance = "Excellent"
         }
-      })
 
-      let totalLeaves = 0
+        else if (present >= 22) {
 
-      myLeaves.forEach((l) => {
-        totalLeaves += l.days
-      })
+          performance = "Good"
+        }
 
-      if (totalLeaves > 1) {
+        else if (present >= 18) {
 
-        const extraLeaves =
-          totalLeaves - 1
+          performance = "Average"
+        }
 
-        leaveCut =
-          extraLeaves *
-          (data.salary / 30)
+        setSalaryData({
+          present,
+          absent,
+          halfDay,
+          totalCut:
+            totalCut.toFixed(0),
+          netSalary:
+            netSalary.toFixed(0),
+          totalLeaves,
+          pf: pf.toFixed(0),
+          professionalTax,
+          leaveCut:
+            leaveCut.toFixed(0),
+          attendanceCut:
+            attendanceCut.toFixed(0),
+          performance
+        })
+
+      } catch (error) {
+
+        console.log(error)
       }
-
-      // PF
-      const pf =
-        data.salary * 0.12
-
-      // TAX
-      const professionalTax = 200
-
-      // TOTAL CUT
-      const totalCut =
-        attendanceCut +
-        leaveCut +
-        pf +
-        professionalTax
-
-      // NET SALARY
-      const netSalary =
-        data.salary - totalCut
-
-      // PERFORMANCE
-      let performance = "Average"
-
-      if (present >= 26) {
-        performance = "Excellent"
-      }
-
-      else if (present >= 22) {
-        performance = "Good"
-      }
-
-      else if (present >= 18) {
-        performance = "Average"
-      }
-
-      else {
-        performance = "Poor"
-      }
-
-      setSalaryData({
-        present,
-        absent,
-        halfDay,
-        totalCut:
-          totalCut.toFixed(0),
-        netSalary:
-          netSalary.toFixed(0),
-        totalLeaves,
-        pf: pf.toFixed(0),
-        professionalTax,
-        leaveCut:
-          leaveCut.toFixed(0),
-        performance
-      })
     }
 
   // 🔥 AUTO CHECKOUT
   useEffect(() => {
 
-    if (
-      !checkInTime ||
-      checkOutTime ||
-      !user
-    ) return
+    if (!user) return
 
-    const interval =
-      setInterval(async () => {
+    const autoCheckout =
+      async () => {
 
-        const currentTime =
-          new Date()
+        const today =
+          new Date().toLocaleDateString()
 
         const currentHour =
-          currentTime.getHours()
+          new Date().getHours()
 
-        const currentMinute =
-          currentTime.getMinutes()
+        if (currentHour >= 23) {
 
-        // 🔥 11:59 PM
-        if (
-          currentHour === 23 &&
-          currentMinute >= 59
-        ) {
+          try {
 
-          const today =
-            new Date().toLocaleDateString()
+            const res =
+              await axios.get(
+                "http://localhost:3000/attendance"
+              )
 
-          const res =
-            await axios.get(
-              "http://localhost:3000/attendance"
-            )
+            const record =
+              res.data.find(
+                (a) =>
+                  a.userId === user.id &&
+                  a.date === today
+              )
 
-          const record =
-            res.data.find(
-              (a) =>
-                a.userId ===
-                user.id &&
-                a.date === today
-            )
+            if (
+              record &&
+              record.checkIn &&
+              !record.checkOut
+            ) {
 
-          if (
-            record &&
-            !record.checkOut
-          ) {
+              await axios.patch(
+                `http://localhost:3000/attendance/${record.id}`,
+                {
+                  checkOut:
+                    "Auto Checkout"
+                }
+              )
 
-            await axios.patch(
-              `http://localhost:3000/attendance/${record.id}`,
-              {
-                checkOut:
-                  "Auto Checkout"
-              }
-            )
+              setCheckOutTime(
+                "Auto Checkout"
+              )
 
-            setCheckOutTime(
-              "Auto Checkout"
-            )
+              fetchSalarySlip(user)
+            }
 
-            alert(
-              "Auto Checkout Applied"
-            )
+          } catch (error) {
+
+            console.log(error)
           }
         }
+      }
 
-      }, 60000)
+    autoCheckout()
 
-    return () =>
-      clearInterval(interval)
-
-  }, [
-    checkInTime,
-    checkOutTime,
-    user
-  ])
-
-  if (!user) {
-
-    return (
-      <h3>
-        No user logged in
-      </h3>
-    )
-  }
+  }, [user])
 
   // 🔥 CHECK IN
   const handleCheckIn =
     async () => {
 
-      const time =
-        new Date().toLocaleTimeString()
+      try {
 
-      const today =
-        new Date().toLocaleDateString()
+        const time =
+          new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          })
 
-      const res =
-        await axios.get(
-          "http://localhost:3000/attendance"
-        )
+        const today =
+          new Date().toLocaleDateString()
 
-      const already =
-        res.data.find(
-          (a) =>
-            a.userId === user.id &&
-            a.date === today
-        )
+        const res =
+          await axios.get(
+            "http://localhost:3000/attendance"
+          )
 
-      if (already) {
+        const already =
+          res.data.find(
+            (a) =>
+              a.userId === user.id &&
+              a.date === today
+          )
 
-        alert(
-          "Already checked in"
-        )
+        if (already) {
 
-        return
-      }
+          alert(
+            "Already checked in"
+          )
 
-      await axios.post(
-        "http://localhost:3000/attendance",
-        {
-          userId: user.id,
-          name: user.firstName,
-          contact: user.contact,
-          department:
-            user.department,
-          salary: user.salary,
-          date: today,
-          checkIn: time,
-          checkOut: ""
+          return
         }
-      )
 
-      setCheckInTime(time)
+        await axios.post(
+          "http://localhost:3000/attendance",
+          {
+            userId: user.id,
+            name: user.firstName,
+            contact: user.contact,
+            department:
+              user.department,
+            salary: user.salary,
+            date: today,
+            checkIn: time,
+            checkOut: ""
+          }
+        )
+
+        setCheckInTime(time)
+
+        fetchSalarySlip(user)
+
+        alert("Checked In Successfully")
+
+      } catch (error) {
+
+        console.log(error)
+      }
     }
 
   // 🔥 CHECK OUT
   const handleCheckOut =
     async () => {
 
-      const time =
-        new Date().toLocaleTimeString()
+      try {
 
-      const today =
-        new Date().toLocaleDateString()
+        const time =
+          new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          })
 
-      const res =
-        await axios.get(
-          "http://localhost:3000/attendance"
-        )
+        const today =
+          new Date().toLocaleDateString()
 
-      const record =
-        res.data.find(
-          (a) =>
-            a.userId === user.id &&
-            a.date === today
-        )
+        const res =
+          await axios.get(
+            "http://localhost:3000/attendance"
+          )
 
-      if (!record) {
+        const record =
+          res.data.find(
+            (a) =>
+              a.userId === user.id &&
+              a.date === today
+          )
 
-        alert(
-          "Please check in first"
-        )
+        if (!record) {
 
-        return
-      }
+          alert(
+            "Please check in first"
+          )
 
-      await axios.patch(
-        `http://localhost:3000/attendance/${record.id}`,
-        {
-          checkOut: time
+          return
         }
-      )
 
-      setCheckOutTime(time)
+        await axios.patch(
+          `http://localhost:3000/attendance/${record.id}`,
+          {
+            checkOut: time
+          }
+        )
+
+        setCheckOutTime(time)
+
+        fetchSalarySlip(user)
+
+        alert("Checked Out Successfully")
+
+      } catch (error) {
+
+        console.log(error)
+      }
     }
 
   // 🔥 APPLY LEAVE
   const handleLeaveApply =
     async () => {
 
-      if (
-        !start ||
-        !end ||
-        !type
-      ) {
+      try {
 
-        alert(
-          "Please fill all fields"
+        if (
+          !start ||
+          !end ||
+          !type
+        ) {
+
+          alert(
+            "Please fill all fields"
+          )
+
+          return
+        }
+
+        const days =
+          (
+            new Date(end) -
+            new Date(start)
+          ) /
+          (
+            1000 *
+            60 *
+            60 *
+            24
+          ) + 1
+
+        await axios.post(
+          "http://localhost:3000/leaves",
+          {
+            userId: user.id,
+            name: user.firstName,
+            contact: user.contact,
+            reason: leaveReason,
+            type,
+            start,
+            end,
+            days,
+            status: "pending"
+          }
         )
 
-        return
+        setLeaveStatus("pending")
+
+        setLeaveReason("")
+        setStart("")
+        setEnd("")
+        setType("")
+
+        alert(
+          "Leave Applied Successfully"
+        )
+
+      } catch (error) {
+
+        console.log(error)
       }
-
-      const days =
-        (
-          new Date(end) -
-          new Date(start)
-        ) /
-        (
-          1000 *
-          60 *
-          60 *
-          24
-        ) +
-        1
-
-      await axios.post(
-        "http://localhost:3000/leaves",
-        {
-          userId: user.id,
-          name: user.firstName,
-          contact: user.contact,
-          reason: leaveReason,
-          type,
-          start,
-          end,
-          days,
-          status: "pending"
-        }
-      )
-
-      setLeaveStatus("pending")
-
-      setLeaveReason("")
-      setStart("")
-      setEnd("")
-      setType("")
     }
+
+  // 🔥 DOWNLOAD
+  const downloadSalarySlip =
+    () => {
+
+      window.print()
+    }
+
+  if (!user) {
+
+    return (
+      <h3 className="text-center mt-5">
+        No User Logged In
+      </h3>
+    )
+  }
 
   return (
 
     <div
       className="container-fluid p-4"
       style={{
-        background:
-          "#f1f5f9",
+        background: "#f1f5f9",
         minHeight: "100vh"
       }}
     >
@@ -544,55 +616,33 @@ const Profile = () => {
       {/* 🔥 PROFILE */}
       <div className="card shadow border-0 p-4 mb-4">
 
-        <div className="row">
+        <div className="row align-items-center">
 
           <div className="col-md-8">
 
-            <h2 className="fw-bold">
+            <h2 className="fw-bold mb-3">
               Welcome,
               {" "}
-              {
-                user.firstName
-              }
+              {user.firstName}
             </h2>
 
-            <p>
-              📧
-              {" "}
-              {user.email}
-            </p>
+            <p>📧 {user.email}</p>
 
-            <p>
-              📱
-              {" "}
-              {user.contact}
-            </p>
+            <p>📱 {user.contact}</p>
 
-            <p>
-              🏢
-              {" "}
-              {
-                user.department
-              }
-            </p>
+            <p>🏢 {user.department}</p>
 
-            <p>
-              💼
-              {" "}
-              {
-                user.role
-              }
-            </p>
+            <p>💼 {user.role}</p>
 
           </div>
 
           <div className="col-md-4">
 
             <div
-              className="p-4 rounded text-center"
+              className="p-4 rounded text-center text-white"
               style={{
                 background:
-                  "#dcfce7"
+                  "linear-gradient(135deg,#2563eb,#1e40af)"
               }}
             >
 
@@ -618,39 +668,41 @@ const Profile = () => {
       {/* 🔥 ATTENDANCE */}
       <div className="card shadow border-0 p-4 mb-4">
 
-        <h4 className="fw-bold mb-3">
+        <h4 className="fw-bold mb-4">
           Attendance
         </h4>
 
-        <div className="row">
+        <div className="row align-items-center">
 
           <div className="col-md-6">
 
             <p>
               ✅ Check In:
               {" "}
-              {
-                checkInTime ||
-                "--"
-              }
+              <b>
+                {
+                  checkInTime || "--"
+                }
+              </b>
             </p>
 
             <p>
               ❌ Check Out:
               {" "}
-              {
-                checkOutTime ||
-                "--"
-              }
+              <b>
+                {
+                  checkOutTime || "--"
+                }
+              </b>
             </p>
 
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 d-flex gap-2 flex-wrap">
 
             <button
               onClick={handleCheckIn}
-              className="btn btn-success me-2"
+              className="btn btn-success"
               disabled={checkInTime}
             >
               Check In
@@ -676,54 +728,74 @@ const Profile = () => {
       {/* 🔥 LEAVE */}
       <div className="card shadow border-0 p-4 mb-4">
 
-        <h4 className="fw-bold mb-3">
+        <h4 className="fw-bold mb-4">
           Apply Leave
         </h4>
 
-        <input
-          type="text"
-          placeholder="Leave Type"
-          value={type}
-          onChange={(e) =>
-            setType(
-              e.target.value
-            )
-          }
-          className="form-control mb-2"
-        />
+        <div className="row">
 
-        <textarea
-          placeholder="Reason"
-          value={leaveReason}
-          onChange={(e) =>
-            setLeaveReason(
-              e.target.value
-            )
-          }
-          className="form-control mb-2"
-        />
+          <div className="col-md-6">
 
-        <input
-          type="date"
-          value={start}
-          onChange={(e) =>
-            setStart(
-              e.target.value
-            )
-          }
-          className="form-control mb-2"
-        />
+            <input
+              type="text"
+              placeholder="Leave Type"
+              value={type}
+              onChange={(e) =>
+                setType(
+                  e.target.value
+                )
+              }
+              className="form-control mb-3"
+            />
 
-        <input
-          type="date"
-          value={end}
-          onChange={(e) =>
-            setEnd(
-              e.target.value
-            )
-          }
-          className="form-control mb-2"
-        />
+          </div>
+
+          <div className="col-md-6">
+
+            <textarea
+              placeholder="Reason"
+              value={leaveReason}
+              onChange={(e) =>
+                setLeaveReason(
+                  e.target.value
+                )
+              }
+              className="form-control mb-3"
+            />
+
+          </div>
+
+          <div className="col-md-6">
+
+            <input
+              type="date"
+              value={start}
+              onChange={(e) =>
+                setStart(
+                  e.target.value
+                )
+              }
+              className="form-control mb-3"
+            />
+
+          </div>
+
+          <div className="col-md-6">
+
+            <input
+              type="date"
+              value={end}
+              onChange={(e) =>
+                setEnd(
+                  e.target.value
+                )
+              }
+              className="form-control mb-3"
+            />
+
+          </div>
+
+        </div>
 
         <button
           onClick={handleLeaveApply}
@@ -735,26 +807,20 @@ const Profile = () => {
         <p className="mt-3 fw-bold">
           Status:
           {" "}
-          {
-            leaveStatus ||
-            "No Request"
-          }
+          <span className="text-primary">
+            {
+              leaveStatus ||
+              "No Request"
+            }
+          </span>
         </p>
 
       </div>
-      <p>
-        Performance:
-        {" "}
-        <b>
-          {
-            salaryData.performance
-          }
-        </b>
-      </p>
-      {/* 🔥 SALARY SLIP */}
+
+      {/* 🔥 SALARY */}
       <div className="card shadow border-0 p-4">
 
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
           <div>
 
@@ -763,246 +829,270 @@ const Profile = () => {
             </h3>
 
             <p className="text-muted">
-              Monthly Payslip
+              Monthly Payslip Details
             </p>
 
           </div>
 
-          <div
-            className="p-3 rounded"
-            style={{
-              background:
-                "#dcfce7"
-            }}
-          >
+          <div className="d-flex gap-2 flex-wrap">
 
-            <h2>
-              ₹
-              {
-                salaryData.netSalary
+            <button
+              className="btn btn-dark"
+              onClick={
+                downloadSalarySlip
               }
-            </h2>
+            >
+              Download Slip
+            </button>
 
-            <p>
-              Employee Net Pay
-            </p>
+            <button
+              className="btn btn-primary"
+              onClick={() =>
+                navigate(
+                  "/salary-history"
+                )
+              }
+            >
+              Salary History
+            </button>
 
           </div>
 
         </div>
 
+        {/* 🔥 SUMMARY */}
         <div className="row mb-4">
 
-          <div className="col-md-6">
+          <div className="col-md-3 mb-3">
 
-            <p>
-              Employee:
-              {" "}
-              <b>
-                {
-                  user.firstName
-                }
-              </b>
-            </p>
+            <div className="card border-0 shadow-sm p-3 text-center">
 
-            <p>
-              Department:
-              {" "}
-              <b>
-                {
-                  user.department
-                }
-              </b>
-            </p>
+              <h6>
+                Present
+              </h6>
 
-            <p>
-              Salary:
-              {" "}
-              <b>
-                ₹
-                {
-                  user.salary
-                }
-              </b>
-            </p>
-
-          </div>
-
-          <div className="col-md-6">
-
-            <p>
-              Present:
-              {" "}
-              <b>
+              <h3 className="text-success">
                 {
                   salaryData.present
                 }
-              </b>
-            </p>
+              </h3>
 
-            <p>
-              Absent:
-              {" "}
-              <b>
+            </div>
+
+          </div>
+
+          <div className="col-md-3 mb-3">
+
+            <div className="card border-0 shadow-sm p-3 text-center">
+
+              <h6>
+                Absent
+              </h6>
+
+              <h3 className="text-danger">
                 {
                   salaryData.absent
                 }
-              </b>
-            </p>
+              </h3>
 
-            <p>
-              Half Day:
-              {" "}
-              <b>
+            </div>
+
+          </div>
+
+          <div className="col-md-3 mb-3">
+
+            <div className="card border-0 shadow-sm p-3 text-center">
+
+              <h6>
+                Half Day
+              </h6>
+
+              <h3 className="text-warning">
                 {
                   salaryData.halfDay
                 }
-              </b>
-            </p>
+              </h3>
 
-            <p>
-              Leaves:
-              {" "}
-              <b>
+            </div>
+
+          </div>
+
+          <div className="col-md-3 mb-3">
+
+            <div className="card border-0 shadow-sm p-3 text-center">
+
+              <h6>
+                Performance
+              </h6>
+
+              <h5 className="text-primary">
                 {
-                  salaryData.totalLeaves
+                  salaryData.performance
                 }
-              </b>
-            </p>
+              </h5>
+
+            </div>
 
           </div>
 
         </div>
 
-        <table className="table table-bordered">
+        {/* 🔥 TABLE */}
+        <div className="table-responsive">
 
-          <thead className="table-dark">
+          <table className="table table-bordered align-middle">
 
-            <tr>
+            <thead className="table-dark">
 
-              <th>
-                Earnings
-              </th>
+              <tr>
 
-              <th>
-                Amount
-              </th>
+                <th>
+                  Type
+                </th>
 
-              <th>
-                Deductions
-              </th>
+                <th>
+                  Details
+                </th>
 
-              <th>
-                Amount
-              </th>
+                <th>
+                  Amount
+                </th>
 
-            </tr>
+              </tr>
 
-          </thead>
+            </thead>
 
-          <tbody>
+            <tbody>
 
-            <tr>
-              <td>Basic Salary</td>
-              <td>₹ {user.salary}</td>
+              <tr>
 
-              <td>Attendance Cut</td>
+                <td>
+                  Basic Salary
+                </td>
 
-              <td>
+                <td>
+                  Monthly Salary
+                </td>
 
-                ₹ {
+                <td className="fw-bold">
+                  ₹ {user.salary}
+                </td>
 
-                  Number(
-                    salaryData.totalCut
-                  ) -
+              </tr>
 
-                  Number(
-                    salaryData.pf
-                  ) -
+              <tr>
 
-                  salaryData.professionalTax -
+                <td>
+                  Attendance Cut
+                </td>
 
-                  Number(
-                    salaryData.leaveCut
-                  )
-                }
+                <td>
+                  Absent / Half Day
+                </td>
 
-              </td>
-            </tr>
-
-            <tr>
-
-              <td>
-                PF Deduction (12%)
-              </td>
-
-              <td>
-                ₹ {salaryData.pf}
-              </td>
-
-              <td>
-                Professional Tax
-              </td>
-
-              <td>
-                ₹ {
-                  salaryData.professionalTax
-                }
-              </td>
-
-            </tr>
-
-            <tr>
-
-              <td>
-                Leave Deduction
-              </td>
-
-              <td>
-                ₹ {
-                  salaryData.leaveCut
-                }
-              </td>
-
-              <td>
-                Performance
-              </td>
-
-              <td>
-
-                <b>
-                  {
-                    salaryData.performance
+                <td className="text-danger fw-bold">
+                  ₹ {
+                    salaryData.attendanceCut
                   }
-                </b>
+                </td>
 
-              </td>
+              </tr>
 
-            </tr>
+              <tr>
 
-            <tr>
+                <td>
+                  Leave Cut
+                </td>
 
-              <td
-                colSpan="2"
-                className="fw-bold"
-              >
-                Net Salary
-              </td>
+                <td>
+                  Extra Leave Deduction
+                </td>
 
-              <td
-                colSpan="2"
-                className="fw-bold text-success"
-              >
-                ₹ {
-                  salaryData.netSalary
-                }
-              </td>
+                <td className="text-danger fw-bold">
+                  ₹ {
+                    salaryData.leaveCut
+                  }
+                </td>
 
-            </tr>
+              </tr>
 
-          </tbody>
+              <tr>
 
-        </table>
+                <td>
+                  PF
+                </td>
+
+                <td>
+                  12% PF Deduction
+                </td>
+
+                <td className="text-danger fw-bold">
+                  ₹ {
+                    salaryData.pf
+                  }
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>
+                  Professional Tax
+                </td>
+
+                <td>
+                  Government Tax
+                </td>
+
+                <td className="text-danger fw-bold">
+                  ₹ {
+                    salaryData.professionalTax
+                  }
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>
+                  Total Leaves
+                </td>
+
+                <td>
+                  Approved Leaves
+                </td>
+
+                <td className="fw-bold">
+                  {
+                    salaryData.totalLeaves
+                  }
+                </td>
+
+              </tr>
+
+              <tr className="table-success">
+
+                <td className="fw-bold">
+                  Net Salary
+                </td>
+
+                <td className="fw-bold">
+                  Final Salary
+                </td>
+
+                <td className="fw-bold text-success">
+                  ₹ {
+                    salaryData.netSalary
+                  }
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       </div>
 
