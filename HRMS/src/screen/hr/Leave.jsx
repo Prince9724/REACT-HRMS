@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
+
 const HrDashboard = () => {
-  const navigate =  useNavigate();
+  const navigate = useNavigate();
   const [leaves, setLeaves] = useState([])
 
   // ✅ FETCH DATA
@@ -45,10 +46,8 @@ const HrDashboard = () => {
 
       {/* TOP BUTTONS */}
       <div className="d-flex gap-3 mb-3">
-         
-       
-        <button className="btn btn-warning" >Leave History</button>
-        <button className="btn btn-primary"onClick={()=>navigate("/hr")}>back to home page</button>
+        <button className="btn btn-warning">Leave History</button>
+        <button className="btn btn-primary" onClick={() => navigate("/hr")}>Back to Home Page</button>
       </div>
 
       {/* CARD */}
@@ -63,61 +62,120 @@ const HrDashboard = () => {
         </div>
 
         {/* TABLE */}
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Date</th>
-              <th>Reason</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {leaves.map((l) => (
-              <tr key={l.id}>
-                <td>{l.name}</td>
-                <td>{l.date}</td>
-                <td>{l.reason}</td>
-
-                {/* STATUS COLOR */}
-                <td>
-                  <span className={
-                    l.status === "approved"
-                      ? "text-success"
-                      : l.status === "rejected"
-                      ? "text-danger"
-                      : "text-warning"
-                  }>
-                    {l.status}
-                  </span>
-                </td>
-
-                {/* ACTION BUTTONS */}
-                <td>
-                  <button
-                    onClick={() => handleAction(l.id, "approved")}
-                    className="btn btn-sm btn-success me-2"
-                  >
-                    Approve
-                  </button>
-
-                  <button
-                    onClick={() => handleAction(l.id, "rejected")}
-                    className="btn btn-sm btn-danger"
-                  >
-                    Reject
-                  </button>
-                </td>
-
+        <div className="table-responsive">
+          <table className="table table-bordered table-hover">
+            <thead className="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Employee Name</th>
+                <th>Leave Type</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>No. of Days</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {leaves.length === 0 ? (
+                <tr>
+                  <td colSpan="9" className="text-center text-muted">
+                    No leave requests found
+                  </td>
+                </tr>
+              ) : (
+                leaves.map((l) => (
+                  <tr key={l.id}>
+                    <td>{l.id}</td>
+                    <td>
+                      <strong>{l.name}</strong>
+                      <br />
+                      <small className="text-muted">ID: {l.userId}</small>
+                    </td>
+                    
+                    {/* 🔥 LEAVE TYPE WITH BADGE */}
+                    <td>
+                      {l.type === "free" ? (
+                        <span className="badge bg-success">🎁 Free Leave</span>
+                      ) : l.type === "paid" ? (
+                        <span className="badge bg-warning text-dark">💰 Paid Leave</span>
+                      ) : (
+                        <span className="badge bg-secondary">Other</span>
+                      )}
+                    </td>
+                    
+                    <td>{l.start || "N/A"}</td>
+                    <td>{l.end || "N/A"}</td>
+                    <td className="text-center">
+                      <span className="badge bg-info">{l.days || 1}</span>
+                    </td>
+                    
+                    <td>{l.reason || "No reason provided"}</td>
+
+                    {/* 🔥 STATUS COLOR */}
+                    <td>
+                      {l.status === "approved" ? (
+                        <span className="badge bg-success">✅ Approved</span>
+                      ) : l.status === "rejected" ? (
+                        <span className="badge bg-danger">❌ Rejected</span>
+                      ) : (
+                        <span className="badge bg-warning text-dark">⏳ Pending</span>
+                      )}
+                    </td>
+
+                    {/* 🔥 ACTION BUTTONS */}
+                    <td>
+                      {l.status === "pending" ? (
+                        <div className="d-flex gap-2">
+                          <button
+                            onClick={() => handleAction(l.id, "approved")}
+                            className="btn btn-sm btn-success"
+                          >
+                            ✅ Approve
+                          </button>
+                          <button
+                            onClick={() => handleAction(l.id, "rejected")}
+                            className="btn btn-sm btn-danger"
+                          >
+                            ❌ Reject
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-muted">No Action</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* 📊 SUMMARY CARD */}
+        <div className="row mt-4">
+          <div className="col-md-4">
+            <div className="card bg-success text-white p-3">
+              <h5>✅ Approved</h5>
+              <h3>{leaves.filter(l => l.status === "approved").length}</h3>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card bg-warning text-dark p-3">
+              <h5>⏳ Pending</h5>
+              <h3>{leaves.filter(l => l.status === "pending").length}</h3>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card bg-danger text-white p-3">
+              <h5>❌ Rejected</h5>
+              <h3>{leaves.filter(l => l.status === "rejected").length}</h3>
+            </div>
+          </div>
+        </div>
 
       </div>
-
     </div>
   )
 }

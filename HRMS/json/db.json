@@ -176,8 +176,20 @@
       "start": "2026-05-11",
       "end": "2026-05-16",
       "days": 6,
-      "status": "pending",
+      "status": "approved",
       "id": 2
+    },
+    {
+      "userId": 7,
+      "name": "Kavita",
+      "contact": "1000000006",
+      "reason": "casual",
+      "type": "free",
+      "start": "2026-05-10",
+      "end": "2026-05-11",
+      "days": 2,
+      "status": "pending",
+      "id": 3
     }
   ],
   "attendance": [
@@ -960,6 +972,28 @@
       "date": "5/9/2026",
       "checkIn": "09:15 AM",
       "checkOut": "Auto Checkout"
+    },
+    {
+      "userId": 9,
+      "name": "Deepika",
+      "contact": "1000000008",
+      "department": "Flutter",
+      "salary": 42000,
+      "date": "5/9/2026",
+      "checkIn": "05:57 PM",
+      "checkOut": "",
+      "id": 79
+    },
+    {
+      "userId": 7,
+      "name": "Kavita",
+      "contact": "1000000006",
+      "department": "Web Development",
+      "salary": 42000,
+      "date": "5/9/2026",
+      "checkIn": "06:48 PM",
+      "checkOut": "",
+      "id": 80
     }
   ],
   "holidays": [

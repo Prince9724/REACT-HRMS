@@ -168,115 +168,176 @@ const SalaryHistory = () => {
   }, [leaves, selectedMonth])
 
   // 🔥 SALARY REPORT
-  const salaryReport = useMemo(() => {
+  // 🔥 SALARY REPORT
+const salaryReport = useMemo(() => {
 
-    if (!user) return null
+  if (!user) return null
 
-    let present = 0
-    let absent = 0
-    let halfDay = 0
+  // 🔥 CURRENT MONTH TOTAL DAYS
+  const [year, month] = selectedMonth.split("-")
 
-    let attendanceCut = 0
-    let leaveCut = 0
+  const totalDaysInMonth =
+    new Date(year, month, 0).getDate()
 
-    let paidLeaves = 0
-    let unpaidLeaves = 0
-
-    const salaryPerDay =
-      user.salary / 30
-
-    monthlyAttendance.forEach((a) => {
-
-      if (
-        a.checkIn === "Leave"
-      ) {
-
-        absent++
-
-        attendanceCut +=
-          salaryPerDay
-
-        return
-      }
-
-      const hours =
-        calculateHours(
-          a.checkIn,
-          a.checkOut
-        )
-
-      if (hours >= 8) {
-
-        present++
-      }
-
-      else if (hours >= 4) {
-
-        halfDay++
-
-        attendanceCut +=
-          salaryPerDay / 2
-      }
-
-      else {
-
-        absent++
-
-        attendanceCut +=
-          salaryPerDay
-      }
-    })
-
-    monthlyLeaves.forEach((l, index) => {
-
-      // 🔥 FIRST LEAVE FREE
-      if (index === 0) {
-
-        paidLeaves += l.days
-      }
-
-      else {
-
-        unpaidLeaves += l.days
-
-        leaveCut +=
-          l.days * salaryPerDay
-      }
-    })
-
-    const pf =
-      user.salary * 0.12
-
-    const professionalTax = 200
-
-    const totalCut =
-      attendanceCut +
-      leaveCut +
-      pf +
-      professionalTax
-
-    const netSalary =
-      user.salary - totalCut
+  // 🔥 IF NO ATTENDANCE RECORD
+  // FULL SALARY CUT
+  if (monthlyAttendance.length === 0) {
 
     return {
-      present,
-      absent,
-      halfDay,
-      paidLeaves,
-      unpaidLeaves,
-      attendanceCut,
-      leaveCut,
-      pf,
-      professionalTax,
-      totalCut,
-      netSalary
+      present: 0,
+      absent: totalDaysInMonth,
+      halfDay: 0,
+      paidLeaves: 0,
+      unpaidLeaves: 0,
+      attendanceCut: user.salary,
+      leaveCut: 0,
+      pf: 0,
+      professionalTax: 0,
+      totalCut: user.salary,
+      netSalary: 0
+    }
+  }
+
+  let present = 0
+  let absent = 0
+  let halfDay = 0
+
+  let attendanceCut = 0
+  let leaveCut = 0
+
+  let paidLeaves = 0
+  let unpaidLeaves = 0
+
+  const salaryPerDay =
+    user.salary / totalDaysInMonth
+
+  // 🔥 PRESENT ATTENDANCE DAYS
+  const attendedDates = []
+
+  monthlyAttendance.forEach((a) => {
+
+    attendedDates.push(a.date)
+
+    if (a.checkIn === "Leave") {
+
+      absent++
+
+      attendanceCut += salaryPerDay
+
+      return
     }
 
-  }, [
-    monthlyAttendance,
-    monthlyLeaves,
-    user
-  ])
+    const hours =
+      calculateHours(
+        a.checkIn,
+        a.checkOut
+      )
+
+    // ✅ PRESENT
+    if (hours >= 8) {
+
+      present++
+    }
+
+    // ⚠️ HALF DAY
+    else if (hours >= 4) {
+
+      halfDay++
+
+      attendanceCut +=
+        salaryPerDay / 2
+    }
+
+    // ❌ ABSENT
+    else {
+
+      absent++
+
+      attendanceCut +=
+        salaryPerDay
+    }
+  })
+
+  // 🔥 MISSING DAYS = ABSENT
+  const missingDays =
+    totalDaysInMonth -
+    monthlyAttendance.length
+
+  if (missingDays > 0) {
+
+    absent += missingDays
+
+    attendanceCut +=
+      missingDays * salaryPerDay
+  }
+
+  // 🔥 LEAVES
+  monthlyLeaves.forEach((l, index) => {
+
+    // ✅ FIRST LEAVE FREE
+    if (index === 0) {
+
+      paidLeaves += l.days
+    }
+
+    // ❌ EXTRA LEAVE CUT
+    else {
+
+      unpaidLeaves += l.days
+
+      leaveCut +=
+        l.days * salaryPerDay
+    }
+  })
+
+  // 🔥 PF
+  const pf =
+    user.salary * 0.12
+
+  // 🔥 TAX
+  const professionalTax = 200
+
+  // 🔥 TOTAL CUT
+  let totalCut =
+    attendanceCut +
+    leaveCut +
+    pf +
+    professionalTax
+
+  // 🔥 NET SALARY
+  let netSalary =
+    user.salary - totalCut
+
+  // 🔥 NO NEGATIVE SALARY
+  if (netSalary < 0) {
+    netSalary = 0
+  }
+
+  if (totalCut > user.salary) {
+    totalCut = user.salary
+  }
+
+  return {
+    present,
+    absent,
+    halfDay,
+    paidLeaves,
+    unpaidLeaves,
+    attendanceCut,
+    leaveCut,
+    pf,
+    professionalTax,
+    totalCut,
+    netSalary
+  }
+
+}, [
+  monthlyAttendance,
+  monthlyLeaves,
+  user,
+  selectedMonth
+])
+  
 
   // 🔥 DOWNLOAD
   const handleDownload = () => {

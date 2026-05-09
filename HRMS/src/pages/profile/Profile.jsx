@@ -15,7 +15,10 @@ const Profile = () => {
   const [leaveStatus, setLeaveStatus] = useState("")
   const [start, setStart] = useState("")
   const [end, setEnd] = useState("")
-  const [type, setType] = useState("")
+  const [type, setType] = useState("") // paid / free
+  
+  // 🔥 Track if user has used free leave
+  const [hasUsedFreeLeave, setHasUsedFreeLeave] = useState(false)
 
   const [salaryData, setSalaryData] = useState({
     present: 0,
@@ -28,6 +31,7 @@ const Profile = () => {
     professionalTax: 200,
     leaveCut: 0,
     attendanceCut: 0,
+    freeLeaveUsed: false,
     performance: "Average"
   })
 
@@ -109,6 +113,21 @@ const Profile = () => {
     return diff
   }
 
+  // 🔥 CHECK IF USER HAS USED FREE LEAVE
+  const checkFreeLeaveUsed = async (userId) => {
+    try {
+      const res = await axios.get("http://localhost:3000/leaves")
+      const freeLeaves = res.data.filter(
+        (l) => l.userId === userId && l.type === "free" && l.status === "approved"
+      )
+      setHasUsedFreeLeave(freeLeaves.length > 0)
+      return freeLeaves.length > 0
+    } catch (error) {
+      console.log(error)
+      return false
+    }
+  }
+
   // 🔥 LOAD USER
   useEffect(() => {
 
@@ -124,6 +143,7 @@ const Profile = () => {
     fetchAttendance(data)
     fetchLeave(data)
     fetchSalarySlip(data)
+    checkFreeLeaveUsed(data.id)
 
   }, [])
 
@@ -209,18 +229,49 @@ const Profile = () => {
             "http://localhost:3000/leaves"
           )
 
+        const currentDate =
+          new Date()
+
+        const currentMonth =
+          currentDate.getMonth()
+
+        const currentYear =
+          currentDate.getFullYear()
+
         const myAttendance =
-          attendanceRes.data.filter(
-            (a) =>
-              a.userId === data.id
-          )
+          attendanceRes.data.filter((a) => {
+
+            if (a.userId !== data.id) {
+              return false
+            }
+
+            const attendanceDate =
+              new Date(a.date)
+
+            return (
+              attendanceDate.getMonth() === currentMonth &&
+              attendanceDate.getFullYear() === currentYear
+            )
+          })
 
         const myLeaves =
-          leaveRes.data.filter(
-            (l) =>
-              l.userId === data.id &&
-              l.status === "approved"
-          )
+          leaveRes.data.filter((l) => {
+
+            if (
+              l.userId !== data.id ||
+              l.status !== "approved"
+            ) {
+              return false
+            }
+
+            const leaveDate =
+              new Date(l.start)
+
+            return (
+              leaveDate.getMonth() === currentMonth &&
+              leaveDate.getFullYear() === currentYear
+            )
+          })
 
         let present = 0
         let absent = 0
@@ -228,11 +279,25 @@ const Profile = () => {
 
         let attendanceCut = 0
         let leaveCut = 0
+        let freeLeaveCount = 0
 
         myAttendance.forEach((a) => {
 
           if (
             a.checkIn === "Leave"
+          ) {
+
+            absent++
+
+            attendanceCut +=
+              data.salary / 30
+
+            return
+          }
+
+          if (
+            a.checkIn === "" &&
+            a.checkOut === ""
           ) {
 
             absent++
@@ -262,31 +327,50 @@ const Profile = () => {
               data.salary / 30 / 2
           }
 
-          else {
+          else if (hours > 0) {
 
             absent++
 
             attendanceCut +=
               data.salary / 30
           }
+
         })
 
         let totalLeaves = 0
+        let paidLeaveDays = 0
+        let freeLeaveDays = 0
 
         myLeaves.forEach((l) => {
-
           totalLeaves += l.days
+          
+          // 🔥 Separate paid and free leaves
+          if (l.type === "free") {
+            freeLeaveDays += l.days
+          } else {
+            paidLeaveDays += l.days
+          }
         })
 
-        // 🔥 FIRST LEAVE FREE
-        if (totalLeaves > 1) {
-
-          const extraLeaves =
-            totalLeaves - 1
-
-          leaveCut =
-            extraLeaves *
-            (data.salary / 30)
+        // 🔥 LEAVE CUT: Only paid leaves are deducted
+        // First leave is free (as per your requirement)
+        let remainingPaidLeaves = paidLeaveDays
+        
+        // If free leave is used, paid leaves are deducted normally
+        // If no free leave used, first leave (any type) is free
+        const hasFreeLeave = myLeaves.some(l => l.type === "free" && l.status === "approved")
+        
+        if (hasFreeLeave) {
+          // Free leave already used, all paid leaves are deducted
+          if (paidLeaveDays > 0) {
+            leaveCut = paidLeaveDays * (data.salary / 30)
+          }
+        } else {
+          // No free leave used yet
+          if (totalLeaves > 1) {
+            const extraLeaves = totalLeaves - 1
+            leaveCut = extraLeaves * (data.salary / 30)
+          }
         }
 
         const pf =
@@ -300,22 +384,26 @@ const Profile = () => {
           pf +
           professionalTax
 
-        const netSalary =
+        let netSalary =
           data.salary - totalCut
+
+        if (netSalary < 0) {
+          netSalary = 0
+        }
 
         let performance = "Poor"
 
-        if (present >= 26) {
+        if (present >= 20) {
 
           performance = "Excellent"
         }
 
-        else if (present >= 22) {
+        else if (present >= 15) {
 
           performance = "Good"
         }
 
-        else if (present >= 18) {
+        else if (present >= 8) {
 
           performance = "Average"
         }
@@ -335,6 +423,7 @@ const Profile = () => {
             leaveCut.toFixed(0),
           attendanceCut:
             attendanceCut.toFixed(0),
+          freeLeaveUsed: hasFreeLeave,
           performance
         })
 
@@ -524,7 +613,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 APPLY LEAVE
+  // 🔥 APPLY LEAVE (UPDATED WITH DROPDOWN)
   const handleLeaveApply =
     async () => {
 
@@ -541,6 +630,15 @@ const Profile = () => {
           )
 
           return
+        }
+
+        // 🔥 CHECK FREE LEAVE USAGE
+        if (type === "free") {
+          const used = await checkFreeLeaveUsed(user.id)
+          if (used) {
+            alert("❌ You have already used your Free Leave! You can only apply for Paid Leave now.")
+            return
+          }
         }
 
         const days =
@@ -562,7 +660,7 @@ const Profile = () => {
             name: user.firstName,
             contact: user.contact,
             reason: leaveReason,
-            type,
+            type, // "paid" or "free"
             start,
             end,
             days,
@@ -577,8 +675,11 @@ const Profile = () => {
         setEnd("")
         setType("")
 
+        // Refresh free leave status
+        await checkFreeLeaveUsed(user.id)
+        
         alert(
-          "Leave Applied Successfully"
+          "Leave Applied Successfully!"
         )
 
       } catch (error) {
@@ -725,28 +826,40 @@ const Profile = () => {
 
       </div>
 
-      {/* 🔥 LEAVE */}
+      {/* 🔥 LEAVE - UPDATED WITH DROPDOWN */}
       <div className="card shadow border-0 p-4 mb-4">
 
         <h4 className="fw-bold mb-4">
           Apply Leave
         </h4>
 
+        {/* 🔥 FREE LEAVE STATUS WARNING */}
+        {hasUsedFreeLeave && (
+          <div className="alert alert-warning mb-3">
+            ⚠️ You have already used your <strong>Free Leave</strong>. Only <strong>Paid Leave</strong> is available now.
+          </div>
+        )}
+
         <div className="row">
 
           <div className="col-md-6">
 
-            <input
-              type="text"
-              placeholder="Leave Type"
+            {/* 🔥 LEAVE TYPE DROPDOWN */}
+            <select
               value={type}
               onChange={(e) =>
-                setType(
-                  e.target.value
-                )
+                setType(e.target.value)
               }
               className="form-control mb-3"
-            />
+            >
+              <option value="">Select Leave Type</option>
+              <option value="free" disabled={hasUsedFreeLeave}>
+                Free Leave (One Time - No Salary Cut) {hasUsedFreeLeave ? "(Used)" : ""}
+              </option>
+              <option value="paid">
+                Paid Leave (Salary Cut)
+              </option>
+            </select>
 
           </div>
 
@@ -1005,7 +1118,7 @@ const Profile = () => {
                 </td>
 
                 <td>
-                  Extra Leave Deduction
+                  {salaryData.freeLeaveUsed ? "Paid Leave Deduction" : "First Leave Free, Rest Deducted"}
                 </td>
 
                 <td className="text-danger fw-bold">

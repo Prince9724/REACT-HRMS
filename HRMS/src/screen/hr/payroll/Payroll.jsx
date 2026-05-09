@@ -59,7 +59,8 @@ const Payroll = () => {
 
     if (
       !time ||
-      time === "Auto Checkout"
+      time === "Auto Checkout" ||
+      time === "Leave"
     ) return 0
 
     try {
@@ -129,7 +130,7 @@ const Payroll = () => {
     return diff
   }
 
-  // 🔥 PAYROLL LOGIC
+  // 🔥 PAYROLL LOGIC (WITHOUT BONUS)
   const calculatePayroll = (
     employees,
     attendance,
@@ -165,9 +166,15 @@ const Payroll = () => {
           let halfDay = 0
           let totalHours = 0
           let attendanceCut = 0
+          let hasAnyAttendance = false
 
-          // 🔥 ATTENDANCE
+          // 🔥 ATTENDANCE CALCULATION
           userAttendance.forEach((a) => {
+
+            // Check if employee has any check-in
+            if (a.checkIn && a.checkIn !== "") {
+              hasAnyAttendance = true
+            }
 
             const hours =
               calculateHours(
@@ -178,161 +185,113 @@ const Payroll = () => {
             totalHours += hours
 
             if (hours >= 8) {
-
               present++
-
             }
-
             else if (hours >= 4) {
-
               halfDay++
-
-              attendanceCut +=
-                perDaySalary / 2
+              attendanceCut += perDaySalary / 2
             }
-
-            else {
-
+            else if (hours > 0) {
               absent++
-
-              attendanceCut +=
-                perDaySalary
+              attendanceCut += perDaySalary
+            }
+            else if (a.checkIn === "" && a.checkOut === "") {
+              absent++
+              attendanceCut += perDaySalary
             }
           })
 
-          // 🔥 LEAVES
+          // 🔥 LEAVES CALCULATION
           let totalLeaves = 0
+          let paidLeaveDays = 0
+          let freeLeaveDays = 0
 
           approvedLeaves.forEach((l) => {
-
-            totalLeaves +=
-              Number(l.days)
+            totalLeaves += Number(l.days)
+            
+            if (l.type === "free") {
+              freeLeaveDays += Number(l.days)
+            } else {
+              paidLeaveDays += Number(l.days)
+            }
           })
 
-          // 🔥 1 LEAVE FREE
+          // 🔥 LEAVE CUT: Only paid leaves are deducted
           let leaveCut = 0
-
-          if (totalLeaves > 1) {
-
-            const extraLeaves =
-              totalLeaves - 1
-
-            leaveCut =
-              extraLeaves *
-              perDaySalary
+          
+          // Check if free leave is used
+          const hasFreeLeave = approvedLeaves.some(l => l.type === "free")
+          
+          if (hasFreeLeave) {
+            // Free leave used, all paid leaves are deducted
+            if (paidLeaveDays > 0) {
+              leaveCut = paidLeaveDays * perDaySalary
+            }
+          } else {
+            // No free leave used, first leave is free
+            if (totalLeaves > 1) {
+              const extraLeaves = totalLeaves - 1
+              leaveCut = extraLeaves * perDaySalary
+            }
           }
 
-          // 🔥 PF
-          const pf =
-            emp.salary * 0.12
+          // 🔥 PF (12%)
+          const pf = emp.salary * 0.12
 
           // 🔥 TAX
-          const professionalTax =
-            200
-
-          // 🔥 PERFORMANCE
-          let performance =
-            "Average"
-
-          let bonus = 0
-
-          if (present >= 26) {
-
-            performance =
-              "Excellent"
-
-            bonus = 5000
-          }
-
-          else if (present >= 22) {
-
-            performance =
-              "Good"
-
-            bonus = 2500
-          }
-
-          else if (present >= 18) {
-
-            performance =
-              "Average"
-
-            bonus = 1000
-          }
-
-          else {
-
-            performance =
-              "Poor"
-
-            bonus = 0
-          }
+          const professionalTax = 200
 
           // 🔥 TOTAL CUT
-          const totalCut =
-            attendanceCut +
-            leaveCut +
-            pf +
-            professionalTax
+          const totalCut = attendanceCut + leaveCut + pf + professionalTax
 
           // 🔥 NET SALARY
-          const netSalary =
-            emp.salary -
-            totalCut +
-            bonus
+          let netSalary = emp.salary - totalCut
+          
+          // 🔥 If net salary is negative, set to 0
+          if (netSalary < 0) {
+            netSalary = 0
+          }
+
+          // 🔥 CRITICAL: If employee has NO attendance at all (never came in month)
+          // Show salary as 0
+          if (!hasAnyAttendance && present === 0 && userAttendance.length === 0) {
+            netSalary = 0
+          }
+
+          // 🔥 PERFORMANCE (Without bonus, just for display)
+          let performance = "Average"
+
+          if (present >= 26) {
+            performance = "Excellent"
+          }
+          else if (present >= 22) {
+            performance = "Good"
+          }
+          else if (present >= 18) {
+            performance = "Average"
+          }
+          else {
+            performance = "Poor"
+          }
 
           return {
-
             id: emp.id,
-
-            name:
-              emp.firstName,
-
-            department:
-              emp.department,
-
-            baseSalary:
-              emp.salary,
-
+            name: emp.firstName,
+            department: emp.department,
+            baseSalary: emp.salary,
             present,
-
             absent,
-
             halfDay,
-
             totalLeaves,
-
-            totalHours:
-              totalHours.toFixed(1),
-
-            attendanceCut:
-              Math.round(
-                attendanceCut
-              ),
-
-            leaveCut:
-              Math.round(
-                leaveCut
-              ),
-
-            pf:
-              Math.round(pf),
-
+            totalHours: totalHours.toFixed(1),
+            attendanceCut: Math.round(attendanceCut),
+            leaveCut: Math.round(leaveCut),
+            pf: Math.round(pf),
             professionalTax,
-
-            bonus,
-
             performance,
-
-            totalCut:
-              Math.round(
-                totalCut
-              ),
-
-            netSalary:
-              Math.round(
-                netSalary
-              )
+            totalCut: Math.round(totalCut),
+            netSalary: Math.round(netSalary),
+            hasAnyAttendance
           }
         })
 
@@ -460,6 +419,8 @@ const Payroll = () => {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Department</th>
+                <th>Present</th>
+                <th>Absent</th>
                 <th>Performance</th>
                 <th>Net Salary</th>
                 <th>Action</th>
@@ -477,18 +438,19 @@ const Payroll = () => {
 
                       <tr key={p.id}>
 
+                        <td>{p.id}</td>
+                        <td>{p.name}</td>
+                        <td>{p.department || "N/A"}</td>
                         <td>
-                          {p.id}
+                          <span className="badge bg-success">
+                            {p.present}
+                          </span>
                         </td>
-
                         <td>
-                          {p.name}
+                          <span className="badge bg-danger">
+                            {p.absent}
+                          </span>
                         </td>
-
-                        <td>
-                          {p.department}
-                        </td>
-
                         <td>
 
                           {
@@ -520,9 +482,11 @@ const Payroll = () => {
                         </td>
 
                         <td className="fw-bold text-success">
-
-                          ₹ {p.netSalary}
-
+                          {p.netSalary === 0 ? (
+                            <span className="text-danger">₹ 0</span>
+                          ) : (
+                            `₹ ${p.netSalary}`
+                          )}
                         </td>
 
                         <td>
@@ -545,7 +509,7 @@ const Payroll = () => {
                     <tr>
 
                       <td
-                        colSpan="6"
+                        colSpan="8"
                         className="text-center"
                       >
                         No Data Found
@@ -617,13 +581,13 @@ const Payroll = () => {
                         {" "}
                         <b>
                           {
-                            selectedEmployee.department
+                            selectedEmployee.department || "N/A"
                           }
                         </b>
                       </p>
 
                       <p>
-                        Salary:
+                        Base Salary:
                         {" "}
                         <b>
                           ₹
@@ -650,7 +614,7 @@ const Payroll = () => {
                       <p>
                         Present:
                         {" "}
-                        <b>
+                        <b className="text-success">
                           {
                             selectedEmployee.present
                           }
@@ -660,7 +624,7 @@ const Payroll = () => {
                       <p>
                         Absent:
                         {" "}
-                        <b>
+                        <b className="text-danger">
                           {
                             selectedEmployee.absent
                           }
@@ -670,7 +634,7 @@ const Payroll = () => {
                       <p>
                         Half Day:
                         {" "}
-                        <b>
+                        <b className="text-warning">
                           {
                             selectedEmployee.halfDay
                           }
@@ -678,7 +642,7 @@ const Payroll = () => {
                       </p>
 
                       <p>
-                        Leaves:
+                        Leaves Taken:
                         {" "}
                         <b>
                           {
@@ -697,102 +661,68 @@ const Payroll = () => {
                     <tbody>
 
                       <tr>
-
-                        <td>
-                          PF
-                        </td>
-
-                        <td>
-                          ₹
-                          {
-                            selectedEmployee.pf
-                          }
-                        </td>
-
-                      </tr>
-
-                      <tr>
-
-                        <td>
-                          Professional Tax
-                        </td>
-
-                        <td>
-                          ₹
-                          {
-                            selectedEmployee.professionalTax
-                          }
-                        </td>
-
-                      </tr>
-
-                      <tr>
-
-                        <td>
-                          Attendance Cut
-                        </td>
-
-                        <td>
-                          ₹
-                          {
-                            selectedEmployee.attendanceCut
-                          }
-                        </td>
-
-                      </tr>
-
-                      <tr>
-
-                        <td>
-                          Leave Cut
-                        </td>
-
-                        <td>
-                          ₹
-                          {
-                            selectedEmployee.leaveCut
-                          }
-                        </td>
-
-                      </tr>
-
-                      <tr>
-
-                        <td>
-                          Bonus
-                        </td>
-
-                        <td className="text-success">
-
-                          ₹
-                          {
-                            selectedEmployee.bonus
-                          }
-
-                        </td>
-
-                      </tr>
-
-                      <tr>
-
+                        <td>Basic Salary</td>
                         <td className="fw-bold">
-                          Net Salary
+                          ₹ {selectedEmployee.baseSalary}
                         </td>
+                      </tr>
 
+                      <tr>
+                        <td>Attendance Cut</td>
+                        <td className="text-danger">
+                          ₹ {selectedEmployee.attendanceCut}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>Leave Cut</td>
+                        <td className="text-danger">
+                          ₹ {selectedEmployee.leaveCut}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>PF (12%)</td>
+                        <td className="text-danger">
+                          ₹ {selectedEmployee.pf}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>Professional Tax</td>
+                        <td className="text-danger">
+                          ₹ {selectedEmployee.professionalTax}
+                        </td>
+                      </tr>
+
+                      <tr className="table-secondary">
+                        <td className="fw-bold">Total Deduction</td>
+                        <td className="fw-bold text-danger">
+                          ₹ {selectedEmployee.totalCut}
+                        </td>
+                      </tr>
+
+                      <tr className="table-success">
+                        <td className="fw-bold">Net Salary</td>
                         <td className="fw-bold text-success">
-
-                          ₹
-                          {
-                            selectedEmployee.netSalary
-                          }
-
+                          {selectedEmployee.netSalary === 0 ? (
+                            <span className="text-danger">₹ 0</span>
+                          ) : (
+                            `₹ ${selectedEmployee.netSalary}`
+                          )}
                         </td>
-
                       </tr>
 
                     </tbody>
 
                   </table>
+
+                  {/* 🔥 WARNING FOR ZERO SALARY */}
+                  {selectedEmployee.netSalary === 0 && selectedEmployee.present === 0 && (
+                    <div className="alert alert-danger mt-3">
+                      ⚠️ This employee has <strong>no attendance records</strong> for this month. Salary is ₹ 0.
+                    </div>
+                  )}
 
                 </div>
 
