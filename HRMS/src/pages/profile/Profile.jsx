@@ -13,29 +13,31 @@ const Profile = () => {
 
   const [leaveReason, setLeaveReason] = useState("")
   const [leaveStatus, setLeaveStatus] = useState("")
+
   const [start, setStart] = useState("")
   const [end, setEnd] = useState("")
-  const [type, setType] = useState("") // paid / free
-  
-  // 🔥 Track if user has used free leave
+  const [type, setType] = useState("")
+
+  const [attendanceHistory, setAttendanceHistory] = useState([])
+
   const [hasUsedFreeLeave, setHasUsedFreeLeave] = useState(false)
 
   const [salaryData, setSalaryData] = useState({
     present: 0,
     absent: 0,
     halfDay: 0,
-    totalCut: 0,
-    netSalary: 0,
+    sundayPaid: 0,
     totalLeaves: 0,
+    attendanceCut: 0,
+    leaveCut: 0,
     pf: 0,
     professionalTax: 200,
-    leaveCut: 0,
-    attendanceCut: 0,
-    freeLeaveUsed: false,
+    totalCut: 0,
+    netSalary: 0,
     performance: "Average"
   })
 
-  // 🔥 TIME CONVERT
+  // 🔥 TIME TO MINUTES
   const convertToMinutes = (time) => {
 
     if (
@@ -79,19 +81,24 @@ const Profile = () => {
     }
   }
 
-  // 🔥 HOURS
+  // 🔥 HOURS CALCULATE
   const calculateHours = (
     checkIn,
     checkOut
   ) => {
 
-    if (!checkIn) return 0
-
-    if (checkOut === "Auto Checkout") {
-      return 4
+    if (
+      !checkIn ||
+      !checkOut
+    ) {
+      return 0
     }
 
-    if (!checkOut) return 0
+    if (
+      checkOut === "Auto Checkout"
+    ) {
+      return 4
+    }
 
     const inMinutes =
       convertToMinutes(checkIn)
@@ -102,9 +109,15 @@ const Profile = () => {
     let diff =
       (outMinutes - inMinutes) / 60
 
-    if (diff < 0 || isNaN(diff)) {
+    if (
+      diff < 0 ||
+      isNaN(diff)
+    ) {
       return 0
     }
+
+    // 🔥 1 HOUR BREAK
+    diff = diff - 1
 
     if (diff > 8) {
       diff = 8
@@ -113,19 +126,13 @@ const Profile = () => {
     return diff
   }
 
-  // 🔥 CHECK IF USER HAS USED FREE LEAVE
-  const checkFreeLeaveUsed = async (userId) => {
-    try {
-      const res = await axios.get("http://localhost:3000/leaves")
-      const freeLeaves = res.data.filter(
-        (l) => l.userId === userId && l.type === "free" && l.status === "approved"
-      )
-      setHasUsedFreeLeave(freeLeaves.length > 0)
-      return freeLeaves.length > 0
-    } catch (error) {
-      console.log(error)
-      return false
-    }
+  // 🔥 SUNDAY CHECK
+  const isSunday = (date) => {
+
+    const day =
+      new Date(date).getDay()
+
+    return day === 0
   }
 
   // 🔥 LOAD USER
@@ -136,17 +143,46 @@ const Profile = () => {
         localStorage.getItem("user")
       )
 
-    setUser(data)
-
     if (!data) return
 
+    setUser(data)
+
     fetchAttendance(data)
-    fetchLeave(data)
     fetchSalarySlip(data)
-    checkFreeLeaveUsed(data.id)
+    checkFreeLeave(data.id)
 
   }, [])
 
+  // 🔥 FREE LEAVE CHECK
+  const checkFreeLeave =
+    async (id) => {
+
+      try {
+
+        const res =
+          await axios.get(
+            "http://localhost:3000/leaves"
+          )
+
+        const used =
+          res.data.find(
+            (l) =>
+              l.userId === id &&
+              l.type === "free" &&
+              l.status === "approved"
+          )
+
+        setHasUsedFreeLeave(
+          !!used
+        )
+
+      } catch (error) {
+
+        console.log(error)
+      }
+    }
+
+  // 🔥 FETCH ATTENDANCE
   // 🔥 FETCH ATTENDANCE
   const fetchAttendance =
     async (data) => {
@@ -156,14 +192,45 @@ const Profile = () => {
         const today =
           new Date().toLocaleDateString()
 
-        const res = await axios.get(
-          "http://localhost:3000/attendance"
+        const res =
+          await axios.get(
+            "http://localhost:3000/attendance"
+          )
+
+        // 🔥 ONLY CURRENT MONTH HISTORY
+        const currentMonth =
+          new Date().getMonth()
+
+        const currentYear =
+          new Date().getFullYear()
+
+        const myAttendance =
+          res.data.filter((a) => {
+
+            if (
+              a.userId !== data.id
+            ) {
+              return false
+            }
+
+            const attendanceDate =
+              new Date(a.date)
+
+            return (
+              attendanceDate.getMonth() === currentMonth &&
+              attendanceDate.getFullYear() === currentYear
+            )
+          })
+
+        // 🔥 LATEST FIRST
+        setAttendanceHistory(
+          myAttendance.reverse()
         )
 
+        // 🔥 TODAY ATTENDANCE
         const todayData =
-          res.data.find(
+          myAttendance.find(
             (a) =>
-              a.userId === data.id &&
               a.date === today
           )
 
@@ -184,36 +251,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 FETCH LEAVE
-  const fetchLeave =
-    async (data) => {
-
-      try {
-
-        const res = await axios.get(
-          "http://localhost:3000/leaves"
-        )
-
-        const myLeave =
-          res.data.find(
-            (l) =>
-              l.userId === data.id
-          )
-
-        if (myLeave) {
-
-          setLeaveStatus(
-            myLeave.status
-          )
-        }
-
-      } catch (error) {
-
-        console.log(error)
-      }
-    }
-
-  // 🔥 FETCH SALARY
+  // 🔥 SALARY LOGIC
   const fetchSalarySlip =
     async (data) => {
 
@@ -229,81 +267,73 @@ const Profile = () => {
             "http://localhost:3000/leaves"
           )
 
-        const currentDate =
-          new Date()
-
         const currentMonth =
-          currentDate.getMonth()
+          new Date().getMonth()
 
         const currentYear =
-          currentDate.getFullYear()
+          new Date().getFullYear()
 
         const myAttendance =
-          attendanceRes.data.filter((a) => {
+          attendanceRes.data.filter(
+            (a) => {
 
-            if (a.userId !== data.id) {
-              return false
+              if (
+                a.userId !== data.id
+              ) {
+                return false
+              }
+
+              const d =
+                new Date(a.date)
+
+              return (
+                d.getMonth() === currentMonth &&
+                d.getFullYear() === currentYear
+              )
             }
-
-            const attendanceDate =
-              new Date(a.date)
-
-            return (
-              attendanceDate.getMonth() === currentMonth &&
-              attendanceDate.getFullYear() === currentYear
-            )
-          })
+          )
 
         const myLeaves =
-          leaveRes.data.filter((l) => {
+          leaveRes.data.filter(
+            (l) => {
 
-            if (
-              l.userId !== data.id ||
-              l.status !== "approved"
-            ) {
-              return false
+              if (
+                l.userId !== data.id ||
+                l.status !== "approved"
+              ) {
+                return false
+              }
+
+              const d =
+                new Date(l.start)
+
+              return (
+                d.getMonth() === currentMonth &&
+                d.getFullYear() === currentYear
+              )
             }
-
-            const leaveDate =
-              new Date(l.start)
-
-            return (
-              leaveDate.getMonth() === currentMonth &&
-              leaveDate.getFullYear() === currentYear
-            )
-          })
+          )
 
         let present = 0
         let absent = 0
         let halfDay = 0
+        let sundayPaid = 0
 
         let attendanceCut = 0
         let leaveCut = 0
-        let freeLeaveCount = 0
+
+        const perDaySalary =
+          data.salary / 30
 
         myAttendance.forEach((a) => {
 
+          // 🔥 SUNDAY
           if (
-            a.checkIn === "Leave"
+            isSunday(a.date)
           ) {
 
-            absent++
-
-            attendanceCut +=
-              data.salary / 30
-
-            return
-          }
-
-          if (
-            a.checkIn === "" &&
-            a.checkOut === ""
-          ) {
-
-            absent++
-
-            attendanceCut +=
-              data.salary / 30
+            sundayPaid++
+            present++
 
             return
           }
@@ -319,64 +349,54 @@ const Profile = () => {
             present++
           }
 
-          else if (hours >= 4) {
+          else if (
+            hours >= 4
+          ) {
 
             halfDay++
 
             attendanceCut +=
-              data.salary / 30 / 2
+              perDaySalary / 2
           }
 
-          else if (hours > 0) {
+          else {
 
             absent++
 
             attendanceCut +=
-              data.salary / 30
+              perDaySalary
           }
-
         })
 
         let totalLeaves = 0
-        let paidLeaveDays = 0
-        let freeLeaveDays = 0
+        let paidLeaves = 0
 
         myLeaves.forEach((l) => {
-          totalLeaves += l.days
-          
-          // 🔥 Separate paid and free leaves
-          if (l.type === "free") {
-            freeLeaveDays += l.days
-          } else {
-            paidLeaveDays += l.days
+
+          totalLeaves +=
+            Number(l.days)
+
+          if (
+            l.type === "paid"
+          ) {
+
+            paidLeaves +=
+              Number(l.days)
           }
         })
 
-        // 🔥 LEAVE CUT: Only paid leaves are deducted
-        // First leave is free (as per your requirement)
-        let remainingPaidLeaves = paidLeaveDays
-        
-        // If free leave is used, paid leaves are deducted normally
-        // If no free leave used, first leave (any type) is free
-        const hasFreeLeave = myLeaves.some(l => l.type === "free" && l.status === "approved")
-        
-        if (hasFreeLeave) {
-          // Free leave already used, all paid leaves are deducted
-          if (paidLeaveDays > 0) {
-            leaveCut = paidLeaveDays * (data.salary / 30)
-          }
-        } else {
-          // No free leave used yet
-          if (totalLeaves > 1) {
-            const extraLeaves = totalLeaves - 1
-            leaveCut = extraLeaves * (data.salary / 30)
-          }
+        if (paidLeaves > 0) {
+
+          leaveCut =
+            paidLeaves *
+            perDaySalary
         }
 
         const pf =
           data.salary * 0.12
 
-        const professionalTax = 200
+        const professionalTax =
+          200
 
         const totalCut =
           attendanceCut +
@@ -385,45 +405,64 @@ const Profile = () => {
           professionalTax
 
         let netSalary =
-          data.salary - totalCut
+          data.salary -
+          totalCut
 
         if (netSalary < 0) {
           netSalary = 0
         }
 
-        let performance = "Poor"
+        let performance =
+          "Poor"
 
-        if (present >= 20) {
+        if (present >= 26) {
 
-          performance = "Excellent"
+          performance =
+            "Excellent"
         }
 
-        else if (present >= 15) {
+        else if (
+          present >= 20
+        ) {
 
-          performance = "Good"
+          performance =
+            "Good"
         }
 
-        else if (present >= 8) {
+        else if (
+          present >= 15
+        ) {
 
-          performance = "Average"
+          performance =
+            "Average"
         }
 
         setSalaryData({
+
           present,
           absent,
           halfDay,
-          totalCut:
-            totalCut.toFixed(0),
-          netSalary:
-            netSalary.toFixed(0),
+          sundayPaid,
+
           totalLeaves,
-          pf: pf.toFixed(0),
-          professionalTax,
-          leaveCut:
-            leaveCut.toFixed(0),
+
           attendanceCut:
             attendanceCut.toFixed(0),
-          freeLeaveUsed: hasFreeLeave,
+
+          leaveCut:
+            leaveCut.toFixed(0),
+
+          pf:
+            pf.toFixed(0),
+
+          professionalTax,
+
+          totalCut:
+            totalCut.toFixed(0),
+
+          netSalary:
+            netSalary.toFixed(0),
+
           performance
         })
 
@@ -441,13 +480,13 @@ const Profile = () => {
     const autoCheckout =
       async () => {
 
-        const today =
-          new Date().toLocaleDateString()
-
         const currentHour =
           new Date().getHours()
 
-        if (currentHour >= 23) {
+        const today =
+          new Date().toLocaleDateString()
+
+        if (currentHour >= 18) {
 
           try {
 
@@ -481,7 +520,6 @@ const Profile = () => {
                 "Auto Checkout"
               )
 
-              fetchSalarySlip(user)
             }
 
           } catch (error) {
@@ -500,6 +538,31 @@ const Profile = () => {
     async () => {
 
       try {
+
+        const currentHour =
+          new Date().getHours()
+
+        const day =
+          new Date().getDay()
+
+        // 🔥 SUNDAY CLOSED
+        if (day === 0) {
+
+          alert(
+            "Office Closed On Sunday"
+          )
+
+          return
+        }
+
+        if (currentHour < 9) {
+
+          alert(
+            "Office opens at 9 AM"
+          )
+
+          return
+        }
 
         const time =
           new Date().toLocaleTimeString([], {
@@ -525,7 +588,7 @@ const Profile = () => {
         if (already) {
 
           alert(
-            "Already checked in"
+            "Already Checked In"
           )
 
           return
@@ -548,9 +611,12 @@ const Profile = () => {
 
         setCheckInTime(time)
 
+        fetchAttendance(user)
         fetchSalarySlip(user)
 
-        alert("Checked In Successfully")
+        alert(
+          "Checked In Successfully"
+        )
 
       } catch (error) {
 
@@ -563,6 +629,18 @@ const Profile = () => {
     async () => {
 
       try {
+
+        const currentHour =
+          new Date().getHours()
+
+        if (currentHour < 18) {
+
+          alert(
+            "Checkout allowed after 6 PM"
+          )
+
+          return
+        }
 
         const time =
           new Date().toLocaleTimeString([], {
@@ -588,7 +666,7 @@ const Profile = () => {
         if (!record) {
 
           alert(
-            "Please check in first"
+            "Please Check In First"
           )
 
           return
@@ -603,9 +681,12 @@ const Profile = () => {
 
         setCheckOutTime(time)
 
+        fetchAttendance(user)
         fetchSalarySlip(user)
 
-        alert("Checked Out Successfully")
+        alert(
+          "Checked Out Successfully"
+        )
 
       } catch (error) {
 
@@ -613,7 +694,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 APPLY LEAVE (UPDATED WITH DROPDOWN)
+  // 🔥 APPLY LEAVE
   const handleLeaveApply =
     async () => {
 
@@ -626,19 +707,22 @@ const Profile = () => {
         ) {
 
           alert(
-            "Please fill all fields"
+            "Fill all fields"
           )
 
           return
         }
 
-        // 🔥 CHECK FREE LEAVE USAGE
-        if (type === "free") {
-          const used = await checkFreeLeaveUsed(user.id)
-          if (used) {
-            alert("❌ You have already used your Free Leave! You can only apply for Paid Leave now.")
-            return
-          }
+        if (
+          type === "free" &&
+          hasUsedFreeLeave
+        ) {
+
+          alert(
+            "Free Leave Already Used"
+          )
+
+          return
         }
 
         const days =
@@ -660,7 +744,7 @@ const Profile = () => {
             name: user.firstName,
             contact: user.contact,
             reason: leaveReason,
-            type, // "paid" or "free"
+            type,
             start,
             end,
             days,
@@ -668,18 +752,17 @@ const Profile = () => {
           }
         )
 
-        setLeaveStatus("pending")
+        setLeaveStatus(
+          "pending"
+        )
 
         setLeaveReason("")
         setStart("")
         setEnd("")
         setType("")
 
-        // Refresh free leave status
-        await checkFreeLeaveUsed(user.id)
-        
         alert(
-          "Leave Applied Successfully!"
+          "Leave Applied Successfully"
         )
 
       } catch (error) {
@@ -688,7 +771,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 DOWNLOAD
+  // 🔥 PRINT
   const downloadSalarySlip =
     () => {
 
@@ -707,56 +790,69 @@ const Profile = () => {
   return (
 
     <div
-      className="container-fluid p-4"
+      className="container-fluid py-4"
       style={{
-        background: "#f1f5f9",
-        minHeight: "100vh"
+        minHeight: "100vh",
+        background:
+          "linear-gradient(to right,#eef2ff,#f8fafc)"
       }}
     >
 
-      {/* 🔥 PROFILE */}
-      <div className="card shadow border-0 p-4 mb-4">
+      {/* 🔥 HEADER */}
+      <div className="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden">
 
-        <div className="row align-items-center">
+        <div
+          className="p-5 text-white"
+          style={{
+            background:
+              "linear-gradient(135deg,#0f172a,#1e293b)"
+          }}
+        >
 
-          <div className="col-md-8">
+          <div className="row align-items-center">
 
-            <h2 className="fw-bold mb-3">
-              Welcome,
-              {" "}
-              {user.firstName}
-            </h2>
+            <div className="col-md-8">
 
-            <p>📧 {user.email}</p>
-
-            <p>📱 {user.contact}</p>
-
-            <p>🏢 {user.department}</p>
-
-            <p>💼 {user.role}</p>
-
-          </div>
-
-          <div className="col-md-4">
-
-            <div
-              className="p-4 rounded text-center text-white"
-              style={{
-                background:
-                  "linear-gradient(135deg,#2563eb,#1e40af)"
-              }}
-            >
-
-              <h1>
-                ₹
-                {
-                  salaryData.netSalary
-                }
+              <h1 className="fw-bold">
+                Welcome,
+                {" "}
+                {user.firstName}
               </h1>
 
-              <h5>
-                Net Salary
-              </h5>
+              <p className="mb-1">
+                📧 {user.email}
+              </p>
+
+              <p className="mb-1">
+                📱 {user.contact}
+              </p>
+
+              <p className="mb-1">
+                🏢 {user.department}
+              </p>
+
+              <p className="mb-0">
+                💼 {user.role}
+              </p>
+
+            </div>
+
+            <div className="col-md-4">
+
+              <div className="bg-white text-dark rounded-4 p-4 text-center shadow">
+
+                <h1 className="fw-bold text-success">
+                  ₹
+                  {
+                    salaryData.netSalary
+                  }
+                </h1>
+
+                <h5>
+                  Net Salary
+                </h5>
+
+              </div>
 
             </div>
 
@@ -767,51 +863,51 @@ const Profile = () => {
       </div>
 
       {/* 🔥 ATTENDANCE */}
-      <div className="card shadow border-0 p-4 mb-4">
+      <div className="card border-0 shadow rounded-4 p-4 mb-4">
 
-        <h4 className="fw-bold mb-4">
+        <h3 className="fw-bold mb-4">
           Attendance
-        </h4>
+        </h3>
 
         <div className="row align-items-center">
 
           <div className="col-md-6">
 
-            <p>
+            <h5 className="mb-3">
               ✅ Check In:
               {" "}
-              <b>
+              <span className="text-success">
                 {
                   checkInTime || "--"
                 }
-              </b>
-            </p>
+              </span>
+            </h5>
 
-            <p>
+            <h5>
               ❌ Check Out:
               {" "}
-              <b>
+              <span className="text-danger">
                 {
                   checkOutTime || "--"
                 }
-              </b>
-            </p>
+              </span>
+            </h5>
 
           </div>
 
-          <div className="col-md-6 d-flex gap-2 flex-wrap">
+          <div className="col-md-6 d-flex gap-3 flex-wrap">
 
             <button
+              className="btn btn-success px-4 py-2"
               onClick={handleCheckIn}
-              className="btn btn-success"
               disabled={checkInTime}
             >
               Check In
             </button>
 
             <button
+              className="btn btn-danger px-4 py-2"
               onClick={handleCheckOut}
-              className="btn btn-danger"
               disabled={
                 !checkInTime ||
                 checkOutTime
@@ -826,46 +922,62 @@ const Profile = () => {
 
       </div>
 
-      {/* 🔥 LEAVE - UPDATED WITH DROPDOWN */}
-      <div className="card shadow border-0 p-4 mb-4">
+      {/* 🔥 LEAVE */}
+      <div className="card border-0 shadow rounded-4 p-4 mb-4">
 
-        <h4 className="fw-bold mb-4">
+        <h3 className="fw-bold mb-4">
           Apply Leave
-        </h4>
+        </h3>
 
-        {/* 🔥 FREE LEAVE STATUS WARNING */}
         {hasUsedFreeLeave && (
-          <div className="alert alert-warning mb-3">
-            ⚠️ You have already used your <strong>Free Leave</strong>. Only <strong>Paid Leave</strong> is available now.
+
+          <div className="alert alert-warning">
+
+            Free Leave Already Used.
+            Only Paid Leave Available.
+
           </div>
         )}
 
         <div className="row">
 
-          <div className="col-md-6">
+          <div className="col-md-6 mb-3">
 
-            {/* 🔥 LEAVE TYPE DROPDOWN */}
             <select
+              className="form-select"
               value={type}
               onChange={(e) =>
-                setType(e.target.value)
+                setType(
+                  e.target.value
+                )
               }
-              className="form-control mb-3"
             >
-              <option value="">Select Leave Type</option>
-              <option value="free" disabled={hasUsedFreeLeave}>
-                Free Leave (One Time - No Salary Cut) {hasUsedFreeLeave ? "(Used)" : ""}
+
+              <option value="">
+                Select Leave Type
               </option>
+
+              {
+                !hasUsedFreeLeave && (
+
+                  <option value="free">
+                    Free Leave
+                  </option>
+                )
+              }
+
               <option value="paid">
-                Paid Leave (Salary Cut)
+                Paid Leave
               </option>
+
             </select>
 
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 mb-3">
 
             <textarea
+              className="form-control"
               placeholder="Reason"
               value={leaveReason}
               onChange={(e) =>
@@ -873,37 +985,36 @@ const Profile = () => {
                   e.target.value
                 )
               }
-              className="form-control mb-3"
             />
 
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 mb-3">
 
             <input
               type="date"
+              className="form-control"
               value={start}
               onChange={(e) =>
                 setStart(
                   e.target.value
                 )
               }
-              className="form-control mb-3"
             />
 
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 mb-3">
 
             <input
               type="date"
+              className="form-control"
               value={end}
               onChange={(e) =>
                 setEnd(
                   e.target.value
                 )
               }
-              className="form-control mb-3"
             />
 
           </div>
@@ -911,13 +1022,14 @@ const Profile = () => {
         </div>
 
         <button
+          className="btn btn-primary px-4"
           onClick={handleLeaveApply}
-          className="btn btn-primary"
         >
           Apply Leave
         </button>
 
-        <p className="mt-3 fw-bold">
+        <h6 className="mt-3">
+
           Status:
           {" "}
           <span className="text-primary">
@@ -926,28 +1038,29 @@ const Profile = () => {
               "No Request"
             }
           </span>
-        </p>
+
+        </h6>
 
       </div>
 
       {/* 🔥 SALARY */}
-      <div className="card shadow border-0 p-4">
+      <div className="card border-0 shadow rounded-4 p-4 mb-4">
 
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 
           <div>
 
-            <h3 className="fw-bold">
+            <h2 className="fw-bold">
               Salary Slip
-            </h3>
+            </h2>
 
             <p className="text-muted">
-              Monthly Payslip Details
+              Monthly Salary Details
             </p>
 
           </div>
 
-          <div className="d-flex gap-2 flex-wrap">
+          <div className="d-flex gap-2">
 
             <button
               className="btn btn-dark"
@@ -978,17 +1091,17 @@ const Profile = () => {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card border-0 shadow-sm p-3 text-center">
+            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
 
               <h6>
                 Present
               </h6>
 
-              <h3 className="text-success">
+              <h2 className="text-success">
                 {
                   salaryData.present
                 }
-              </h3>
+              </h2>
 
             </div>
 
@@ -996,17 +1109,17 @@ const Profile = () => {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card border-0 shadow-sm p-3 text-center">
+            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
 
               <h6>
                 Absent
               </h6>
 
-              <h3 className="text-danger">
+              <h2 className="text-danger">
                 {
                   salaryData.absent
                 }
-              </h3>
+              </h2>
 
             </div>
 
@@ -1014,17 +1127,17 @@ const Profile = () => {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card border-0 shadow-sm p-3 text-center">
+            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
 
               <h6>
                 Half Day
               </h6>
 
-              <h3 className="text-warning">
+              <h2 className="text-warning">
                 {
                   salaryData.halfDay
                 }
-              </h3>
+              </h2>
 
             </div>
 
@@ -1032,17 +1145,17 @@ const Profile = () => {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card border-0 shadow-sm p-3 text-center">
+            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
 
               <h6>
-                Performance
+                Sunday Paid
               </h6>
 
-              <h5 className="text-primary">
+              <h2 className="text-info">
                 {
-                  salaryData.performance
+                  salaryData.sundayPaid
                 }
-              </h5>
+              </h2>
 
             </div>
 
@@ -1078,7 +1191,6 @@ const Profile = () => {
             <tbody>
 
               <tr>
-
                 <td>
                   Basic Salary
                 </td>
@@ -1087,14 +1199,12 @@ const Profile = () => {
                   Monthly Salary
                 </td>
 
-                <td className="fw-bold">
+                <td>
                   ₹ {user.salary}
                 </td>
-
               </tr>
 
               <tr>
-
                 <td>
                   Attendance Cut
                 </td>
@@ -1103,52 +1213,46 @@ const Profile = () => {
                   Absent / Half Day
                 </td>
 
-                <td className="text-danger fw-bold">
+                <td className="text-danger">
                   ₹ {
                     salaryData.attendanceCut
                   }
                 </td>
-
               </tr>
 
               <tr>
-
                 <td>
                   Leave Cut
                 </td>
 
                 <td>
-                  {salaryData.freeLeaveUsed ? "Paid Leave Deduction" : "First Leave Free, Rest Deducted"}
+                  Paid Leave
                 </td>
 
-                <td className="text-danger fw-bold">
+                <td className="text-danger">
                   ₹ {
                     salaryData.leaveCut
                   }
                 </td>
-
               </tr>
 
               <tr>
-
                 <td>
                   PF
                 </td>
 
                 <td>
-                  12% PF Deduction
+                  12% PF
                 </td>
 
-                <td className="text-danger fw-bold">
+                <td className="text-danger">
                   ₹ {
                     salaryData.pf
                   }
                 </td>
-
               </tr>
 
               <tr>
-
                 <td>
                   Professional Tax
                 </td>
@@ -1157,27 +1261,26 @@ const Profile = () => {
                   Government Tax
                 </td>
 
-                <td className="text-danger fw-bold">
+                <td className="text-danger">
                   ₹ {
                     salaryData.professionalTax
                   }
                 </td>
-
               </tr>
 
-              <tr>
-
-                <td>
-                  Total Leaves
-                </td>
-
-                <td>
-                  Approved Leaves
-                </td>
+              <tr className="table-secondary">
 
                 <td className="fw-bold">
-                  {
-                    salaryData.totalLeaves
+                  Total Deduction
+                </td>
+
+                <td>
+                  Total Cuts
+                </td>
+
+                <td className="fw-bold text-danger">
+                  ₹ {
+                    salaryData.totalCut
                   }
                 </td>
 
@@ -1189,7 +1292,7 @@ const Profile = () => {
                   Net Salary
                 </td>
 
-                <td className="fw-bold">
+                <td>
                   Final Salary
                 </td>
 
@@ -1200,6 +1303,162 @@ const Profile = () => {
                 </td>
 
               </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+      {/* 🔥 ATTENDANCE HISTORY */}
+      <div className="card border-0 shadow rounded-4 p-4">
+
+        <h3 className="fw-bold mb-4">
+          Attendance History
+        </h3>
+
+        <div className="table-responsive">
+
+          <table className="table table-hover align-middle">
+
+            <thead className="table-dark">
+
+              <tr>
+
+                <th>
+                  Date
+                </th>
+
+                <th>
+                  Check In
+                </th>
+
+                <th>
+                  Check Out
+                </th>
+
+                <th>
+                  Hours
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {
+                attendanceHistory.map(
+                  (a, index) => {
+
+                    const hours =
+                      calculateHours(
+                        a.checkIn,
+                        a.checkOut
+                      )
+
+                    let status =
+                      "Absent"
+
+                    if (
+                      isSunday(a.date)
+                    ) {
+
+                      status =
+                        "Sunday Paid"
+                    }
+
+                    else if (
+                      hours >= 8
+                    ) {
+
+                      status =
+                        "Present"
+                    }
+
+                    else if (
+                      hours >= 4
+                    ) {
+
+                      status =
+                        "Half Day"
+                    }
+
+                    return (
+
+                      <tr key={index}>
+
+                        <td>
+                          {a.date}
+                        </td>
+
+                        <td>
+                          {a.checkIn}
+                        </td>
+
+                        <td>
+                          {a.checkOut || "--"}
+                        </td>
+
+                        <td>
+                          {hours}
+                        </td>
+
+                        <td>
+
+                          {
+                            status ===
+                            "Present" && (
+
+                              <span className="badge bg-success">
+                                Present
+                              </span>
+                            )
+                          }
+
+                          {
+                            status ===
+                            "Half Day" && (
+
+                              <span className="badge bg-warning text-dark">
+                                Half Day
+                              </span>
+                            )
+                          }
+
+                          {
+                            status ===
+                            "Absent" && (
+
+                              <span className="badge bg-danger">
+                                Absent
+                              </span>
+                            )
+                          }
+
+                          {
+                            status ===
+                            "Sunday Paid" && (
+
+                              <span className="badge bg-info">
+                                Sunday Paid
+                              </span>
+                            )
+                          }
+
+                        </td>
+
+                      </tr>
+                    )
+                  }
+                )
+              }
 
             </tbody>
 

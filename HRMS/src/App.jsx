@@ -14,7 +14,7 @@ import Manager from './screen/Manager/Manager'
 import ViewEmployee from './pages/employees/VeiwEmploye'
 import Attendance from './screen/hr/attendence/Attendence'
 import Payroll from './screen/hr/payroll/Payroll'
-import SalaryHistory from './components/salary/SalaryHistory'
+import SalaryHistory from './components/sallery/SalaryHistory'
 
 const App = () => {
   return (

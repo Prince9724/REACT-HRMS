@@ -15,14 +15,19 @@ const Employees = () => {
   // 🔥 Search + Role Filter + Department Filter
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
-  const [departmentFilter, setDepartmentFilter] = useState("all") // 🆕 Department filter
+  const [departmentFilter, setDepartmentFilter] = useState("all")
+
+  // 🔥 Toggle password visibility
+  const [showPassword, setShowPassword] = useState({})
 
   useEffect(() => {
     dispatch(fetchUser())
   }, [dispatch])
 
   const handleDelete = (id) => {
-    dispatch(deleteUser(id))
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      dispatch(deleteUser(id))
+    }
   }
 
   const handleEdit = (u) => {
@@ -48,10 +53,18 @@ const Employees = () => {
     navigate(`/view/${id}`)
   }
 
+  // 🔥 Toggle password visibility for a specific user
+  const togglePasswordVisibility = (userId) => {
+    setShowPassword(prev => ({
+      ...prev,
+      [userId]: !prev[userId]
+    }))
+  }
+
   // 🔥 FILTER LOGIC (Role + Department + Search)
   const filteredUsers = user
     ?.filter(u => u && (roleFilter === "all" || u.role === roleFilter))
-    ?.filter(u => departmentFilter === "all" || u.department === departmentFilter) // 🆕 Department filter
+    ?.filter(u => departmentFilter === "all" || u.department === departmentFilter)
     ?.filter(u =>
       `${u.firstName} ${u.lastName}`
         .toLowerCase()
@@ -94,7 +107,6 @@ const Employees = () => {
           </select>
         </div>
 
-        {/* 🆕 Department Filter Dropdown */}
         <div className="col-md-4">
           <select
             className="form-control"
@@ -110,22 +122,57 @@ const Employees = () => {
         </div>
       </div>
 
-      {status === "loading" && <p>Loading...</p>}
-      {status === "failed" && <p>{error}</p>}
+      {status === "loading" && <p className="text-center">Loading...</p>}
+      {status === "failed" && <p className="text-center text-danger">{error}</p>}
 
       <div className="row scroll-box">
 
         {filteredUsers?.map((u) => (
           <div className="col-md-4 mb-3" key={u.id}>
-            <div className="card p-3 shadow-sm">
+            <div className="card p-3 shadow-sm h-100">
 
               {editUser?.id === u.id ? (
+                // 🔥 EDIT MODE
                 <>
-                  <input name="firstName" value={editUser.firstName} onChange={handleChange} className="form-control mb-1" />
-                  <input name="lastName" value={editUser.lastName} onChange={handleChange} className="form-control mb-1" />
-                  <input name="contact" value={editUser.contact} onChange={handleChange} className="form-control mb-1" />
+                  <input 
+                    name="firstName" 
+                    value={editUser.firstName || ""} 
+                    onChange={handleChange} 
+                    className="form-control mb-1" 
+                    placeholder="First Name"
+                  />
+                  <input 
+                    name="lastName" 
+                    value={editUser.lastName || ""} 
+                    onChange={handleChange} 
+                    className="form-control mb-1" 
+                    placeholder="Last Name"
+                  />
+                  <input 
+                    name="email" 
+                    value={editUser.email || ""} 
+                    onChange={handleChange} 
+                    className="form-control mb-1" 
+                    placeholder="Email"
+                  />
+                  <input 
+                    name="contact" 
+                    value={editUser.contact || ""} 
+                    onChange={handleChange} 
+                    className="form-control mb-1" 
+                    placeholder="Contact"
+                  />
+                  
+                  {/* 🔥 PASSWORD EDIT FIELD */}
+                  <input 
+                    name="password" 
+                    value={editUser.password || ""} 
+                    onChange={handleChange} 
+                    className="form-control mb-1" 
+                    placeholder="Password"
+                    type="text"
+                  />
 
-                  {/* 🆕 Department dropdown in edit mode */}
                   <select 
                     name="department" 
                     value={editUser.department || ""} 
@@ -134,9 +181,19 @@ const Employees = () => {
                   >
                     <option value="">Select Department</option>
                     <option value="AI/ML">AI/ML</option>
-                    <option value="Web Developement">Web Development</option>
+                    <option value="Web Development">Web Development</option>
                     <option value="Graphic Designer">Graphic Designer</option>
                     <option value="Flutter">Flutter</option>
+                  </select>
+
+                  <select 
+                    name="role" 
+                    value={editUser.role || "employee"} 
+                    onChange={handleChange}
+                    className="form-control mb-1"
+                  >
+                    <option value="employee">Employee</option>
+                    <option value="manager">Manager</option>
                   </select>
 
                   <input 
@@ -148,7 +205,6 @@ const Employees = () => {
                     className="form-control mb-1"
                   />
 
-                  {/* 🔥 Birthdate edit */}
                   <input 
                     type="date"
                     name="birthdate"
@@ -157,38 +213,81 @@ const Employees = () => {
                     className="form-control mb-1"
                   />
 
-                  <button className="btn btn-success mt-2" onClick={handleUpdate}>
-                    Save
-                  </button>
+                  <div className="d-flex gap-2 mt-2">
+                    <button className="btn btn-success" onClick={handleUpdate}>
+                      Save
+                    </button>
+                    <button className="btn btn-secondary" onClick={() => setEditUser(null)}>
+                      Cancel
+                    </button>
+                  </div>
                 </>
               ) : (
+                // 🔥 VIEW MODE
                 <>
-                  <h5>{u.firstName} {u.lastName}</h5>
+                  <h5 className="mb-2">
+                    {u.firstName} {u.lastName}
+                    <span className={`badge ms-2 ${u.role === 'manager' ? 'bg-danger' : 'bg-info'}`}>
+                      {u.role}
+                    </span>
+                  </h5>
 
-                  <p>📱 {u.contact}</p>
-                  <p>🏢 {u.department || "N/A"}</p>
-                  <p>💰 ₹ {u.salary ? u.salary.toLocaleString() : 0}</p>
+                  <p className="mb-1">
+                    📧 <strong>Email:</strong> {u.email}
+                  </p>
+
+                  <p className="mb-1">
+                    📱 <strong>Contact:</strong> {u.contact}
+                  </p>
+
+                  <p className="mb-1">
+                    🏢 <strong>Department:</strong> {u.department || "N/A"}
+                  </p>
+
+                  <p className="mb-1">
+                    💰 <strong>Salary:</strong> ₹ {u.salary ? u.salary.toLocaleString() : 0}
+                  </p>
+
+                  {/* 🔥 PASSWORD FIELD WITH TOGGLE */}
+                  <p className="mb-1">
+                    🔐 <strong>Password:</strong>{" "}
+                    <span className="font-monospace">
+                      {showPassword[u.id] ? u.password : "••••••"}
+                    </span>
+                    <button
+                      className="btn btn-sm btn-link p-0 ms-2"
+                      onClick={() => togglePasswordVisibility(u.id)}
+                      style={{ textDecoration: "none" }}
+                    >
+                      {showPassword[u.id] ? "🙈 Hide" : "👁️ Show"}
+                    </button>
+                  </p>
 
                   {/* 🔥 AGE */}
-                  <p>
-                    🎂 Age:{" "}
+                  <p className="mb-2">
+                    🎂 <strong>Age:</strong>{" "}
                     <span className="fw-bold text-primary">
                       {u.birthdate ? calculateAge(u.birthdate) : "N/A"}
                     </span>
                   </p>
 
+                  {/* 🔥 JOINING DATE */}
+                  <p className="mb-2 small text-muted">
+                    📅 Joined: {u.joiningDate ? new Date(u.joiningDate).toLocaleDateString() : "N/A"}
+                  </p>
+
                   {/* 🔥 ACTION BUTTONS */}
-                  <div className="mt-2">
-                    <button className="btn btn-info me-2" onClick={() => handleView(u.id)}>
-                      View
+                  <div className="mt-3 d-flex gap-2 flex-wrap">
+                    <button className="btn btn-info btn-sm" onClick={() => handleView(u.id)}>
+                      👁️ View
                     </button>
 
-                    <button className="btn btn-warning me-2" onClick={() => handleEdit(u)}>
-                      Edit
+                    <button className="btn btn-warning btn-sm" onClick={() => handleEdit(u)}>
+                      ✏️ Edit
                     </button>
 
-                    <button className="btn btn-danger" onClick={() => handleDelete(u.id)}>
-                      Delete
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(u.id)}>
+                      🗑️ Delete
                     </button>
                   </div>
                 </>
@@ -199,6 +298,15 @@ const Employees = () => {
         ))}
 
       </div>
+
+      {/* 🔥 NO DATA FOUND */}
+      {filteredUsers?.length === 0 && status !== "loading" && (
+        <div className="text-center text-muted mt-5">
+          <h5>No employees found</h5>
+          <p>Try changing your search or filter criteria</p>
+        </div>
+      )}
+
     </div>
   )
 }
