@@ -12,12 +12,10 @@ const Employees = () => {
 
   const [editUser, setEditUser] = useState(null)
 
-  // 🔥 Search + Role Filter + Department Filter
   const [search, setSearch] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
   const [departmentFilter, setDepartmentFilter] = useState("all")
 
-  // 🔥 Toggle password visibility
   const [showPassword, setShowPassword] = useState({})
 
   useEffect(() => {
@@ -30,9 +28,7 @@ const Employees = () => {
     }
   }
 
-  const handleEdit = (u) => {
-    setEditUser(u)
-  }
+  const handleEdit = (u) => setEditUser(u)
 
   const handleChange = (e) => {
     setEditUser({
@@ -49,21 +45,17 @@ const Employees = () => {
     setEditUser(null)
   }
 
-  const handleView = (id) => {
-    navigate(`/view/${id}`)
-  }
+  const handleView = (id) => navigate(`/view/${id}`)
 
-  // 🔥 Toggle password visibility for a specific user
   const togglePasswordVisibility = (userId) => {
-    setShowPassword(prev => ({
+    setShowPassword((prev) => ({
       ...prev,
       [userId]: !prev[userId]
     }))
   }
 
-  // 🔥 FILTER LOGIC (Role + Department + Search)
   const filteredUsers = user
-    ?.filter(u => u && (roleFilter === "all" || u.role === roleFilter))
+    ?.filter(u => roleFilter === "all" || u.role === roleFilter)
     ?.filter(u => departmentFilter === "all" || u.department === departmentFilter)
     ?.filter(u =>
       `${u.firstName} ${u.lastName}`
@@ -72,238 +64,172 @@ const Employees = () => {
     )
 
   return (
-    <div className="container-fluid page-container">
+    <div className="container-fluid py-4 bg-light min-vh-100">
 
-      {/* 🔥 TOP BAR */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Employees</h2>
+      {/* HEADER */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3 className="fw-bold text-primary mb-0">
+            <i className="fa-solid fa-users me-2"></i>
+            Employees
+          </h3>
+          <small className="text-muted">Manage all employee records</small>
+        </div>
 
-        <button className="btn btn-secondary" onClick={() => navigate("/hr")}>
-          ⬅ Home
+        <button className="btn btn-dark" onClick={() => navigate("/hr")}>
+          <i className="fa-solid fa-arrow-left me-2"></i>
+          Back
         </button>
       </div>
 
-      {/* 🔥 SEARCH + ROLE FILTER + DEPARTMENT FILTER */}
-      <div className="row mb-3">
-        <div className="col-md-4">
-          <input
-            type="text"
-            placeholder="Search by name..."
-            className="form-control"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      {/* FILTERS */}
+      <div className="card border-0 shadow-sm p-3 mb-4">
+        <div className="row g-3">
 
-        <div className="col-md-4">
-          <select
-            className="form-control"
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-          >
-            <option value="all">All Roles</option>
-            <option value="employee">Employee</option>
-            <option value="manager">Manager</option>
-          </select>
-        </div>
+          <div className="col-md-4">
+            <input
+              className="form-control"
+              placeholder="Search employee..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-        <div className="col-md-4">
-          <select
-            className="form-control"
-            value={departmentFilter}
-            onChange={(e) => setDepartmentFilter(e.target.value)}
-          >
-            <option value="all">All Departments</option>
-            <option value="AI/ML">AI/ML</option>
-            <option value="Web Development">Web Development</option>
-            <option value="Graphic Designer">Graphic Designer</option>
-            <option value="Flutter">Flutter</option>
-          </select>
+          <div className="col-md-4">
+            <select className="form-select" value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}>
+              <option value="all">All Roles</option>
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+            </select>
+          </div>
+
+          <div className="col-md-4">
+            <select className="form-select" value={departmentFilter}
+              onChange={(e) => setDepartmentFilter(e.target.value)}>
+              <option value="all">All Departments</option>
+              <option value="AI/ML">AI/ML</option>
+              <option value="Web Development">Web Development</option>
+              <option value="Graphic Designer">Graphic Designer</option>
+              <option value="Flutter">Flutter</option>
+            </select>
+          </div>
+
         </div>
       </div>
 
+      {/* STATUS */}
       {status === "loading" && <p className="text-center">Loading...</p>}
       {status === "failed" && <p className="text-center text-danger">{error}</p>}
 
-      <div className="row scroll-box">
+      {/* CARDS */}
+      <div className="row g-4">
 
         {filteredUsers?.map((u) => (
-          <div className="col-md-4 mb-3" key={u.id}>
-            <div className="card p-3 shadow-sm h-100">
+          <div className="col-lg-4 col-md-6 col-12" key={u.id}>
+
+            <div className="card border-0 shadow-sm h-100 employee-card">
 
               {editUser?.id === u.id ? (
-                // 🔥 EDIT MODE
-                <>
-                  <input 
-                    name="firstName" 
-                    value={editUser.firstName || ""} 
-                    onChange={handleChange} 
-                    className="form-control mb-1" 
-                    placeholder="First Name"
-                  />
-                  <input 
-                    name="lastName" 
-                    value={editUser.lastName || ""} 
-                    onChange={handleChange} 
-                    className="form-control mb-1" 
-                    placeholder="Last Name"
-                  />
-                  <input 
-                    name="email" 
-                    value={editUser.email || ""} 
-                    onChange={handleChange} 
-                    className="form-control mb-1" 
-                    placeholder="Email"
-                  />
-                  <input 
-                    name="contact" 
-                    value={editUser.contact || ""} 
-                    onChange={handleChange} 
-                    className="form-control mb-1" 
-                    placeholder="Contact"
-                  />
-                  
-                  {/* 🔥 PASSWORD EDIT FIELD */}
-                  <input 
-                    name="password" 
-                    value={editUser.password || ""} 
-                    onChange={handleChange} 
-                    className="form-control mb-1" 
-                    placeholder="Password"
-                    type="text"
-                  />
 
-                  <select 
-                    name="department" 
-                    value={editUser.department || ""} 
-                    onChange={handleChange}
-                    className="form-control mb-1"
-                  >
-                    <option value="">Select Department</option>
-                    <option value="AI/ML">AI/ML</option>
-                    <option value="Web Development">Web Development</option>
-                    <option value="Graphic Designer">Graphic Designer</option>
-                    <option value="Flutter">Flutter</option>
-                  </select>
+                /* EDIT MODE */
+                <div className="p-3">
 
-                  <select 
-                    name="role" 
-                    value={editUser.role || "employee"} 
-                    onChange={handleChange}
-                    className="form-control mb-1"
-                  >
-                    <option value="employee">Employee</option>
-                    <option value="manager">Manager</option>
-                  </select>
+                  <input className="form-control mb-2" name="firstName" value={editUser.firstName} onChange={handleChange} />
+                  <input className="form-control mb-2" name="lastName" value={editUser.lastName} onChange={handleChange} />
+                  <input className="form-control mb-2" name="email" value={editUser.email} onChange={handleChange} />
+                  <input className="form-control mb-2" name="contact" value={editUser.contact} onChange={handleChange} />
+                  <input className="form-control mb-2" name="salary" value={editUser.salary} onChange={handleChange} />
 
-                  <input 
-                    name="salary" 
-                    type="number"
-                    value={editUser.salary || ""} 
-                    onChange={handleChange} 
-                    placeholder="Salary"
-                    className="form-control mb-1"
-                  />
-
-                  <input 
-                    type="date"
-                    name="birthdate"
-                    value={editUser.birthdate || ""}
-                    onChange={handleChange}
-                    className="form-control mb-1"
-                  />
-
-                  <div className="d-flex gap-2 mt-2">
-                    <button className="btn btn-success" onClick={handleUpdate}>
-                      Save
+                  <div className="d-flex gap-2">
+                    <button className="btn btn-success w-50" onClick={handleUpdate}>
+                      <i className="fa-solid fa-check me-1"></i> Save
                     </button>
-                    <button className="btn btn-secondary" onClick={() => setEditUser(null)}>
+                    <button className="btn btn-secondary w-50" onClick={() => setEditUser(null)}>
                       Cancel
                     </button>
                   </div>
-                </>
+
+                </div>
+
               ) : (
-                // 🔥 VIEW MODE
-                <>
-                  <h5 className="mb-2">
-                    {u.firstName} {u.lastName}
-                    <span className={`badge ms-2 ${u.role === 'manager' ? 'bg-danger' : 'bg-info'}`}>
+
+                /* VIEW MODE */
+                <div className="p-3">
+
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h5 className="mb-0 fw-bold">
+                      <i className="fa-solid fa-user me-2 text-primary"></i>
+                      {u.firstName} {u.lastName}
+                    </h5>
+
+                    <span className={`badge ${u.role === "manager" ? "bg-danger" : "bg-primary"}`}>
                       {u.role}
                     </span>
-                  </h5>
-
-                  <p className="mb-1">
-                    📧 <strong>Email:</strong> {u.email}
-                  </p>
-
-                  <p className="mb-1">
-                    📱 <strong>Contact:</strong> {u.contact}
-                  </p>
-
-                  <p className="mb-1">
-                    🏢 <strong>Department:</strong> {u.department || "N/A"}
-                  </p>
-
-                  <p className="mb-1">
-                    💰 <strong>Salary:</strong> ₹ {u.salary ? u.salary.toLocaleString() : 0}
-                  </p>
-
-                  {/* 🔥 PASSWORD FIELD WITH TOGGLE */}
-                  <p className="mb-1">
-                    🔐 <strong>Password:</strong>{" "}
-                    <span className="font-monospace">
-                      {showPassword[u.id] ? u.password : "••••••"}
-                    </span>
-                    <button
-                      className="btn btn-sm btn-link p-0 ms-2"
-                      onClick={() => togglePasswordVisibility(u.id)}
-                      style={{ textDecoration: "none" }}
-                    >
-                      {showPassword[u.id] ? "🙈 Hide" : "👁️ Show"}
-                    </button>
-                  </p>
-
-                  {/* 🔥 AGE */}
-                  <p className="mb-2">
-                    🎂 <strong>Age:</strong>{" "}
-                    <span className="fw-bold text-primary">
-                      {u.birthdate ? calculateAge(u.birthdate) : "N/A"}
-                    </span>
-                  </p>
-
-                  {/* 🔥 JOINING DATE */}
-                  <p className="mb-2 small text-muted">
-                    📅 Joined: {u.joiningDate ? new Date(u.joiningDate).toLocaleDateString() : "N/A"}
-                  </p>
-
-                  {/* 🔥 ACTION BUTTONS */}
-                  <div className="mt-3 d-flex gap-2 flex-wrap">
-                    <button className="btn btn-info btn-sm" onClick={() => handleView(u.id)}>
-                      👁️ View
-                    </button>
-
-                    <button className="btn btn-warning btn-sm" onClick={() => handleEdit(u)}>
-                      ✏️ Edit
-                    </button>
-
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(u.id)}>
-                      🗑️ Delete
-                    </button>
                   </div>
-                </>
+
+                  <p className="mb-1 text-muted">
+                    <i className="fa-solid fa-building me-2"></i>
+                    {u.department || "N/A"}
+                  </p>
+
+                  <p className="mb-1">
+                    <i className="fa-solid fa-phone me-2 text-success"> </i>
+                   contact : {u.contact}
+                  </p>
+
+                  <p className="mb-2 fw-bold">
+                    <i className="fa-solid fa-indian-rupee-sign me-2 text-warning"></i>
+                    Salary: {u.salary}
+                  </p>
+
+                  {/* BUTTONS */}
+                  {/* ACTION BUTTONS */}
+                  <div className="d-flex gap-2 mt-3">
+
+                    {/* VIEW */}
+                    <button
+                      className="btn btn-outline-primary btn-sm w-100"
+                      onClick={() => handleView(u.id)}
+                    >
+                      <i className="fa-solid fa-eye me-1"></i>
+                      View
+                    </button>
+
+                    {/* EDIT */}
+                    <button
+                      className="btn btn-outline-warning btn-sm w-100"
+                      onClick={() => handleEdit(u)}
+                    >
+                      <i className="fa-solid fa-pen me-1"></i>
+                      Edit
+                    </button>
+
+                    {/* DELETE */}
+                    <button
+                      className="btn btn-outline-danger btn-sm w-100"
+                      onClick={() => handleDelete(u.id)}
+                    >
+                      <i className="fa-solid fa-trash me-1"></i>
+                      Delete
+                    </button>
+
+                  </div>
+
+                </div>
               )}
 
             </div>
+
           </div>
         ))}
 
       </div>
 
-      {/* 🔥 NO DATA FOUND */}
-      {filteredUsers?.length === 0 && status !== "loading" && (
+      {/* EMPTY STATE */}
+      {filteredUsers?.length === 0 && (
         <div className="text-center text-muted mt-5">
           <h5>No employees found</h5>
-          <p>Try changing your search or filter criteria</p>
         </div>
       )}
 

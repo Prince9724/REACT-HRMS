@@ -136,7 +136,7 @@ const SalaryHistory = () => {
       diff = 8
     }
 
-    return diff
+    return Number(diff.toFixed(1))
   }
 
   // 🔥 MONTH FILTER
@@ -821,7 +821,7 @@ const salaryReport = useMemo(() => {
                           </td>
 
                           <td>
-                            {hours} hrs
+                            {hours.toFixed(1)} hrs
                           </td>
 
                           <td>

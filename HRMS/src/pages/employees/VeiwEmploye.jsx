@@ -40,6 +40,7 @@ const ViewEmployee = () => {
         <p><strong>Contact:</strong> {user.contact}</p>
 
         <p><strong>Role:</strong> {user.role}</p>
+        <p><strong>Pasword:</strong> {user.password}</p>
 
         {/* 🔥 NEW FIELDS */}
         <p><strong>Department:</strong> {user.department || "N/A"}</p>

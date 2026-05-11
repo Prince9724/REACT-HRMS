@@ -8,7 +8,7 @@ const Front = () => {
     // ✅ ROLE NAVIGATION
     const handleRole = (role) => {
 
-        navigate("/hrlogin", {
+        navigate("/loginpage", {
             state: { role }
         })
     }

@@ -1,477 +1,760 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Manager = () => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate()
-    const [activeTab, setActiveTab] = useState("dashboard")
-    
-    const [users, setUsers] = useState([])
-    const [leaves, setLeaves] = useState([])
-    const [attendance, setAttendance] = useState([])
-    const [search, setSearch] = useState("")
-    const [departmentFilter, setDepartmentFilter] = useState("all")
+  const [activeTab, setActiveTab] = useState("dashboard");
 
-    // Manager's own attendance
-    const [checkInTime, setCheckInTime] = useState("")
-    const [checkOutTime, setCheckOutTime] = useState("")
+  const [users, setUsers] = useState([]);
+  const [leaves, setLeaves] = useState([]);
+  const [attendance, setAttendance] = useState([]);
 
-    const currentUser = JSON.parse(localStorage.getItem("user"))
+  const [search, setSearch] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
 
-    // Fetch Data
-    useEffect(() => {
-        fetchData()
-        fetchManagerAttendance()
-    }, [])
+  const [checkInTime, setCheckInTime] = useState("");
+  const [checkOutTime, setCheckOutTime] = useState("");
 
-    const fetchData = async () => {
-        try {
-            const userRes = await axios.get("http://localhost:3000/employe")
-            const leaveRes = await axios.get("http://localhost:3000/leaves")
-            const attRes = await axios.get("http://localhost:3000/attendance")
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
-            setUsers(userRes.data || [])
-            setLeaves(leaveRes.data || [])
-            setAttendance(attRes.data || [])
-        } catch (err) {
-            console.log(err)
-        }
+  // Random Avatar
+  const avatar =
+    currentUser?.gender?.toLowerCase() === "female"
+      ? "https://randomuser.me/api/portraits/women/44.jpg"
+      : "https://randomuser.me/api/portraits/men/32.jpg";
+
+  // Fetch Data
+  useEffect(() => {
+    fetchData();
+    fetchManagerAttendance();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const userRes = await axios.get("http://localhost:3000/employe");
+      const leaveRes = await axios.get("http://localhost:3000/leaves");
+      const attRes = await axios.get("http://localhost:3000/attendance");
+
+      setUsers(userRes.data || []);
+      setLeaves(leaveRes.data || []);
+      setAttendance(attRes.data || []);
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-    // Fetch Manager's Today Attendance
-    const fetchManagerAttendance = async () => {
-        if (!currentUser) return
-        
-        const today = new Date().toLocaleDateString()
-        try {
-            const res = await axios.get("http://localhost:3000/attendance")
-            const todayData = res.data.find(
-                a => a.userId === currentUser.id && a.date === today
-            )
-            if (todayData) {
-                setCheckInTime(todayData.checkIn || "")
-                setCheckOutTime(todayData.checkOut || "")
-            }
-        } catch (err) {
-            console.log(err)
-        }
+  // Today's Attendance
+  const fetchManagerAttendance = async () => {
+    if (!currentUser) return;
+
+    const today = new Date().toLocaleDateString();
+
+    try {
+      const res = await axios.get("http://localhost:3000/attendance");
+
+      const todayData = res.data.find(
+        (a) => a.userId === currentUser.id && a.date === today
+      );
+
+      if (todayData) {
+        setCheckInTime(todayData.checkIn || "");
+        setCheckOutTime(todayData.checkOut || "");
+      }
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-    // Manager Check In
-    const handleCheckIn = async () => {
-        const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-        const today = new Date().toLocaleDateString()
+  // Check In
+  const handleCheckIn = async () => {
+    const time = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
-        try {
-            const res = await axios.get("http://localhost:3000/attendance")
-            const already = res.data.find(a => a.userId === currentUser.id && a.date === today)
+    const today = new Date().toLocaleDateString();
 
-            if (already) {
-                alert("Already checked in today!")
-                return
-            }
+    try {
+      const res = await axios.get("http://localhost:3000/attendance");
 
-            await axios.post("http://localhost:3000/attendance", {
-                userId: currentUser.id,
-                name: currentUser.firstName,
-                contact: currentUser.contact,
-                department: currentUser.department,
-                salary: currentUser.salary,
-                date: today,
-                checkIn: time,
-                checkOut: ""
-            })
+      const already = res.data.find(
+        (a) => a.userId === currentUser.id && a.date === today
+      );
 
-            setCheckInTime(time)
-            alert("Checked In Successfully!")
-            fetchManagerAttendance()
-        } catch (err) {
-            console.log(err)
-            alert("Error checking in")
-        }
+      if (already) {
+        alert("Already checked in!");
+        return;
+      }
+
+      await axios.post("http://localhost:3000/attendance", {
+        userId: currentUser.id,
+        name: currentUser.firstName,
+        department: currentUser.department,
+        contact: currentUser.contact,
+        salary: currentUser.salary,
+        date: today,
+        checkIn: time,
+        checkOut: "",
+      });
+
+      setCheckInTime(time);
+
+      fetchData();
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-    // Manager Check Out
-    const handleCheckOut = async () => {
-        const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-        const today = new Date().toLocaleDateString()
+  // Check Out
+  const handleCheckOut = async () => {
+    const time = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
-        try {
-            const res = await axios.get("http://localhost:3000/attendance")
-            const record = res.data.find(a => a.userId === currentUser.id && a.date === today)
+    const today = new Date().toLocaleDateString();
 
-            if (!record) {
-                alert("Please check in first!")
-                return
-            }
+    try {
+      const res = await axios.get("http://localhost:3000/attendance");
 
-            if (record.checkOut) {
-                alert("Already checked out!")
-                return
-            }
+      const record = res.data.find(
+        (a) => a.userId === currentUser.id && a.date === today
+      );
 
-            await axios.patch(`http://localhost:3000/attendance/${record.id}`, {
-                checkOut: time
-            })
+      if (!record) {
+        alert("Please check in first!");
+        return;
+      }
 
-            setCheckOutTime(time)
-            alert("Checked Out Successfully!")
-            fetchManagerAttendance()
-        } catch (err) {
-            console.log(err)
-            alert("Error checking out")
+      if (record.checkOut) {
+        alert("Already checked out!");
+        return;
+      }
+
+      await axios.patch(
+        `http://localhost:3000/attendance/${record.id}`,
+        {
+          checkOut: time,
         }
+      );
+
+      setCheckOutTime(time);
+
+      fetchData();
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-    // Stats
-    const totalEmployees = users.filter(u => u.role === "employee").length
-    const pendingLeaves = leaves.filter(l => l.status === "pending").length
-    const approvedLeaves = leaves.filter(l => l.status === "approved").length
+  // Stats
+  const totalEmployees = users.filter(
+    (u) => u.role === "employee"
+  ).length;
 
-    // Today's attendance
-    const today = new Date().toLocaleDateString()
-    const todayAttendance = attendance.filter(a => a.date === today)
-    const presentToday = todayAttendance.filter(a => a.checkIn && a.checkIn !== "").length
+  const pendingLeaves = leaves.filter(
+    (l) => l.status === "pending"
+  ).length;
 
-    // Filter Employees
-    const filteredEmployees = users.filter(u => {
-        const matchRole = u.role === "employee"
-        const matchSearch = (u.firstName + " " + (u.lastName || "")).toLowerCase().includes(search.toLowerCase())
-        const matchDept = departmentFilter === "all" || u.department === departmentFilter
-        return matchRole && matchSearch && matchDept
-    })
+  const approvedLeaves = leaves.filter(
+    (l) => l.status === "approved"
+  ).length;
 
-    // Get unique departments
-    const departments = [...new Set(users.map(u => u.department).filter(d => d))]
+  // Today's Attendance
+  const today = new Date().toLocaleDateString();
 
-    return (
-        <div style={{ minHeight: "100vh", background: "#f0f2f5" }}>
-            
-            {/* Top Bar */}
-            <div style={{ background: "linear-gradient(135deg, #1e3c72, #2a5298)", padding: "15px 20px", color: "white", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h3 style={{ margin: 0 }}>🏢 XCELTECH HRMS - Manager Panel</h3>
-                <div>
-                    <span style={{ marginRight: 15 }}>👋 Welcome, <strong>{currentUser?.firstName}</strong></span>
-                    <button 
-                        style={{ padding: "5px 15px", background: "transparent", border: "1px solid white", color: "white", borderRadius: 5, cursor: "pointer" }}
-                        onClick={() => {
-                            localStorage.removeItem("user")
-                            navigate("/")
-                        }}
-                    >
-                        Logout
-                    </button>
-                </div>
-            </div>
+  const todayAttendance = attendance.filter(
+    (a) => a.date === today
+  );
 
-            <div style={{ display: "flex" }}>
-                
-                {/* Sidebar */}
-                <div style={{ width: 280, background: "white", minHeight: "calc(100vh - 60px)", borderRight: "1px solid #ddd", padding: 20 }}>
-                    
-                    {/* Profile */}
-                    <div style={{ textAlign: "center", marginBottom: 20 }}>
-                        <img 
-                            src={`https://ui-avatars.com/api/?name=${currentUser?.firstName}&background=1e3c72&color=fff&rounded=true&size=80`} 
-                            alt="Profile"
-                            style={{ width: 70, height: 70, borderRadius: "50%", marginBottom: 10 }}
-                        />
-                        <h5 style={{ margin: 0 }}>{currentUser?.firstName}</h5>
-                        <small style={{ color: "#666" }}>Manager</small>
-                    </div>
+  const presentToday = todayAttendance.filter(
+    (a) => a.checkIn && a.checkIn !== ""
+  ).length;
 
-                    <hr />
+  // Employee Filter
+  const filteredEmployees = users.filter((u) => {
+    const matchRole = u.role === "employee";
 
-                    {/* Manager's Attendance Card */}
-                    <div style={{ background: "#f8f9fa", padding: 15, borderRadius: 10, marginBottom: 20 }}>
-                        <h6 style={{ margin: "0 0 10px 0" }}>📅 My Attendance</h6>
-                        <p style={{ margin: "5px 0" }}>✅ Check In: <strong>{checkInTime || "--"}</strong></p>
-                        <p style={{ margin: "5px 0 10px 0" }}>❌ Check Out: <strong>{checkOutTime || "--"}</strong></p>
-                        <div style={{ display: "flex", gap: 10 }}>
-                            <button 
-                                style={{ flex: 1, padding: "8px", background: checkInTime ? "#ccc" : "#28a745", color: "white", border: "none", borderRadius: 5, cursor: "pointer" }}
-                                onClick={handleCheckIn}
-                                disabled={checkInTime}
-                            >
-                                Check In
-                            </button>
-                            <button 
-                                style={{ flex: 1, padding: "8px", background: (!checkInTime || checkOutTime) ? "#ccc" : "#dc3545", color: "white", border: "none", borderRadius: 5, cursor: "pointer" }}
-                                onClick={handleCheckOut}
-                                disabled={!checkInTime || checkOutTime}
-                            >
-                                Check Out
-                            </button>
-                        </div>
-                    </div>
+    const matchSearch = `${u.firstName} ${u.lastName || ""}`
+      .toLowerCase()
+      .includes(search.toLowerCase());
 
-                    <hr />
+    const matchDept =
+      departmentFilter === "all" ||
+      u.department === departmentFilter;
 
-                    {/* Navigation */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        <button 
-                            style={{ padding: "10px", textAlign: "left", background: activeTab === "dashboard" ? "#007bff" : "transparent", color: activeTab === "dashboard" ? "white" : "#333", border: "none", borderRadius: 8, cursor: "pointer" }}
-                            onClick={() => setActiveTab("dashboard")}
-                        >
-                            📊 Dashboard
-                        </button>
-                        <button 
-                            style={{ padding: "10px", textAlign: "left", background: activeTab === "employees" ? "#007bff" : "transparent", color: activeTab === "employees" ? "white" : "#333", border: "none", borderRadius: 8, cursor: "pointer" }}
-                            onClick={() => setActiveTab("employees")}
-                        >
-                            👥 Employees
-                        </button>
-                        <button 
-                            style={{ padding: "10px", textAlign: "left", background: activeTab === "attendance" ? "#007bff" : "transparent", color: activeTab === "attendance" ? "white" : "#333", border: "none", borderRadius: 8, cursor: "pointer" }}
-                            onClick={() => setActiveTab("attendance")}
-                        >
-                            📅 Attendance
-                        </button>
-                        <button 
-                            style={{ padding: "10px", textAlign: "left", background: activeTab === "leaves" ? "#007bff" : "transparent", color: activeTab === "leaves" ? "white" : "#333", border: "none", borderRadius: 8, cursor: "pointer" }}
-                            onClick={() => setActiveTab("leaves")}
-                        >
-                            📋 Leave Requests
-                        </button>
-                    </div>
+    return matchRole && matchSearch && matchDept;
+  });
 
-                    <hr style={{ margin: "20px 0" }} />
-                    
-                    <button 
-                        style={{ width: "100%", padding: "10px", background: "#6c757d", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}
-                        onClick={() => navigate("/")}
-                    >
-                        ← Back to Home
-                    </button>
-                </div>
+  // Departments
+  const departments = [
+    ...new Set(users.map((u) => u.department).filter(Boolean)),
+  ];
 
-                {/* Main Content */}
-                <div style={{ flex: 1, padding: 20, overflowY: "auto", maxHeight: "calc(100vh - 60px)" }}>
-                    
-                    {/* Dashboard Tab */}
-                    {activeTab === "dashboard" && (
-                        <>
-                            {/* Welcome Banner */}
-                            <div style={{ background: "linear-gradient(135deg, #667eea, #764ba2)", padding: 20, borderRadius: 10, color: "white", marginBottom: 20 }}>
-                                <h4>Welcome back, {currentUser?.firstName}!</h4>
-                                <p style={{ margin: 0, opacity: 0.8 }}>Here's what's happening in your team today.</p>
-                            </div>
+  return (
+    <div
+      className="d-flex"
+      style={{
+        minHeight: "100vh",
+        background: "#f4f7fb",
+        fontFamily: "sans-serif",
+      }}
+    >
+      {/* SIDEBAR */}
+      <div
+        style={{
+          width: "280px",
+          background: "#111827",
+          color: "white",
+          padding: "25px 20px",
+        }}
+      >
+        <div className="text-center mb-4">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpk-XsaGErykwAliZebAqSWQW1Zsukhc2aJw&s"
+            alt="profile"
+            style={{
+              width: "90px",
+              height: "90px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "4px solid #fff",
+            }}
+          />
 
-                            {/* Stats Cards */}
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 15, marginBottom: 20 }}>
-                                <div style={{ background: "white", padding: 20, borderRadius: 10, textAlign: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                                    <h2 style={{ margin: 0, color: "#007bff" }}>{totalEmployees}</h2>
-                                    <small>Total Employees</small>
-                                </div>
-                                <div style={{ background: "white", padding: 20, borderRadius: 10, textAlign: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                                    <h2 style={{ margin: 0, color: "#28a745" }}>{presentToday}</h2>
-                                    <small>Present Today</small>
-                                </div>
-                                <div style={{ background: "white", padding: 20, borderRadius: 10, textAlign: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                                    <h2 style={{ margin: 0, color: "#ffc107" }}>{pendingLeaves}</h2>
-                                    <small>Pending Leaves</small>
-                                </div>
-                                <div style={{ background: "white", padding: 20, borderRadius: 10, textAlign: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                                    <h2 style={{ margin: 0, color: "#17a2b8" }}>{approvedLeaves}</h2>
-                                    <small>Approved Leaves</small>
-                                </div>
-                            </div>
+          <h4 className="mt-3 mb-1">
+            {currentUser?.firstName}
+          </h4>
 
-                            {/* Recent Leaves */}
-                            <div style={{ background: "white", padding: 20, borderRadius: 10, boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                                <h5>📋 Recent Leave Requests</h5>
-                                <hr />
-                                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                    <thead>
-                                        <tr style={{ background: "#f8f9fa", textAlign: "left" }}>
-                                            <th style={{ padding: 10 }}>Name</th>
-                                            <th style={{ padding: 10 }}>Type</th>
-                                            <th style={{ padding: 10 }}>Period</th>
-                                            <th style={{ padding: 10 }}>Days</th>
-                                            <th style={{ padding: 10 }}>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {leaves.slice(0, 5).map(l => (
-                                            <tr key={l.id} style={{ borderBottom: "1px solid #ddd" }}>
-                                                <td style={{ padding: 10 }}><strong>{l.name}</strong></td>
-                                                <td style={{ padding: 10 }}>
-                                                    <span style={{ padding: "3px 8px", borderRadius: 5, fontSize: 12, background: l.type === "free" ? "#28a745" : "#ffc107", color: l.type === "free" ? "white" : "black" }}>
-                                                        {l.type === "free" ? "🎁 Free" : "💰 Paid"}
-                                                    </span>
-                                                </td>
-                                                <td style={{ padding: 10 }}>{l.start} to {l.end}</td>
-                                                <td style={{ padding: 10 }}>{l.days}</td>
-                                                <td style={{ padding: 10 }}>
-                                                    <span style={{ padding: "3px 8px", borderRadius: 5, fontSize: 12, background: l.status === "approved" ? "#28a745" : l.status === "rejected" ? "#dc3545" : "#ffc107", color: "white" }}>
-                                                        {l.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {leaves.length === 0 && (
-                                            <tr>
-                                                <td colSpan="5" style={{ padding: 20, textAlign: "center" }}>No leave requests</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </>
-                    )}
-
-                    {/* Employees Tab */}
-                    {activeTab === "employees" && (
-                        <div style={{ background: "white", padding: 20, borderRadius: 10, boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
-                                <h5 style={{ margin: 0 }}>👥 All Employees</h5>
-                                <div style={{ display: "flex", gap: 10 }}>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search by name..." 
-                                        style={{ padding: "8px 12px", border: "1px solid #ddd", borderRadius: 5, width: 200 }}
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                    />
-                                    <select 
-                                        style={{ padding: "8px 12px", border: "1px solid #ddd", borderRadius: 5 }}
-                                        value={departmentFilter}
-                                        onChange={(e) => setDepartmentFilter(e.target.value)}
-                                    >
-                                        <option value="all">All Departments</option>
-                                        {departments.map(dept => (
-                                            <option key={dept} value={dept}>{dept}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                <thead>
-                                    <tr style={{ background: "#f8f9fa", textAlign: "left" }}>
-                                        <th style={{ padding: 10 }}>ID</th>
-                                        <th style={{ padding: 10 }}>Name</th>
-                                        <th style={{ padding: 10 }}>Email</th>
-                                        <th style={{ padding: 10 }}>Department</th>
-                                        <th style={{ padding: 10 }}>Salary</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredEmployees.map(u => (
-                                        <tr key={u.id} style={{ borderBottom: "1px solid #ddd" }}>
-                                            <td style={{ padding: 10 }}>{u.id}</td>
-                                            <td style={{ padding: 10 }}><strong>{u.firstName} {u.lastName || ""}</strong></td>
-                                            <td style={{ padding: 10 }}>{u.email}</td>
-                                            <td style={{ padding: 10 }}>{u.department || "N/A"}</td>
-                                            <td style={{ padding: 10 }}>₹ {u.salary?.toLocaleString()}</td>
-                                        </tr>
-                                    ))}
-                                    {filteredEmployees.length === 0 && (
-                                        <tr>
-                                            <td colSpan="5" style={{ padding: 20, textAlign: "center" }}>No employees found</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                    {/* Attendance Tab */}
-                    {activeTab === "attendance" && (
-                        <div style={{ background: "white", padding: 20, borderRadius: 10, boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                            <h5>📅 Today's Attendance</h5>
-                            <hr />
-                            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                <thead>
-                                    <tr style={{ background: "#f8f9fa", textAlign: "left" }}>
-                                        <th style={{ padding: 10 }}>Employee</th>
-                                        <th style={{ padding: 10 }}>Department</th>
-                                        <th style={{ padding: 10 }}>Check In</th>
-                                        <th style={{ padding: 10 }}>Check Out</th>
-                                        <th style={{ padding: 10 }}>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {todayAttendance.map(a => (
-                                        <tr key={a.id} style={{ borderBottom: "1px solid #ddd" }}>
-                                            <td style={{ padding: 10 }}><strong>{a.name}</strong></td>
-                                            <td style={{ padding: 10 }}>{a.department}</td>
-                                            <td style={{ padding: 10 }}>{a.checkIn || "--"}</td>
-                                            <td style={{ padding: 10 }}>{a.checkOut || "--"}</td>
-                                            <td style={{ padding: 10 }}>
-                                                <span style={{ padding: "3px 8px", borderRadius: 5, fontSize: 12, background: a.checkIn ? "#28a745" : "#dc3545", color: "white" }}>
-                                                    {a.checkIn ? "Present" : "Absent"}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {todayAttendance.length === 0 && (
-                                        <tr>
-                                            <td colSpan="5" style={{ padding: 20, textAlign: "center" }}>No attendance records for today</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                    {/* Leaves Tab */}
-                    {activeTab === "leaves" && (
-                        <div style={{ background: "white", padding: 20, borderRadius: 10, boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-                                <h5 style={{ margin: 0 }}>📋 All Leave Requests</h5>
-                                <input 
-                                    type="text" 
-                                    placeholder="Search by name..." 
-                                    style={{ padding: "8px 12px", border: "1px solid #ddd", borderRadius: 5, width: 200 }}
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-                            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                <thead>
-                                    <tr style={{ background: "#f8f9fa", textAlign: "left" }}>
-                                        <th style={{ padding: 10 }}>Employee</th>
-                                        <th style={{ padding: 10 }}>Type</th>
-                                        <th style={{ padding: 10 }}>Reason</th>
-                                        <th style={{ padding: 10 }}>Period</th>
-                                        <th style={{ padding: 10 }}>Days</th>
-                                        <th style={{ padding: 10 }}>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {leaves.filter(l => l.name?.toLowerCase().includes(search.toLowerCase())).map(l => (
-                                        <tr key={l.id} style={{ borderBottom: "1px solid #ddd" }}>
-                                            <td style={{ padding: 10 }}><strong>{l.name}</strong></td>
-                                            <td style={{ padding: 10 }}>
-                                                <span style={{ padding: "3px 8px", borderRadius: 5, fontSize: 12, background: l.type === "free" ? "#28a745" : "#ffc107", color: l.type === "free" ? "white" : "black" }}>
-                                                    {l.type === "free" ? "🎁 Free" : "💰 Paid"}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: 10 }}>{l.reason || "No reason"}</td>
-                                            <td style={{ padding: 10 }}>{l.start} to {l.end}</td>
-                                            <td style={{ padding: 10, textAlign: "center" }}>{l.days}</td>
-                                            <td style={{ padding: 10 }}>
-                                                <span style={{ padding: "3px 8px", borderRadius: 5, fontSize: 12, background: l.status === "approved" ? "#28a745" : l.status === "rejected" ? "#dc3545" : "#ffc107", color: "white" }}>
-                                                    {l.status}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {leaves.filter(l => l.name?.toLowerCase().includes(search.toLowerCase())).length === 0 && (
-                                        <tr>
-                                            <td colSpan="6" style={{ padding: 20, textAlign: "center" }}>No leave requests found</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-
-                </div>
-            </div>
+          <small style={{ color: "#9ca3af" }}>
+            Manager Panel
+          </small>
         </div>
-    )
-}
 
-export default Manager
+        {/* Attendance Card */}
+        <div
+          style={{
+            background: "#1f2937",
+            borderRadius: "15px",
+            padding: "18px",
+            marginBottom: "25px",
+          }}
+        >
+          <h6 className="mb-3">My Attendance</h6>
+
+          <p className="mb-2">
+            Check In :{" "}
+            <strong>{checkInTime || "--"}</strong>
+          </p>
+
+          <p className="mb-3">
+            Check Out :{" "}
+            <strong>{checkOutTime || "--"}</strong>
+          </p>
+
+          <div className="d-flex gap-2">
+            <button
+              onClick={handleCheckIn}
+              disabled={checkInTime}
+              className="btn btn-success btn-sm w-100"
+            >
+              Check In
+            </button>
+
+            <button
+              onClick={handleCheckOut}
+              disabled={!checkInTime || checkOutTime}
+              className="btn btn-danger btn-sm w-100"
+            >
+              Check Out
+            </button>
+          </div>
+        </div>
+
+        {/* MENU */}
+        <div className="d-flex flex-column gap-2">
+          {[
+            {
+              key: "dashboard",
+              label: "Dashboard",
+            //   icon: "📊",
+            },
+            {
+              key: "employees",
+              label: "Employees",
+            //   icon: "👥",
+            },
+            {
+              key: "attendance",
+              label: "Attendance",
+            //   icon: "📅",
+            },
+            {
+              key: "leaves",
+              label: "Leaves",
+              icon: "📝",
+            },
+          ].map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveTab(item.key)}
+              style={{
+                border: "none",
+                padding: "12px 15px",
+                borderRadius: "12px",
+                textAlign: "left",
+                background:
+                  activeTab === item.key
+                    ? "linear-gradient(135deg,#2563eb,#7c3aed)"
+                    : "transparent",
+                color: "white",
+                fontWeight: "600",
+                cursor: "pointer",
+              }}
+            >
+              {item.icon} {item.label}
+            </button>
+          ))}
+        </div>
+
+        {/* LOGOUT */}
+        <button
+          onClick={() => {
+            localStorage.removeItem("user");
+            navigate("/");
+          }}
+          className="btn btn-light w-100 mt-5"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* MAIN */}
+      <div className="flex-grow-1">
+        {/* TOPBAR */}
+        <div
+          style={{
+            background:
+              "linear-gradient(135deg,#2563eb,#7c3aed)",
+            padding: "20px 30px",
+            color: "white",
+          }}
+        >
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <h3 className="fw-bold mb-1">
+                Welcome Back, {currentUser?.firstName}
+              </h3>
+
+              <small>
+                Manage employees, attendance and leave
+                requests
+              </small>
+            </div>
+
+            <div className="d-flex gap-2">
+              <input
+                type="text"
+                placeholder="Search here..."
+                className="form-control"
+                style={{
+                  minWidth: "250px",
+                  borderRadius: "10px",
+                }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <div className="p-4">
+          {/* DASHBOARD */}
+          {activeTab === "dashboard" && (
+            <>
+              {/* STATS */}
+              <div className="row g-4 mb-4">
+                {[
+                  {
+                    title: "Total Employees",
+                    value: totalEmployees,
+                    color: "#2563eb",
+                    // icon: "👥",
+                  },
+                  {
+                    title: "Present Today",
+                    value: presentToday,
+                    color: "#16a34a",
+                    icon: "✅",
+                  },
+                  {
+                    title: "Pending Leaves",
+                    value: pendingLeaves,
+                    color: "#f59e0b",
+                    icon: "⏳",
+                  },
+                  {
+                    title: "Approved Leaves",
+                    value: approvedLeaves,
+                    color: "#7c3aed",
+                    icon: "✔",
+                  },
+                ].map((card, i) => (
+                  <div key={i} className="col-md-6 col-xl-3">
+                    <div
+                      style={{
+                        background: "white",
+                        borderRadius: "18px",
+                        padding: "25px",
+                        boxShadow:
+                          "0 5px 20px rgba(0,0,0,0.08)",
+                        transition: "0.3s",
+                      }}
+                    >
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <small
+                            style={{ color: "#6b7280" }}
+                          >
+                            {card.title}
+                          </small>
+
+                          <h2
+                            className="fw-bold mt-2"
+                            style={{ color: card.color }}
+                          >
+                            {card.value}
+                          </h2>
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: "35px",
+                          }}
+                        >
+                          {card.icon}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* RECENT LEAVES */}
+              <div
+                className="card border-0 shadow-sm"
+                style={{ borderRadius: "20px" }}
+              >
+                <div className="card-body">
+                  <h4 className="fw-bold mb-4">
+                    Recent Leave Requests
+                  </h4>
+
+                  <div className="table-responsive">
+                    <table className="table table-hover align-middle">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Days</th>
+                          <th>Period</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {leaves.slice(0, 5).map((l) => (
+                          <tr key={l.id}>
+                            <td className="fw-semibold">
+                              {l.name}
+                            </td>
+
+                            <td>
+                              <span
+                                className={`badge ${
+                                  l.type === "free"
+                                    ? "bg-success"
+                                    : "bg-warning text-dark"
+                                }`}
+                              >
+                                {l.type}
+                              </span>
+                            </td>
+
+                            <td>{l.days}</td>
+
+                            <td>
+                              {l.start} - {l.end}
+                            </td>
+
+                            <td>
+                              <span
+                                className={`badge ${
+                                  l.status === "approved"
+                                    ? "bg-success"
+                                    : l.status === "rejected"
+                                    ? "bg-danger"
+                                    : "bg-warning text-dark"
+                                }`}
+                              >
+                                {l.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* EMPLOYEES */}
+          {activeTab === "employees" && (
+            <div
+              className="card border-0 shadow-sm"
+              style={{ borderRadius: "20px" }}
+            >
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                  <h4 className="fw-bold mb-0">
+                    Employees
+                  </h4>
+
+                  <div className="d-flex gap-2 flex-wrap">
+                    <input
+                      type="text"
+                      placeholder="Search employee..."
+                      className="form-control"
+                      style={{ width: "220px" }}
+                      value={search}
+                      onChange={(e) =>
+                        setSearch(e.target.value)
+                      }
+                    />
+
+                    <select
+                      className="form-select"
+                      style={{ width: "220px" }}
+                      value={departmentFilter}
+                      onChange={(e) =>
+                        setDepartmentFilter(
+                          e.target.value
+                        )
+                      }
+                    >
+                      <option value="all">
+                        All Departments
+                      </option>
+
+                      {departments.map((dept, i) => (
+                        <option key={i} value={dept}>
+                          {dept}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="table-responsive">
+                  <table className="table table-striped table-hover align-middle">
+                    <thead className="table-dark">
+                      <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Salary</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {filteredEmployees.map((u) => (
+                        <tr key={u.id}>
+                          <td>{u.id}</td>
+
+                          <td className="fw-semibold">
+                            {u.firstName}{" "}
+                            {u.lastName || ""}
+                          </td>
+
+                          <td>{u.email}</td>
+
+                          <td>{u.department}</td>
+
+                          <td>
+                            ₹{" "}
+                            {u.salary?.toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ATTENDANCE */}
+          {activeTab === "attendance" && (
+            <div
+              className="card border-0 shadow-sm"
+              style={{ borderRadius: "20px" }}
+            >
+              <div className="card-body">
+                <h4 className="fw-bold mb-4">
+                  Today's Attendance
+                </h4>
+
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {todayAttendance.map((a) => (
+                        <tr key={a.id}>
+                          <td className="fw-semibold">
+                            {a.name}
+                          </td>
+
+                          <td>{a.department}</td>
+
+                          <td>{a.checkIn || "--"}</td>
+
+                          <td>{a.checkOut || "--"}</td>
+
+                          <td>
+                            <span
+                              className={`badge ${
+                                a.checkIn
+                                  ? "bg-success"
+                                  : "bg-danger"
+                              }`}
+                            >
+                              {a.checkIn
+                                ? "Present"
+                                : "Absent"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* LEAVES */}
+          {activeTab === "leaves" && (
+            <div
+              className="card border-0 shadow-sm"
+              style={{ borderRadius: "20px" }}
+            >
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                  <h4 className="fw-bold mb-0">
+                    Leave Requests
+                  </h4>
+
+                  <input
+                    type="text"
+                    placeholder="Search leave..."
+                    className="form-control"
+                    style={{ width: "220px" }}
+                    value={search}
+                    onChange={(e) =>
+                      setSearch(e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className="table-responsive">
+                  <table className="table table-striped table-hover align-middle">
+                    <thead className="table-dark">
+                      <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Reason</th>
+                        <th>Period</th>
+                        <th>Days</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {leaves
+                        .filter((l) =>
+                          l.name
+                            ?.toLowerCase()
+                            .includes(
+                              search.toLowerCase()
+                            )
+                        )
+                        .map((l) => (
+                          <tr key={l.id}>
+                            <td className="fw-semibold">
+                              {l.name}
+                            </td>
+
+                            <td>
+                              <span
+                                className={`badge ${
+                                  l.type === "free"
+                                    ? "bg-success"
+                                    : "bg-warning text-dark"
+                                }`}
+                              >
+                                {l.type}
+                              </span>
+                            </td>
+
+                            <td>
+                              {l.reason || "No reason"}
+                            </td>
+
+                            <td>
+                              {l.start} - {l.end}
+                            </td>
+
+                            <td>{l.days}</td>
+
+                            <td>
+                              <span
+                                className={`badge ${
+                                  l.status === "approved"
+                                    ? "bg-success"
+                                    : l.status === "rejected"
+                                    ? "bg-danger"
+                                    : "bg-warning text-dark"
+                                }`}
+                              >
+                                {l.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Manager;

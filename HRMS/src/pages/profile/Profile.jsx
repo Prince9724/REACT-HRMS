@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router"
 
+
 const Profile = () => {
 
   const navigate = useNavigate()
-
+  const [myLeaves, setMyLeaves] = useState([])
   const [user, setUser] = useState(null)
 
   const [checkInTime, setCheckInTime] = useState("")
@@ -37,7 +38,7 @@ const Profile = () => {
     performance: "Average"
   })
 
-  // 🔥 TIME TO MINUTES
+  // TIME TO MINUTES
   const convertToMinutes = (time) => {
 
     if (
@@ -80,8 +81,33 @@ const Profile = () => {
       return 0
     }
   }
+  const fetchMyLeaves = async (data) => {
 
-  // 🔥 HOURS CALCULATE
+    try {
+
+      const res = await axios.get(
+        "http://localhost:3000/leaves"
+      )
+
+      const userLeaves = res.data.filter(
+        (l) => l.userId === data.id
+      )
+
+      setMyLeaves(userLeaves.reverse())
+
+      if (userLeaves.length > 0) {
+
+        setLeaveStatus(
+          userLeaves[userLeaves.length - 1].status
+        )
+      }
+
+    } catch (error) {
+
+      console.log(error)
+    }
+  }
+  // HOURS CALCULATE
   const calculateHours = (
     checkIn,
     checkOut
@@ -116,17 +142,16 @@ const Profile = () => {
       return 0
     }
 
-    // 🔥 1 HOUR BREAK
     diff = diff - 1
 
     if (diff > 8) {
       diff = 8
     }
 
-    return diff
+    return Number(diff.toFixed(1))
   }
 
-  // 🔥 SUNDAY CHECK
+  // SUNDAY CHECK
   const isSunday = (date) => {
 
     const day =
@@ -135,7 +160,7 @@ const Profile = () => {
     return day === 0
   }
 
-  // 🔥 LOAD USER
+  // LOAD USER
   useEffect(() => {
 
     const data =
@@ -150,10 +175,10 @@ const Profile = () => {
     fetchAttendance(data)
     fetchSalarySlip(data)
     checkFreeLeave(data.id)
-
+      fetchMyLeaves(data)
   }, [])
 
-  // 🔥 FREE LEAVE CHECK
+  // FREE LEAVE CHECK
   const checkFreeLeave =
     async (id) => {
 
@@ -182,8 +207,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 FETCH ATTENDANCE
-  // 🔥 FETCH ATTENDANCE
+  // FETCH ATTENDANCE
   const fetchAttendance =
     async (data) => {
 
@@ -197,7 +221,6 @@ const Profile = () => {
             "http://localhost:3000/attendance"
           )
 
-        // 🔥 ONLY CURRENT MONTH HISTORY
         const currentMonth =
           new Date().getMonth()
 
@@ -222,12 +245,10 @@ const Profile = () => {
             )
           })
 
-        // 🔥 LATEST FIRST
         setAttendanceHistory(
           myAttendance.reverse()
         )
 
-        // 🔥 TODAY ATTENDANCE
         const todayData =
           myAttendance.find(
             (a) =>
@@ -251,7 +272,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 SALARY LOGIC
+  // SALARY LOGIC
   const fetchSalarySlip =
     async (data) => {
 
@@ -327,7 +348,6 @@ const Profile = () => {
 
         myAttendance.forEach((a) => {
 
-          // 🔥 SUNDAY
           if (
             isSunday(a.date)
           ) {
@@ -472,7 +492,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 AUTO CHECKOUT
+  // AUTO CHECKOUT
   useEffect(() => {
 
     if (!user) return
@@ -533,7 +553,7 @@ const Profile = () => {
 
   }, [user])
 
-  // 🔥 CHECK IN
+  // CHECK IN
   const handleCheckIn =
     async () => {
 
@@ -545,7 +565,6 @@ const Profile = () => {
         const day =
           new Date().getDay()
 
-        // 🔥 SUNDAY CLOSED
         if (day === 0) {
 
           alert(
@@ -624,7 +643,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 CHECK OUT
+  // CHECK OUT
   const handleCheckOut =
     async () => {
 
@@ -694,7 +713,7 @@ const Profile = () => {
       }
     }
 
-  // 🔥 APPLY LEAVE
+  // APPLY LEAVE
   const handleLeaveApply =
     async () => {
 
@@ -771,86 +790,232 @@ const Profile = () => {
       }
     }
 
-  // 🔥 PRINT
-  const downloadSalarySlip =
-    () => {
+  // PDF DOWNLOAD - Professional Salary Slip
+  const downloadSalarySlip = () => {
+    const doc = new jsPDF()
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    const currentDate = new Date()
+    const month = monthNames[currentDate.getMonth()]
+    const year = currentDate.getFullYear()
 
-      window.print()
-    }
+    doc.setFillColor(15, 23, 42)
+    doc.rect(0, 0, 210, 42, "F")
+
+    doc.setFontSize(22)
+    doc.setTextColor(255, 255, 255)
+    doc.text("XCELTECH HRMS", 105, 18, { align: "center" })
+
+    doc.setFontSize(11)
+    doc.setTextColor(220, 220, 220)
+    doc.text("Official Salary Slip", 105, 28, { align: "center" })
+
+    doc.setFontSize(9)
+    doc.text(`${month} ${year}`, 105, 36, { align: "center" })
+
+    doc.setFontSize(10)
+    doc.setTextColor(0, 0, 0)
+
+    doc.text(`Employee Name: ${user.firstName} ${user.lastName || ""}`, 15, 55)
+    doc.text(`Employee ID: ${user.id}`, 15, 63)
+    doc.text(`Department: ${user.department || "N/A"}`, 15, 71)
+    doc.text(`Role: ${user.role}`, 15, 79)
+
+    doc.text(`Salary: ₹ ${user.salary.toLocaleString()}`, 135, 55)
+    doc.text(`Performance: ${salaryData.performance}`, 135, 63)
+    doc.text(`Generated: ${currentDate.toLocaleDateString()}`, 135, 71)
+
+    const earnings = [
+      ["Basic Salary", `₹ ${user.salary.toLocaleString()}`],
+      ["Sunday Paid", `₹ ${(salaryData.sundayPaid * (user.salary / 30)).toFixed(0)}`],
+    ]
+
+    const deductions = [
+      ["Attendance Cut", `₹ ${salaryData.attendanceCut}`],
+      ["Leave Cut", `₹ ${salaryData.leaveCut}`],
+      ["PF (12%)", `₹ ${salaryData.pf}`],
+      ["Professional Tax", `₹ ${salaryData.professionalTax}`],
+    ]
+
+    doc.autoTable({
+      startY: 95,
+      head: [["Earnings", "Amount", "Deductions", "Amount"]],
+      body: earnings.map((e, i) => [
+        e[0],
+        e[1],
+        deductions[i] ? deductions[i][0] : "",
+        deductions[i] ? deductions[i][1] : ""
+      ]),
+      foot: [
+        ["Total Salary", `₹ ${user.salary.toLocaleString()}`, "Total Deduction", `₹ ${salaryData.totalCut}`],
+        ["", "", "Net Salary", `₹ ${salaryData.netSalary}`]
+      ],
+      theme: "grid",
+      headStyles: {
+        fillColor: [15, 23, 42],
+        textColor: 255,
+        fontStyle: "bold"
+      },
+      footStyles: {
+        fillColor: [241, 245, 249],
+        textColor: 0,
+        fontStyle: "bold"
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252]
+      }
+    })
+
+    const finalY = doc.lastAutoTable.finalY + 12
+
+    doc.setFontSize(8)
+    doc.setTextColor(120, 120, 120)
+    doc.text("This is a system generated salary slip.", 105, finalY, { align: "center" })
+
+    doc.save(`Salary_Slip_${user.firstName}_${month}_${year}.pdf`)
+  }
 
   if (!user) {
 
     return (
-      <h3 className="text-center mt-5">
-        No User Logged In
-      </h3>
+      <div className="container py-5">
+        <div className="card border-0 shadow-lg rounded-4 p-5 text-center">
+          <i className="bi bi-person-x display-3 text-secondary"></i>
+          <h3 className="mt-3 fw-bold">
+            No User Logged In
+          </h3>
+        </div>
+      </div>
     )
   }
 
   return (
 
     <div
-      className="container-fluid py-4"
+      className="container-fluid py-4 px-lg-4"
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(to right,#eef2ff,#f8fafc)"
+        background: "#f1f5f9"
       }}
     >
 
-      {/* 🔥 HEADER */}
-      <div className="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden">
+      {/* PROFILE HEADER */}
+      <div className="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
 
         <div
-          className="p-5 text-white"
+          className="p-4 p-lg-5"
           style={{
-            background:
-              "linear-gradient(135deg,#0f172a,#1e293b)"
+            background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)"
           }}
         >
 
-          <div className="row align-items-center">
+          <div className="row align-items-center g-4">
 
-            <div className="col-md-8">
+            <div className="col-lg-8">
 
-              <h1 className="fw-bold">
-                Welcome,
-                {" "}
-                {user.firstName}
-              </h1>
+              <div className="d-flex align-items-center flex-column flex-md-row text-center text-md-start">
 
-              <p className="mb-1">
-                📧 {user.email}
-              </p>
+                <div
+                  className="rounded-circle d-flex align-items-center justify-content-center me-md-4 mb-3 mb-md-0 shadow"
+                  style={{
+                    width: "95px",
+                    height: "95px",
+                    background: "rgba(223, 23, 23, 0.15)",
+                    backdropFilter: "blur(10px)"
+                  }}
 
-              <p className="mb-1">
-                📱 {user.contact}
-              </p>
+                >
+                  <img style={{ height: "200px" }} src="https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001882.png" alt="" />
+                  <i className="bi bi-person-fill text-white display-5"></i>
+                </div>
 
-              <p className="mb-1">
-                🏢 {user.department}
-              </p>
+                <div className="text-white">
 
-              <p className="mb-0">
-                💼 {user.role}
-              </p>
+                  <h1 className="fw-bold mb-2">
+                    {user.firstName} {user.lastName || ""}
+                  </h1>
+
+                  <div className="d-flex flex-wrap gap-3 justify-content-center justify-content-md-start">
+
+                    <span className="badge bg-light text-dark px-3 py-2 rounded-pill">
+                      <i className="bi bi-briefcase-fill me-1"></i>
+                      {user.role}
+                    </span>
+
+                    <span className="badge bg-primary-subtle text-dark px-3 py-2 rounded-pill">
+                      <i className="bi bi-building me-1"></i>
+                      {user.department || "N/A"}
+                    </span>
+
+                  </div>
+
+                  <div className="mt-4">
+
+                    <div style={{width:"450px"}} className="row g-3 ">
+
+                      <div className="col-sm-6">
+                        <div className="bg-white bg-opacity-10 rounded-3 p-3 border border-light border-opacity-25">
+                          <small className="text-light d-block mb-1">
+                            Email
+                          </small>
+                          <div className="fw-semibold w-100 text-white">
+                            <i className="bi bi-envelope-fill me-2"></i>
+                            {user.email}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-sm-6">
+                        <div className="bg-white bg-opacity-10 rounded-3 p-3 border border-light border-opacity-25">
+                          <small className="text-light d-block mb-1">
+                            Contact
+                          </small>
+                          <div className="fw-semibold text-white">
+                            <i className="bi bi-telephone-fill me-2"></i>
+                            {user.contact}
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
 
             </div>
 
-            <div className="col-md-4">
+            <div className="col-lg-4">
 
-              <div className="bg-white text-dark rounded-4 p-4 text-center shadow">
+              <div className="card border-0 shadow-lg rounded-4">
 
-                <h1 className="fw-bold text-success">
-                  ₹
-                  {
-                    salaryData.netSalary
-                  }
-                </h1>
+                <div className="card-body text-center p-4">
 
-                <h5>
-                  Net Salary
-                </h5>
+                  <div
+                    className="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "70px",
+                      height: "70px",
+                      background: "#dcfce7"
+                    }}
+                  >
+                    <i className="bi bi-wallet2 text-success fs-2"></i>
+                  </div>
+
+                  <p className="text-muted mb-1">
+                    Monthly Net Salary
+                  </p>
+
+                  <h1 className="fw-bold text-success mb-2">
+                    ₹{salaryData.netSalary}
+                  </h1>
+
+                  <span className="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
+                    {salaryData.performance} Performance
+                  </span>
+
+                </div>
 
               </div>
 
@@ -862,607 +1027,825 @@ const Profile = () => {
 
       </div>
 
-      {/* 🔥 ATTENDANCE */}
-      <div className="card border-0 shadow rounded-4 p-4 mb-4">
+      {/* ATTENDANCE OVERVIEW */}
+      <div className="row g-4 mb-4">
 
-        <h3 className="fw-bold mb-4">
-          Attendance
-        </h3>
-
-        <div className="row align-items-center">
-
-          <div className="col-md-6">
-
-            <h5 className="mb-3">
-              ✅ Check In:
-              {" "}
-              <span className="text-success">
-                {
-                  checkInTime || "--"
-                }
-              </span>
-            </h5>
-
-            <h5>
-              ❌ Check Out:
-              {" "}
-              <span className="text-danger">
-                {
-                  checkOutTime || "--"
-                }
-              </span>
-            </h5>
-
+        <div className="col-lg-3 col-md-6">
+          <div className="card border-0 shadow-sm rounded-4 h-100">
+            <div className="card-body p-4">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <p className="text-muted mb-1">
+                    Present Days
+                  </p>
+                  <h2 className="fw-bold text-success mb-0">
+                    {salaryData.present}
+                  </h2>
+                </div>
+                <div className="bg-success bg-opacity-10 rounded-3 p-3">
+                  <i className="bi bi-check-circle-fill text-success fs-3"></i>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div className="col-md-6 d-flex gap-3 flex-wrap">
-
-            <button
-              className="btn btn-success px-4 py-2"
-              onClick={handleCheckIn}
-              disabled={checkInTime}
-            >
-              Check In
-            </button>
-
-            <button
-              className="btn btn-danger px-4 py-2"
-              onClick={handleCheckOut}
-              disabled={
-                !checkInTime ||
-                checkOutTime
-              }
-            >
-              Check Out
-            </button>
-
+        <div className="col-lg-3 col-md-6">
+          <div className="card border-0 shadow-sm rounded-4 h-100">
+            <div className="card-body p-4">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <p className="text-muted mb-1">
+                    Absent Days
+                  </p>
+                  <h2 className="fw-bold text-danger mb-0">
+                    {salaryData.absent}
+                  </h2>
+                </div>
+                <div className="bg-danger bg-opacity-10 rounded-3 p-3">
+                  <i className="bi bi-x-circle-fill text-danger fs-3"></i>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
 
+        <div className="col-lg-3 col-md-6">
+          <div className="card border-0 shadow-sm rounded-4 h-100">
+            <div className="card-body p-4">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <p className="text-muted mb-1">
+                    Half Days
+                  </p>
+                  <h2 className="fw-bold text-warning mb-0">
+                    {salaryData.halfDay}
+                  </h2>
+                </div>
+                <div className="bg-warning bg-opacity-10 rounded-3 p-3">
+                  <i className="bi bi-clock-fill text-warning fs-3"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-lg-3 col-md-6">
+          <div className="card border-0 shadow-sm rounded-4 h-100">
+            <div className="card-body p-4">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <p className="text-muted mb-1">
+                    Sunday Paid
+                  </p>
+                  <h2 className="fw-bold text-primary mb-0">
+                    {salaryData.sundayPaid}
+                  </h2>
+                </div>
+                <div className="bg-primary bg-opacity-10 rounded-3 p-3">
+                  <i className="bi bi-sun-fill text-primary fs-3"></i>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
 
-      {/* 🔥 LEAVE */}
-      <div className="card border-0 shadow rounded-4 p-4 mb-4">
+      <div className="row g-4 mb-4">
 
-        <h3 className="fw-bold mb-4">
-          Apply Leave
-        </h3>
+        {/* TODAY ATTENDANCE */}
+        <div className="col-lg-6">
 
-        {hasUsedFreeLeave && (
+          <div className="card border-0 shadow-sm rounded-4 h-100">
 
-          <div className="alert alert-warning">
+            <div className="card-header bg-white border-0 p-4">
 
-            Free Leave Already Used.
-            Only Paid Leave Available.
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-          </div>
-        )}
+                <div>
+                  <h4 className="fw-bold mb-1">
+                    <i className="bi bi-calendar-check-fill text-primary me-2"></i>
+                    Today's Attendance
+                  </h4>
+                  <p className="text-muted mb-0">
+                    Daily attendance tracking
+                  </p>
+                </div>
 
-        <div className="row">
+                <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+                  Live Status
+                </span>
 
-          <div className="col-md-6 mb-3">
-
-            <select
-              className="form-select"
-              value={type}
-              onChange={(e) =>
-                setType(
-                  e.target.value
-                )
-              }
-            >
-
-              <option value="">
-                Select Leave Type
-              </option>
-
-              {
-                !hasUsedFreeLeave && (
-
-                  <option value="free">
-                    Free Leave
-                  </option>
-                )
-              }
-
-              <option value="paid">
-                Paid Leave
-              </option>
-
-            </select>
-
-          </div>
-
-          <div className="col-md-6 mb-3">
-
-            <textarea
-              className="form-control"
-              placeholder="Reason"
-              value={leaveReason}
-              onChange={(e) =>
-                setLeaveReason(
-                  e.target.value
-                )
-              }
-            />
-
-          </div>
-
-          <div className="col-md-6 mb-3">
-
-            <input
-              type="date"
-              className="form-control"
-              value={start}
-              onChange={(e) =>
-                setStart(
-                  e.target.value
-                )
-              }
-            />
-
-          </div>
-
-          <div className="col-md-6 mb-3">
-
-            <input
-              type="date"
-              className="form-control"
-              value={end}
-              onChange={(e) =>
-                setEnd(
-                  e.target.value
-                )
-              }
-            />
-
-          </div>
-
-        </div>
-
-        <button
-          className="btn btn-primary px-4"
-          onClick={handleLeaveApply}
-        >
-          Apply Leave
-        </button>
-
-        <h6 className="mt-3">
-
-          Status:
-          {" "}
-          <span className="text-primary">
-            {
-              leaveStatus ||
-              "No Request"
-            }
-          </span>
-
-        </h6>
-
-      </div>
-
-      {/* 🔥 SALARY */}
-      <div className="card border-0 shadow rounded-4 p-4 mb-4">
-
-        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-
-          <div>
-
-            <h2 className="fw-bold">
-              Salary Slip
-            </h2>
-
-            <p className="text-muted">
-              Monthly Salary Details
-            </p>
-
-          </div>
-
-          <div className="d-flex gap-2">
-
-            <button
-              className="btn btn-dark"
-              onClick={
-                downloadSalarySlip
-              }
-            >
-              Download Slip
-            </button>
-
-            <button
-              className="btn btn-primary"
-              onClick={() =>
-                navigate(
-                  "/salary-history"
-                )
-              }
-            >
-              Salary History
-            </button>
-
-          </div>
-
-        </div>
-
-        {/* 🔥 SUMMARY */}
-        <div className="row mb-4">
-
-          <div className="col-md-3 mb-3">
-
-            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
-
-              <h6>
-                Present
-              </h6>
-
-              <h2 className="text-success">
-                {
-                  salaryData.present
-                }
-              </h2>
+              </div>
 
             </div>
 
-          </div>
+            <div className="card-body p-4">
 
-          <div className="col-md-3 mb-3">
+              <div className="row g-3 mb-4">
 
-            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div className="col-md-6">
 
-              <h6>
-                Absent
-              </h6>
+                  <div className="border rounded-4 p-4 h-100 bg-success bg-opacity-10">
 
-              <h2 className="text-danger">
-                {
-                  salaryData.absent
-                }
-              </h2>
+                    <div className="d-flex align-items-center mb-3">
 
-            </div>
+                      <div className="bg-success rounded-circle p-3 me-3">
+                        <i className="bi bi-box-arrow-in-right text-white"></i>
+                      </div>
 
-          </div>
+                      <div>
+                        <p className="text-muted mb-1">
+                          Check In
+                        </p>
+                        <h5 className="fw-bold text-success mb-0">
+                          {checkInTime || "--"}
+                        </h5>
+                      </div>
 
-          <div className="col-md-3 mb-3">
+                    </div>
 
-            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
+                  </div>
 
-              <h6>
-                Half Day
-              </h6>
+                </div>
 
-              <h2 className="text-warning">
-                {
-                  salaryData.halfDay
-                }
-              </h2>
+                <div className="col-md-6">
 
-            </div>
+                  <div className="border rounded-4 p-4 h-100 bg-danger bg-opacity-10">
 
-          </div>
+                    <div className="d-flex align-items-center mb-3">
 
-          <div className="col-md-3 mb-3">
+                      <div className="bg-danger rounded-circle p-3 me-3">
+                        <i className="bi bi-box-arrow-right text-white"></i>
+                      </div>
 
-            <div className="card border-0 shadow-sm rounded-4 p-4 text-center">
+                      <div>
+                        <p className="text-muted mb-1">
+                          Check Out
+                        </p>
+                        <h5 className="fw-bold text-danger mb-0">
+                          {checkOutTime || "--"}
+                        </h5>
+                      </div>
 
-              <h6>
-                Sunday Paid
-              </h6>
+                    </div>
 
-              <h2 className="text-info">
-                {
-                  salaryData.sundayPaid
-                }
-              </h2>
+                  </div>
 
-            </div>
+                </div>
 
-          </div>
+              </div>
 
-        </div>
+              <div className="d-flex flex-wrap gap-3">
 
-        {/* 🔥 TABLE */}
-        <div className="table-responsive">
-
-          <table className="table table-bordered align-middle">
-
-            <thead className="table-dark">
-
-              <tr>
-
-                <th>
-                  Type
-                </th>
-
-                <th>
-                  Details
-                </th>
-
-                <th>
-                  Amount
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              <tr>
-                <td>
-                  Basic Salary
-                </td>
-
-                <td>
-                  Monthly Salary
-                </td>
-
-                <td>
-                  ₹ {user.salary}
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  Attendance Cut
-                </td>
-
-                <td>
-                  Absent / Half Day
-                </td>
-
-                <td className="text-danger">
-                  ₹ {
-                    salaryData.attendanceCut
-                  }
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  Leave Cut
-                </td>
-
-                <td>
-                  Paid Leave
-                </td>
-
-                <td className="text-danger">
-                  ₹ {
-                    salaryData.leaveCut
-                  }
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  PF
-                </td>
-
-                <td>
-                  12% PF
-                </td>
-
-                <td className="text-danger">
-                  ₹ {
-                    salaryData.pf
-                  }
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  Professional Tax
-                </td>
-
-                <td>
-                  Government Tax
-                </td>
-
-                <td className="text-danger">
-                  ₹ {
-                    salaryData.professionalTax
-                  }
-                </td>
-              </tr>
-
-              <tr className="table-secondary">
-
-                <td className="fw-bold">
-                  Total Deduction
-                </td>
-
-                <td>
-                  Total Cuts
-                </td>
-
-                <td className="fw-bold text-danger">
-                  ₹ {
-                    salaryData.totalCut
-                  }
-                </td>
-
-              </tr>
-
-              <tr className="table-success">
-
-                <td className="fw-bold">
-                  Net Salary
-                </td>
-
-                <td>
-                  Final Salary
-                </td>
-
-                <td className="fw-bold text-success">
-                  ₹ {
-                    salaryData.netSalary
-                  }
-                </td>
-
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-      {/* 🔥 ATTENDANCE HISTORY */}
-      <div className="card border-0 shadow rounded-4 p-4">
-
-        <h3 className="fw-bold mb-4">
-          Attendance History
-        </h3>
-
-        <div className="table-responsive">
-
-          <table className="table table-hover align-middle">
-
-            <thead className="table-dark">
-
-              <tr>
-
-                <th>
-                  Date
-                </th>
-
-                <th>
+                <button
+                  className="btn btn-success px-4 py-3 rounded-3 fw-semibold"
+                  onClick={handleCheckIn}
+                  disabled={checkInTime}
+                >
+                  <i className="bi bi-check-circle-fill me-2"></i>
                   Check In
-                </th>
+                </button>
 
-                <th>
+                <button
+                  className="btn btn-danger px-4 py-3 rounded-3 fw-semibold"
+                  onClick={handleCheckOut}
+                  disabled={!checkInTime || checkOutTime}
+                >
+                  <i className="bi bi-x-circle-fill me-2"></i>
                   Check Out
-                </th>
+                </button>
 
-                <th>
-                  Hours
-                </th>
+              </div>
 
-                <th>
-                  Status
-                </th>
+            </div>
 
-              </tr>
+          </div>
 
-            </thead>
+        </div>
 
-            <tbody>
+        {/* LEAVE MANAGEMENT */}
+        <div className="col-lg-6">
 
-              {
-                attendanceHistory.map(
-                  (a, index) => {
+          <div className="card border-0 shadow-sm rounded-4 h-100">
 
-                    const hours =
-                      calculateHours(
-                        a.checkIn,
-                        a.checkOut
-                      )
+            <div className="card-header bg-white border-0 p-4">
 
-                    let status =
-                      "Absent"
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                    if (
-                      isSunday(a.date)
-                    ) {
+                <div>
+                  <h4 className="fw-bold mb-1">
+                    <i className="bi bi-calendar-plus-fill text-warning me-2"></i>
+                    Leave Management
+                  </h4>
+                  <p className="text-muted mb-0">
+                    Apply and manage leaves
+                  </p>
+                </div>
 
-                      status =
-                        "Sunday Paid"
-                    }
+                <span className="badge bg-warning-subtle text-warning px-3 py-2 rounded-pill">
+                  HR Portal
+                </span>
 
-                    else if (
-                      hours >= 8
-                    ) {
+              </div>
 
-                      status =
-                        "Present"
-                    }
+            </div>
 
-                    else if (
-                      hours >= 4
-                    ) {
+            <div className="card-body p-4">
 
-                      status =
-                        "Half Day"
-                    }
+              {hasUsedFreeLeave && (
+                <div className="alert alert-warning border-0 rounded-4 d-flex align-items-center">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                  Free Leave Already Used. Only Paid Leave Available.
+                </div>
+              )}
 
-                    return (
+              <div className="row g-3">
 
-                      <tr key={index}>
+                <div className="col-md-6">
 
-                        <td>
-                          {a.date}
-                        </td>
+                  <label className="form-label fw-semibold">
+                    Leave Type
+                  </label>
 
-                        <td>
-                          {a.checkIn}
-                        </td>
+                  <select
+                    className="form-select rounded-3 py-2"
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    <option value="">
+                      Select Leave Type
+                    </option>
 
-                        <td>
-                          {a.checkOut || "--"}
-                        </td>
+                    {!hasUsedFreeLeave && (
+                      <option value="free">
+                        Free Leave (No Salary Cut)
+                      </option>
+                    )}
 
-                        <td>
-                          {hours}
-                        </td>
+                    <option value="paid">
+                      Paid Leave (Salary Cut)
+                    </option>
 
-                        <td>
+                  </select>
 
-                          {
-                            status ===
-                            "Present" && (
+                </div>
 
-                              <span className="badge bg-success">
-                                Present
-                              </span>
-                            )
-                          }
+                <div className="col-md-6">
 
-                          {
-                            status ===
-                            "Half Day" && (
+                  <label className="form-label fw-semibold">
+                    Leave Reason
+                  </label>
 
-                              <span className="badge bg-warning text-dark">
-                                Half Day
-                              </span>
-                            )
-                          }
+                  <textarea
+                    className="form-control rounded-3"
+                    rows="1"
+                    placeholder="Enter reason..."
+                    value={leaveReason}
+                    onChange={(e) => setLeaveReason(e.target.value)}
+                  />
 
-                          {
-                            status ===
-                            "Absent" && (
+                </div>
 
-                              <span className="badge bg-danger">
-                                Absent
-                              </span>
-                            )
-                          }
+                <div className="col-md-6">
 
-                          {
-                            status ===
-                            "Sunday Paid" && (
+                  <label className="form-label fw-semibold">
+                    Start Date
+                  </label>
 
-                              <span className="badge bg-info">
-                                Sunday Paid
-                              </span>
-                            )
-                          }
+                  <input
+                    type="date"
+                    className="form-control rounded-3"
+                    value={start}
+                    onChange={(e) => setStart(e.target.value)}
+                  />
 
-                        </td>
+                </div>
 
-                      </tr>
-                    )
+                <div className="col-md-6">
+
+                  <label className="form-label fw-semibold">
+                    End Date
+                  </label>
+
+                  <input
+                    type="date"
+                    className="form-control rounded-3"
+                    value={end}
+                    onChange={(e) => setEnd(e.target.value)}
+                  />
+
+                </div>
+
+              </div>
+
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+
+                <button
+                  className="btn btn-primary px-4 py-3 rounded-3 fw-semibold"
+                  onClick={handleLeaveApply}
+                >
+                  <i className="bi bi-send-fill me-2"></i>
+                  Apply Leave
+                </button>
+
+                <div className="bg-light rounded-3 px-4 py-3">
+
+                  <small className="text-muted d-block">
+                    Current Status
+                  </small>
+
+                  <span className="fw-bold text-primary text-capitalize">
+                    {leaveStatus || "No Request"}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* SALARY SECTION */}
+      <div className="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div className="card-header bg-white border-0 p-4">
+
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+            <div>
+
+              <h3 className="fw-bold mb-1">
+                <i className="bi bi-receipt-cutoff text-primary me-2"></i>
+                Salary Overview
+              </h3>
+
+              <p className="text-muted mb-0">
+                Monthly payroll summary and deductions
+              </p>
+
+            </div>
+
+            <div className="d-flex flex-wrap gap-2">
+
+
+
+              <button
+                className="btn btn-outline-primary px-4 py-2 rounded-3"
+                onClick={() => navigate("/salary-history")}
+              >
+                <i className="bi bi-clock-history me-2"></i>
+                Salary History
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="card-body p-4">
+
+          <div className="row g-4 mb-4">
+
+            <div className="col-lg-3 col-md-6">
+              <div className="border rounded-4 p-4 bg-light h-100">
+                <small className="text-muted">
+                  Basic Salary
+                </small>
+                <h4 className="fw-bold mt-2 mb-0">
+                  ₹{user.salary.toLocaleString()}
+                </h4>
+              </div>
+            </div>
+
+            <div className="col-lg-3 col-md-6">
+              <div className="border rounded-4 p-4 bg-danger bg-opacity-10 h-100">
+                <small className="text-muted">
+                  Total Deduction
+                </small>
+                <h4 className="fw-bold text-danger mt-2 mb-0">
+                  ₹{salaryData.totalCut}
+                </h4>
+              </div>
+            </div>
+
+            <div className="col-lg-3 col-md-6">
+              <div className="border rounded-4 p-4 bg-success bg-opacity-10 h-100">
+                <small className="text-muted">
+                  Net Salary
+                </small>
+                <h4 className="fw-bold text-success mt-2 mb-0">
+                  ₹{salaryData.netSalary}
+                </h4>
+              </div>
+            </div>
+
+            <div className="col-lg-3 col-md-6">
+              <div className="border rounded-4 p-4 bg-primary bg-opacity-10 h-100">
+                <small className="text-muted">
+                  Performance
+                </small>
+                <h4 className="fw-bold text-primary mt-2 mb-0">
+                  {salaryData.performance}
+                </h4>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="table-responsive">
+
+            <table className="table align-middle">
+
+              <thead
+                style={{
+                  background: "#0f172a"
+                }}
+              >
+                <tr>
+                  <th className="text-white py-3">Type</th>
+                  <th className="text-white py-3">Description</th>
+                  <th className="text-white py-3">Amount (₹)</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <tr>
+                  <td className="fw-semibold">
+                    <i className="bi bi-cash-stack me-2 text-success"></i>
+                    Basic Salary
+                  </td>
+                  <td>Monthly Salary</td>
+                  <td className="fw-bold">
+                    {user.salary.toLocaleString()}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="fw-semibold">
+                    <i className="bi bi-person-x-fill me-2 text-danger"></i>
+                    Attendance Cut
+                  </td>
+                  <td>Absent / Half Day</td>
+                  <td className="fw-bold text-danger">
+                    {salaryData.attendanceCut}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="fw-semibold">
+                    <i className="bi bi-calendar-x-fill me-2 text-danger"></i>
+                    Leave Cut
+                  </td>
+                  <td>Paid Leave Deduction</td>
+                  <td className="fw-bold text-danger">
+                    {salaryData.leaveCut}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="fw-semibold">
+                    <i className="bi bi-bank2 me-2 text-primary"></i>
+                    PF Deduction
+                  </td>
+                  <td>12% PF Deduction</td>
+                  <td className="fw-bold text-danger">
+                    {salaryData.pf}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="fw-semibold">
+                    <i className="bi bi-building-fill me-2 text-secondary"></i>
+                    Professional Tax
+                  </td>
+                  <td>Government Tax</td>
+                  <td className="fw-bold text-danger">
+                    {salaryData.professionalTax}
+                  </td>
+                </tr>
+
+                <tr className="table-light">
+                  <td className="fw-bold">
+                    Total Deduction
+                  </td>
+                  <td>
+                    All Salary Cuts
+                  </td>
+                  <td className="fw-bold text-danger">
+                    ₹{salaryData.totalCut}
+                  </td>
+                </tr>
+
+                <tr className="table-success">
+                  <td className="fw-bold">
+                    Net Salary
+                  </td>
+                  <td>
+                    Final Credited Salary
+                  </td>
+                  <td className="fw-bold text-success">
+                    ₹{salaryData.netSalary}
+                  </td>
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+      {/* MY LEAVES */}
+      <div className="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div className="card-header bg-white border-0 p-4">
+
+          <h4 className="fw-bold mb-0">
+            <i className="bi bi-calendar-event-fill text-primary me-2"></i>
+            My Leave Requests
+          </h4>
+
+        </div>
+
+        <div className="card-body p-0">
+
+          <div className="table-responsive">
+
+            <table className="table align-middle mb-0">
+
+              <thead style={{ background: "#0f172a" }}>
+
+                <tr>
+
+                  <th className="text-white py-3 px-4">
+                    Type
+                  </th>
+
+                  <th className="text-white py-3">
+                    Start
+                  </th>
+
+                  <th className="text-white py-3">
+                    End
+                  </th>
+
+                  <th className="text-white py-3">
+                    Days
+                  </th>
+
+                  <th className="text-white py-3">
+                    Status
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {myLeaves.map((leave, index) => {
+
+                  let badge = "bg-warning"
+
+                  if (leave.status === "approved") {
+                    badge = "bg-success"
                   }
-                )
-              }
 
-            </tbody>
+                  if (leave.status === "rejected") {
+                    badge = "bg-danger"
+                  }
 
-          </table>
+                  return (
+
+                    <tr key={index}>
+
+                      <td className="px-4 text-capitalize fw-semibold">
+                        {leave.type}
+                      </td>
+
+                      <td>
+                        {leave.start}
+                      </td>
+
+                      <td>
+                        {leave.end}
+                      </td>
+
+                      <td>
+                        {leave.days}
+                      </td>
+
+                      <td>
+
+                        <span
+                          className={`badge ${badge} px-3 py-2 rounded-pill text-capitalize`}
+                        >
+                          {leave.status}
+                        </span>
+
+                      </td>
+
+                    </tr>
+
+                  )
+                })}
+
+                {myLeaves.length === 0 && (
+
+                  <tr>
+
+                    <td
+                      colSpan="5"
+                      className="text-center py-4 text-muted"
+                    >
+                      No Leave Requests
+                    </td>
+
+                  </tr>
+
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+      {/* ATTENDANCE HISTORY */}
+      <div className="card border-0 shadow-sm rounded-4">
+
+        <div className="card-header bg-white border-0 p-4">
+
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+            <div>
+
+              <h3 className="fw-bold mb-1">
+                <i className="bi bi-clock-history text-info me-2"></i>
+                Attendance History
+              </h3>
+
+              <p className="text-muted mb-0">
+                Monthly attendance records
+              </p>
+
+            </div>
+
+            <span className="badge bg-info-subtle text-info px-3 py-2 rounded-pill">
+              {attendanceHistory.length} Records
+            </span>
+
+          </div>
+
+        </div>
+
+        <div className="card-body p-0">
+
+          <div className="table-responsive">
+
+            <table className="table table-hover align-middle mb-0">
+
+              <thead
+                style={{
+                  background: "#0f172a"
+                }}
+              >
+
+                <tr>
+                  <th className="text-dark py-3 px-4">
+                    Date
+                  </th>
+
+                  <th className="text-dark py-3">
+                    Check In
+                  </th>
+
+                  <th className="text-dark py-3">
+                    Check Out
+                  </th>
+
+                  <th className="text-dark py-3">
+                    Hours
+                  </th>
+
+                  <th className="text-dark py-3">
+                    Status
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {attendanceHistory.map((a, index) => {
+
+                  const hours = calculateHours(a.checkIn, a.checkOut)
+
+                  let status = "Absent"
+                  let statusClass = "bg-danger"
+                  let statusIcon = "bi-x-circle-fill"
+
+                  if (isSunday(a.date)) {
+
+                    status = "Sunday Paid"
+                    statusClass = "bg-info"
+                    statusIcon = "bi-sun-fill"
+                  }
+
+                  else if (hours >= 8) {
+
+                    status = "Present"
+                    statusClass = "bg-success"
+                    statusIcon = "bi-check-circle-fill"
+                  }
+
+                  else if (hours >= 4) {
+
+                    status = "Half Day"
+                    statusClass = "bg-warning text-dark"
+                    statusIcon = "bi-clock-fill"
+                  }
+
+                  return (
+
+                    <tr key={index}>
+
+                      <td className="fw-semibold px-4">
+                        {a.date}
+                      </td>
+
+                      <td>
+                        <span className="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
+                          {a.checkIn || "--"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span className="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill">
+                          {a.checkOut || "--"}
+                        </span>
+                      </td>
+
+                      <td className="fw-bold">
+                        {hours} hrs
+                      </td>
+
+                      <td>
+
+                        <span className={`badge ${statusClass} px-3 py-2 rounded-pill`}>
+
+                          <i className={`${statusIcon} me-1`}></i>
+
+                          {status}
+
+                        </span>
+
+                      </td>
+
+                    </tr>
+
+                  )
+                })}
+
+                {attendanceHistory.length === 0 && (
+
+                  <tr>
+
+                    <td
+                      colSpan="5"
+                      className="text-center py-5 text-muted"
+                    >
+
+                      <i className="bi bi-inbox-fill display-6 d-block mb-3"></i>
+
+                      No attendance records found
+
+                    </td>
+
+                  </tr>
+
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
 

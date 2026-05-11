@@ -140,18 +140,6 @@
       "password": "1234",
       "joiningDate": "5/7/2026, 5:31:57 PM",
       "id": 12
-    },
-    {
-      "firstName": "prince chauhan",
-      "role": "manager",
-      "department": "Graphic Designer",
-      "salary": 500000000,
-      "email": "prince@gmail.com",
-      "contact": "1000000014",
-      "birthdate": "2007-01-01",
-      "password": "1234",
-      "joiningDate": "5/9/2026, 1:16:10 PM",
-      "id": 13
     }
   ],
   "leaves": [
@@ -202,6 +190,30 @@
       "days": 2,
       "status": "approved",
       "id": 4
+    },
+    {
+      "userId": 8,
+      "name": "Manoj",
+      "contact": "1000000007",
+      "reason": "casual",
+      "type": "free",
+      "start": "2026-05-12",
+      "end": "2026-05-13",
+      "days": 2,
+      "status": "pending",
+      "id": 5
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "reason": "marriage ",
+      "type": "free",
+      "start": "2026-05-12",
+      "end": "2026-05-15",
+      "days": 4,
+      "status": "rejected",
+      "id": 6
     }
   ],
   "attendance": [
@@ -812,8 +824,8 @@
       "department": "AI/ML",
       "salary": 60000,
       "date": "5/1/2026",
-      "checkIn": "Leave",
-      "checkOut": "Leave"
+      "checkIn": "09:00 AM",
+      "checkOut": "06:00 PM"
     },
     {
       "id": 62,
@@ -1014,8 +1026,8 @@
       "department": "Web Development",
       "salary": 42000,
       "date": "5/10/2026",
-      "checkIn": "02:44 PM",
-      "checkOut": "",
+      "checkIn": "09:00 AM",
+      "checkOut": "06:00 PM",
       "id": 81
     },
     {
@@ -1024,8 +1036,8 @@
       "contact": "1000000004",
       "salary": 90000,
       "date": "5/10/2026",
-      "checkIn": "04:04 PM",
-      "checkOut": "",
+      "checkIn": "09:00 AM",
+      "checkOut": "06:00 PM",
       "id": 82
     },
     {
@@ -1035,9 +1047,41 @@
       "department": "Web Development",
       "salary": 45000,
       "date": "5/10/2026",
-      "checkIn": "04:55 PM",
-      "checkOut": "Auto Checkout",
+      "checkIn": "09:00 AM",
+      "checkOut": "05:45 PM",
       "id": 83
+    },
+    {
+      "userId": 8,
+      "name": "Manoj",
+      "contact": "1000000007",
+      "department": "AI/ML",
+      "salary": 58000,
+      "date": "5/11/2026",
+      "checkIn": "09:00 AM",
+      "checkOut": "",
+      "id": 84
+    },
+    {
+      "userId": 5,
+      "name": "roshan",
+      "contact": "1000000004",
+      "salary": 90000,
+      "date": "5/11/2026",
+      "checkIn": "09:00 AM",
+      "checkOut": "",
+      "id": 85
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "department": "AI/ML",
+      "salary": 60000,
+      "date": "5/11/2026",
+      "checkIn": "04:34 PM",
+      "checkOut": "",
+      "id": 86
     }
   ],
   "holidays": [

@@ -45,298 +45,508 @@ const Hr = () => {
     // ==================== UI STARTS HERE ====================
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f0f2f5" }}>
+        <div
+            className="d-flex"
+            style={{
+                minHeight: "100vh",
+                background: "#f1f5f9"
+            }}
+        >
 
-            {/* ========== SIDEBAR ========== */}
-            <div style={{
-                width: "280px",
-                backgroundColor: "white",
-                borderRight: "1px solid #e0e0e0",
-                display: "flex",
-                flexDirection: "column",
-                padding: "20px"
-            }}>
-                
-                {/* Logo */}
-                <div style={{ textAlign: "center", marginBottom: "20px", paddingBottom: "20px", borderBottom: "1px solid #e0e0e0" }}>
-                    <h2 style={{ color: "#1e3c72", margin: 0 }}>XCELTECH</h2>
+            {/* ================= SIDEBAR ================= */}
+
+            <div
+                className="d-flex flex-column flex-shrink-0 p-4 text-white shadow-lg"
+                style={{
+                    width: "280px",
+                    background: "linear-gradient(180deg, #0f172a 0%, #1e293b 100%)"
+                }}
+            >
+
+                {/* LOGO */}
+
+                <div className="text-center mb-4 pb-4 border-bottom border-secondary">
+                    <h2 className="fw-bold mb-1">
+                        XCELTECH
+                    </h2>
+                    <small className="text-light opacity-75">
+                        HR Management System
+                    </small>
                 </div>
 
-                {/* Profile */}
-                <div style={{ textAlign: "center", marginBottom: "20px", paddingBottom: "20px", borderBottom: "1px solid #e0e0e0" }}>
-                    <img 
-                        src="https://i.pravatar.cc/80" 
-                        alt="profile"
-                        style={{ width: "70px", height: "70px", borderRadius: "50%", marginBottom: "10px" }}
-                    />
-                    <h4 style={{ margin: "5px 0", fontSize: "18px" }}>HR Panel</h4>
-                    <p style={{ color: "#666", fontSize: "12px", margin: 0 }}>Administrator</p>
+                {/* PROFILE */}
+
+                <div className="card border-0 rounded-4 shadow mb-4">
+
+                    <div className="card-body text-center p-4">
+
+                        <img
+                            src="https://randomuser.me/api/portraits/men/32.jpg"
+                            alt="profile"
+                            className="rounded-circle shadow border border-4 border-white mb-3"
+                            style={{
+                                width: "80px",
+                                height: "80px",
+                                objectFit: "cover"
+                            }}
+                        />
+
+                        <h5 className="fw-bold mb-1">
+                            HR Panel
+                        </h5>
+
+                        <p className="text-muted mb-0 small">
+                            Administrator
+                        </p>
+
+                    </div>
+
                 </div>
 
-                {/* Navigation Buttons */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {/* NAVIGATION */}
+
+                <div className="d-flex flex-column gap-2">
+
                     <button
                         onClick={() => navigate("/hr")}
-                        style={{
-                            padding: "10px 15px",
-                            textAlign: "left",
-                            backgroundColor: "#007bff",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            fontWeight: "bold"
-                        }}
+                        className="btn btn-primary text-start rounded-3 py-3 fw-semibold shadow-sm"
                     >
-                        📊 Dashboard
+                        <i className="bi bi-grid-fill me-2"></i>
+                        Dashboard
                     </button>
 
                     <button
                         onClick={() => navigate("/user")}
-                        style={{
-                            padding: "10px 15px",
-                            textAlign: "left",
-                            backgroundColor: "transparent",
-                            color: "#333",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer"
-                        }}
+                        className="btn btn-light text-start rounded-3 py-3 fw-semibold"
                     >
-                        👥 Employees
+                        <i className="bi bi-people-fill me-2"></i>
+                        Employees
                     </button>
 
                     <button
                         onClick={() => navigate("/attendance")}
-                        style={{
-                            padding: "10px 15px",
-                            textAlign: "left",
-                            backgroundColor: "transparent",
-                            color: "#333",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer"
-                        }}
+                        className="btn btn-light text-start rounded-3 py-3 fw-semibold"
                     >
-                        📅 Attendance
+                        <i className="bi bi-calendar-check-fill me-2"></i>
+                        Attendance
                     </button>
 
                     <button
                         onClick={() => navigate("/hrdashboard")}
-                        style={{
-                            padding: "10px 15px",
-                            textAlign: "left",
-                            backgroundColor: "transparent",
-                            color: "#333",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer"
-                        }}
+                        className="btn btn-light text-start rounded-3 py-3 fw-semibold"
                     >
-                        📋 Leave
+                        <i className="bi bi-file-earmark-text-fill me-2"></i>
+                        Leave Requests
                     </button>
 
                     <button
                         onClick={() => navigate("/payroll")}
-                        style={{
-                            padding: "10px 15px",
-                            textAlign: "left",
-                            backgroundColor: "transparent",
-                            color: "#333",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer"
-                        }}
+                        className="btn btn-light text-start rounded-3 py-3 fw-semibold"
                     >
-                        💰 Payroll
+                        <i className="bi bi-cash-stack me-2"></i>
+                        Payroll
                     </button>
+
                 </div>
 
-                <div style={{ marginTop: "auto", paddingTop: "20px" }}>
+                {/* BACK BUTTON */}
+
+                <div className="mt-auto pt-4">
+
                     <button
                         onClick={() => navigate("/")}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            backgroundColor: "#6c757d",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer"
-                        }}
+                        className="btn btn-outline-light w-100 rounded-3 py-3 fw-semibold"
                     >
-                        ← Back to Home
+                        <i className="bi bi-arrow-left-circle me-2"></i>
+                        Logout 
                     </button>
+
                 </div>
+
             </div>
 
-            {/* ========== MAIN CONTENT ========== */}
-            <div style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                overflow: "auto"
-            }}>
+            {/* ================= MAIN CONTENT ================= */}
 
-                {/* Top Bar */}
-                <div style={{
-                    backgroundColor: "white",
-                    padding: "15px 20px",
-                    borderBottom: "1px solid #e0e0e0",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                }}>
-                    <input
-                        type="text"
-                        placeholder="Search employee..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        style={{
-                            padding: "8px 12px",
-                            border: "1px solid #ddd",
-                            borderRadius: "5px",
-                            width: "300px"
-                        }}
-                    />
-                    <button
-                        onClick={() => navigate("/add")}
-                        style={{
-                            padding: "8px 20px",
-                            backgroundColor: "#007bff",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: "pointer"
-                        }}
-                    >
-                        + Add Employee
-                    </button>
-                </div>
+            <div className="flex-grow-1 overflow-auto">
 
-                {/* Content Area */}
-                <div style={{ padding: "20px" }}>
+                {/* TOP BAR */}
 
-                    {/* Stats Cards */}
-                    <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(3, 1fr)",
-                        gap: "20px",
-                        marginBottom: "30px"
-                    }}>
-                        {/* Card 1 */}
-                        <div style={{
-                            backgroundColor: "white",
-                            padding: "20px",
-                            borderRadius: "10px",
-                            textAlign: "center",
-                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-                        }}>
-                            <h2 style={{ margin: 0, color: "#007bff" }}>{totalEmployees}</h2>
-                            <p style={{ margin: "5px 0 0", color: "#666" }}>Total Employees</p>
+                <div
+                    className="bg-white shadow-sm border-bottom px-4 py-3"
+                >
+
+                    <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+
+                        <div>
+
+                            <h2 className="fw-bold mb-1 text-dark">
+                                HR Dashboard
+                            </h2>
+
+                            <p className="text-muted mb-0">
+                                Welcome back! Manage employees, attendance & payroll.
+                            </p>
+
                         </div>
 
-                        {/* Card 2 */}
-                        <div style={{
-                            backgroundColor: "white",
-                            padding: "20px",
-                            borderRadius: "10px",
-                            textAlign: "center",
-                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-                        }}>
-                            <h2 style={{ margin: 0, color: "#ffc107" }}>{pending}</h2>
-                            <p style={{ margin: "5px 0 0", color: "#666" }}>Pending Requests</p>
+                        <div className="d-flex flex-column flex-md-row gap-3">
+
+                            <div className="position-relative">
+
+                                <i
+                                    className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"
+                                ></i>
+
+                                <input
+                                    type="text"
+                                    placeholder="Search employee..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="form-control rounded-3 ps-5 shadow-sm"
+                                    style={{
+                                        minWidth: "280px"
+                                    }}
+                                />
+
+                            </div>
+
+                            <button
+                                onClick={() => navigate("/add")}
+                                className="btn btn-primary rounded-3 px-4 shadow-sm fw-semibold"
+                            >
+                                <i className="bi bi-plus-circle-fill me-2"></i>
+                                Add Employee
+                            </button>
+
                         </div>
 
-                        {/* Card 3 */}
-                        <div style={{
-                            backgroundColor: "white",
-                            padding: "20px",
-                            borderRadius: "10px",
-                            textAlign: "center",
-                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-                        }}>
-                            <h2 style={{ margin: 0, color: "#28a745" }}>{approved}</h2>
-                            <p style={{ margin: "5px 0 0", color: "#666" }}>Approved</p>
-                        </div>
                     </div>
 
-                    {/* Leave Requests Table */}
-                    <div style={{
-                        backgroundColor: "white",
-                        borderRadius: "10px",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                        overflow: "hidden"
-                    }}>
-                        <div style={{
-                            padding: "15px 20px",
-                            borderBottom: "1px solid #e0e0e0"
-                        }}>
-                            <h3 style={{ margin: 0 }}>Leave Requests</h3>
+                </div>
+
+                {/* PAGE CONTENT */}
+
+                <div className="p-4">
+
+                    {/* KPI CARDS */}
+
+                    <div className="row g-4 mb-4">
+
+                        {/* TOTAL EMPLOYEE */}
+
+                        <div className="col-md-4">
+
+                            <div className="card border-0 shadow rounded-4 h-100">
+
+                                <div className="card-body p-4">
+
+                                    <div className="d-flex justify-content-between align-items-center">
+
+                                        <div>
+
+                                            <p className="text-muted mb-2 fw-semibold">
+                                                Total Employees
+                                            </p>
+
+                                            <h1 className="fw-bold text-primary mb-0">
+                                                {totalEmployees}
+                                            </h1>
+
+                                        </div>
+
+                                        <div
+                                            className="rounded-circle d-flex align-items-center justify-content-center"
+                                            style={{
+                                                width: "70px",
+                                                height: "70px",
+                                                background: "rgba(13,110,253,0.1)"
+                                            }}
+                                        >
+                                            <i className="bi bi-people-fill text-primary fs-2"></i>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
                         </div>
 
-                        <div style={{ overflowX: "auto" }}>
-                            <table style={{
-                                width: "100%",
-                                borderCollapse: "collapse"
-                            }}>
-                                <thead style={{ backgroundColor: "#f8f9fa" }}>
+                        {/* PENDING */}
+
+                        <div className="col-md-4">
+
+                            <div className="card border-0 shadow rounded-4 h-100">
+
+                                <div className="card-body p-4">
+
+                                    <div className="d-flex justify-content-between align-items-center">
+
+                                        <div>
+
+                                            <p className="text-muted mb-2 fw-semibold">
+                                                Pending Requests
+                                            </p>
+
+                                            <h1 className="fw-bold text-warning mb-0">
+                                                {pending}
+                                            </h1>
+
+                                        </div>
+
+                                        <div
+                                            className="rounded-circle d-flex align-items-center justify-content-center"
+                                            style={{
+                                                width: "70px",
+                                                height: "70px",
+                                                background: "rgba(255,193,7,0.15)"
+                                            }}
+                                        >
+                                            <i className="bi bi-hourglass-split text-warning fs-2"></i>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {/* APPROVED */}
+
+                        <div className="col-md-4">
+
+                            <div className="card border-0 shadow rounded-4 h-100">
+
+                                <div className="card-body p-4">
+
+                                    <div className="d-flex justify-content-between align-items-center">
+
+                                        <div>
+
+                                            <p className="text-muted mb-2 fw-semibold">
+                                                Approved Leaves
+                                            </p>
+
+                                            <h1 className="fw-bold text-success mb-0">
+                                                {approved}
+                                            </h1>
+
+                                        </div>
+
+                                        <div
+                                            className="rounded-circle d-flex align-items-center justify-content-center"
+                                            style={{
+                                                width: "70px",
+                                                height: "70px",
+                                                background: "rgba(25,135,84,0.12)"
+                                            }}
+                                        >
+                                            <i className="bi bi-check-circle-fill text-success fs-2"></i>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {/* TABLE SECTION */}
+
+                    <div className="card border-0 shadow rounded-4 overflow-hidden">
+
+                        {/* HEADER */}
+
+                        <div
+                            className="px-4 py-3 border-bottom bg-white"
+                        >
+
+                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                                <div>
+
+                                    <h4 className="fw-bold mb-1">
+                                        Leave Requests
+                                    </h4>
+
+                                    <p className="text-muted mb-0">
+                                        Employee leave request management
+                                    </p>
+
+                                </div>
+
+                                <span className="badge bg-primary rounded-pill px-3 py-2">
+                                    {filteredLeaves.length} Records
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        {/* TABLE */}
+
+                        <div className="table-responsive">
+
+                            <table className="table table-hover align-middle mb-0">
+
+                                <thead
+                                    className="table-light"
+                                >
+
                                     <tr>
-                                        <th style={{ padding: "12px 15px", textAlign: "left" }}>Name</th>
-                                        <th style={{ padding: "12px 15px", textAlign: "left" }}>Days</th>
-                                        <th style={{ padding: "12px 15px", textAlign: "left" }}>Start</th>
-                                        <th style={{ padding: "12px 15px", textAlign: "left" }}>End</th>
-                                        <th style={{ padding: "12px 15px", textAlign: "left" }}>Type</th>
-                                        <th style={{ padding: "12px 15px", textAlign: "left" }}>Status</th>
+
+                                        <th className="px-4 py-3 fw-bold">
+                                            Employee
+                                        </th>
+
+                                        <th className="px-4 py-3 fw-bold">
+                                            Days
+                                        </th>
+
+                                        <th className="px-4 py-3 fw-bold">
+                                            Start Date
+                                        </th>
+
+                                        <th className="px-4 py-3 fw-bold">
+                                            End Date
+                                        </th>
+
+                                        <th className="px-4 py-3 fw-bold">
+                                            Leave Type
+                                        </th>
+
+                                        <th className="px-4 py-3 fw-bold">
+                                            Status
+                                        </th>
+
                                     </tr>
+
                                 </thead>
+
                                 <tbody>
-                                    {filteredLeaves.length > 0 ? (
-                                        filteredLeaves.map(l => (
-                                            <tr key={l.id} style={{ borderBottom: "1px solid #e0e0e0" }}>
-                                                <td style={{ padding: "12px 15px", fontWeight: "bold" }}>{l.name}</td>
-                                                <td style={{ padding: "12px 15px" }}>{l.days}</td>
-                                                <td style={{ padding: "12px 15px" }}>{l.start}</td>
-                                                <td style={{ padding: "12px 15px" }}>{l.end}</td>
-                                                <td style={{ padding: "12px 15px" }}>
-                                                    <span style={{
-                                                        padding: "3px 8px",
-                                                        borderRadius: "5px",
-                                                        fontSize: "12px",
-                                                        backgroundColor: l.type === "free" ? "#28a745" : "#6c757d",
-                                                        color: "white"
-                                                    }}>
-                                                        {l.type}
-                                                    </span>
+
+                                    {
+                                        filteredLeaves.length > 0 ? (
+
+                                            filteredLeaves.map(l => (
+
+                                                <tr key={l.id}>
+
+                                                    <td className="px-4 py-3">
+
+                                                        <div className="d-flex align-items-center gap-3">
+
+                                                            <img
+                                                                src="https://randomuser.me/api/portraits/men/32.jpg"
+                                                                alt="employee"
+                                                                className="rounded-circle"
+                                                                style={{
+                                                                    width: "45px",
+                                                                    height: "45px",
+                                                                    objectFit: "cover"
+                                                                }}
+                                                            />
+
+                                                            <div>
+
+                                                                <h6 className="mb-0 fw-bold">
+                                                                    {l.name}
+                                                                </h6>
+
+                                                                <small className="text-muted">
+                                                                    Employee
+                                                                </small>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td className="px-4 py-3 fw-semibold">
+                                                        {l.days}
+                                                    </td>
+
+                                                    <td className="px-4 py-3">
+                                                        {l.start}
+                                                    </td>
+
+                                                    <td className="px-4 py-3">
+                                                        {l.end}
+                                                    </td>
+
+                                                    <td className="px-4 py-3">
+
+                                                        <span
+                                                            className={`badge rounded-pill px-3 py-2 ${l.type === "free"
+                                                                    ? "bg-success-subtle text-success"
+                                                                    : "bg-secondary-subtle text-secondary"
+                                                                }`}
+                                                        >
+                                                            {l.type}
+                                                        </span>
+
+                                                    </td>
+
+                                                    <td className="px-4 py-3">
+
+                                                        <span
+                                                            className={`badge rounded-pill px-3 py-2 ${l.status === "approved"
+                                                                    ? "bg-success"
+                                                                    : l.status === "rejected"
+                                                                        ? "bg-danger"
+                                                                        : "bg-warning text-dark"
+                                                                }`}
+                                                        >
+                                                            {l.status}
+                                                        </span>
+
+                                                    </td>
+
+                                                </tr>
+
+                                            ))
+
+                                        ) : (
+
+                                            <tr>
+
+                                                <td
+                                                    colSpan="6"
+                                                    className="text-center py-5 text-muted fw-semibold"
+                                                >
+
+                                                    <i className="bi bi-inbox fs-1 d-block mb-3"></i>
+
+                                                    No Leave Requests Found
+
                                                 </td>
-                                                <td style={{ padding: "12px 15px" }}>
-                                                    <span style={{
-                                                        padding: "3px 8px",
-                                                        borderRadius: "5px",
-                                                        fontSize: "12px",
-                                                        backgroundColor: l.status === "approved" ? "#28a745" : (l.status === "rejected" ? "#dc3545" : "#ffc107"),
-                                                        color: "white"
-                                                    }}>
-                                                        {l.status}
-                                                    </span>
-                                                </td>
+
                                             </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="6" style={{ padding: "40px", textAlign: "center", color: "#666" }}>
-                                                No Data Found
-                                            </td>
-                                        </tr>
-                                    )}
+
+                                        )
+                                    }
+
                                 </tbody>
+
                             </table>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
     )
 }
 
-export default Hr
+export default Hr                       
