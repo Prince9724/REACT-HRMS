@@ -1116,7 +1116,7 @@
       "salary": 60000,
       "date": "5/12/2026",
       "checkIn": "02:45 PM",
-      "checkOut": "",
+      "checkOut": "Auto Checkout",
       "id": 87
     }
   ],

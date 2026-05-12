@@ -755,7 +755,18 @@ const Profile = () => {
             60 *
             24
           ) + 1
+          // ✅ FREE LEAVE ONLY 1 DAY
+if (
+  type === "free" &&
+  days > 1
+) {
 
+  alert(
+    "Free Leave Only Allowed For 1 Day"
+  )
+
+  return
+} 
         await axios.post(
           "http://localhost:3000/leaves",
           {
