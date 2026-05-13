@@ -153,6 +153,54 @@
       "password": "1234",
       "joiningDate": "5/13/2026, 3:17:56 PM",
       "id": 13
+    },
+    {
+      "firstName": "anshu",
+      "role": "employee",
+      "department": "Graphic Designer",
+      "salary": 25000,
+      "email": "anshu@gmail.com",
+      "contact": "9000000009",
+      "birthdate": "2003-01-01",
+      "password": "1234",
+      "joiningDate": "5/13/2026, 3:49:43 PM",
+      "id": 14
+    },
+    {
+      "firstName": "suraj",
+      "role": "manager",
+      "department": "Web Development",
+      "salary": 30000,
+      "email": "suraj@gmail.com",
+      "contact": "2000000001",
+      "birthdate": "2001-01-01",
+      "password": "1234",
+      "joiningDate": "5/13/2026, 3:54:10 PM",
+      "id": 15
+    },
+    {
+      "firstName": "darshan",
+      "role": "employee",
+      "department": "Web Development",
+      "salary": 40000,
+      "email": "dp@gmail.com",
+      "contact": "2000000002",
+      "birthdate": "2007-01-01",
+      "password": "1234",
+      "joiningDate": "5/13/2026, 4:03:04 PM",
+      "id": 16
+    },
+    {
+      "firstName": "raamu",
+      "role": "employee",
+      "department": "Web Development",
+      "salary": 30000,
+      "email": "ramu@gmail.com",
+      "contact": "1000001111",
+      "birthdate": "2001-01-01",
+      "password": "1234",
+      "joiningDate": "5/13/2026, 4:05:29 PM",
+      "id": 17
     }
   ],
   "leaves": [
@@ -275,6 +323,30 @@
       "days": 1,
       "status": "pending",
       "id": 10
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "reason": "sick",
+      "type": "paid",
+      "start": "2026-05-14",
+      "end": "2026-05-14",
+      "days": 1,
+      "status": "pending",
+      "id": 11
+    },
+    {
+      "userId": 16,
+      "name": "darshan",
+      "contact": "2000000002",
+      "reason": "casual",
+      "type": "free",
+      "start": "2026-05-14",
+      "end": "2026-05-14",
+      "days": 1,
+      "status": "approved",
+      "id": 12
     }
   ],
   "attendance": [
@@ -1197,6 +1269,28 @@
       "checkIn": "03:18 PM",
       "checkOut": "",
       "id": 91
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "department": "AI/ML",
+      "salary": 65000,
+      "date": "5/13/2026",
+      "checkIn": "03:54 PM",
+      "checkOut": "",
+      "id": 92
+    },
+    {
+      "userId": 16,
+      "name": "darshan",
+      "contact": "2000000002",
+      "department": "Web Development",
+      "salary": 40000,
+      "date": "5/13/2026",
+      "checkIn": "04:03 PM",
+      "checkOut": "",
+      "id": 93
     }
   ],
   "holidays": [
