@@ -143,15 +143,15 @@
       "id": 12
     },
     {
-      "firstName": "darsha",
+      "firstName": "yash",
       "role": "employee",
-      "department": "Web Development",
+      "department": "Graphic Designer",
       "salary": 25000,
-      "email": "darshan@gmail.com",
-      "contact": "1234567890",
-      "birthdate": "2007-10-21",
+      "email": "yash@gmail.com",
+      "contact": "9000000009",
+      "birthdate": "2002-01-01",
       "password": "1234",
-      "joiningDate": "5/11/2026, 6:19:36 PM",
+      "joiningDate": "5/13/2026, 3:17:56 PM",
       "id": 13
     }
   ],
@@ -237,8 +237,44 @@
       "start": "2026-05-14",
       "end": "2026-05-18",
       "days": 5,
-      "status": "pending",
+      "status": "rejected",
       "id": 7
+    },
+    {
+      "userId": 14,
+      "name": "ansu",
+      "contact": "1000000111",
+      "reason": "sick",
+      "type": "paid",
+      "start": "2026-05-14",
+      "end": "2026-05-15",
+      "days": 2,
+      "status": "approved",
+      "id": 8
+    },
+    {
+      "userId": 15,
+      "name": "yash",
+      "contact": "1111111111",
+      "reason": "SICK",
+      "type": "free",
+      "start": "2026-05-14",
+      "end": "2026-05-14",
+      "days": 1,
+      "status": "approved",
+      "id": 9
+    },
+    {
+      "userId": 13,
+      "name": "yash",
+      "contact": "9000000009",
+      "reason": "casual",
+      "type": "free",
+      "start": "2026-05-14",
+      "end": "2026-05-14",
+      "days": 1,
+      "status": "pending",
+      "id": 10
     }
   ],
   "attendance": [
@@ -1118,6 +1154,49 @@
       "checkIn": "02:45 PM",
       "checkOut": "Auto Checkout",
       "id": 87
+    },
+    {
+      "userId": 14,
+      "name": "ansu",
+      "contact": "1000000111",
+      "department": "Web Development",
+      "salary": 25000,
+      "date": "5/13/2026",
+      "checkIn": "03:05 PM",
+      "checkOut": "",
+      "id": 88
+    },
+    {
+      "userId": 5,
+      "name": "roshan",
+      "contact": "1000000004",
+      "salary": 90000,
+      "date": "5/13/2026",
+      "checkIn": "03:06 PM",
+      "checkOut": "",
+      "id": 89
+    },
+    {
+      "userId": 15,
+      "name": "yash",
+      "contact": "1111111111",
+      "department": "Web Development",
+      "salary": 30000,
+      "date": "5/13/2026",
+      "checkIn": "03:10 PM",
+      "checkOut": "",
+      "id": 90
+    },
+    {
+      "userId": 13,
+      "name": "yash",
+      "contact": "9000000009",
+      "department": "Graphic Designer",
+      "salary": 25000,
+      "date": "5/13/2026",
+      "checkIn": "03:18 PM",
+      "checkOut": "",
+      "id": 91
     }
   ],
   "holidays": [
