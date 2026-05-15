@@ -5,7 +5,7 @@ const Front = () => {
 
     const navigate = useNavigate()
 
-    // ✅ ROLE NAVIGATION
+    // ✅ ROLE NAVIGATION ==
     const handleRole = (role) => {
 
         navigate("/loginpage", {
