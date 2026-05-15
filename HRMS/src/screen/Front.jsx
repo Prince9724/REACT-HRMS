@@ -25,7 +25,7 @@ const Front = () => {
 
             <div className="container py-5">
 
-                {/* HEADER */}
+                {/* HEADER **/}
                 <div className="text-center mb-5">
 
                     <h1
