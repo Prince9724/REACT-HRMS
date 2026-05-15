@@ -170,7 +170,7 @@
       "firstName": "suraj",
       "role": "manager",
       "department": "Web Development",
-      "salary": 30000,
+      "salary": 300000,
       "email": "suraj@gmail.com",
       "contact": "2000000001",
       "birthdate": "2001-01-01",
@@ -201,6 +201,30 @@
       "password": "1234",
       "joiningDate": "5/13/2026, 4:05:29 PM",
       "id": 17
+    },
+    {
+      "firstName": "prince chauhan",
+      "role": "manager",
+      "department": "Graphic Designer",
+      "salary": 150000,
+      "email": "prince@gmail.com",
+      "contact": "1000001010",
+      "birthdate": "2006-01-01",
+      "password": "1234",
+      "joiningDate": "5/14/2026, 6:59:17 PM",
+      "id": 18
+    },
+    {
+      "firstName": "suraj",
+      "role": "manager",
+      "department": "Web Development",
+      "salary": 170000,
+      "email": "suraj@gmail.com",
+      "contact": "9999999999",
+      "birthdate": "2003-01-01",
+      "password": "1234",
+      "joiningDate": "5/15/2026, 3:48:54 PM",
+      "id": 19
     }
   ],
   "leaves": [
@@ -347,6 +371,18 @@
       "days": 1,
       "status": "approved",
       "id": 12
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "reason": "",
+      "type": "free",
+      "start": "2026-05-16",
+      "end": "2026-05-16",
+      "days": 1,
+      "status": "approved",
+      "id": 13
     }
   ],
   "attendance": [
@@ -1291,6 +1327,17 @@
       "checkIn": "04:03 PM",
       "checkOut": "",
       "id": 93
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "department": "AI/ML",
+      "salary": 60000,
+      "date": "5/15/2026",
+      "checkIn": "03:51 PM",
+      "checkOut": "",
+      "id": 94
     }
   ],
   "holidays": [
