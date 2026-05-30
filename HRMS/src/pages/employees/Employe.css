@@ -1,0 +1,12 @@
+.scroll-box {
+  max-height: 500px;   /* height control */
+  overflow-y: auto;    /* vertical scroll */
+  overflow-x: hidden;
+}.scroll-box {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.card {
+  border-radius: 12px;
+}
