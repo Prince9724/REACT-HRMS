@@ -46,25 +46,5 @@
       "available": true
     }
   ],
-  "orders": [
-    {
-      "id": "ord1",
-      "customerName": "Rahul",
-      "tableNumber": 5,
-      "items": [
-        { "menuItemId": 1, "name": "Paneer Butter Masala", "quantity": 2, "price": 250, "taxRate": 5 },
-        { "menuItemId": 2, "name": "Garlic Naan", "quantity": 3, "price": 40, "taxRate": 0 }
-      ],
-      "subtotal": 620,
-      "gst": 25,
-      "serviceCharge": 31,
-      "discount": 0,
-      "totalAmount": 676,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2025-05-30T10:00:00Z",
-      "updatedAt": "2025-05-30T10:45:00Z"
-    }
-  ]
+  "orders": []
 }

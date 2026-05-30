@@ -5,9 +5,19 @@ const getMenu = async () => {
   return response.data;
 };
 
-const addItem = async (itemData) => {
+const addMenuItem = async (itemData) => {
   const response = await axios.post('/menu', itemData);
   return response.data;
 };
 
-export default { getMenu, addItem };
+const updateMenuItem = async (id, updates) => {
+  const response = await axios.patch(`/menu/${id}`, updates);
+  return response.data;
+};
+
+const deleteMenuItem = async (id) => {
+  await axios.delete(`/menu/${id}`);
+  return id;
+};
+
+export default { getMenu, addMenuItem, updateMenuItem, deleteMenuItem };
