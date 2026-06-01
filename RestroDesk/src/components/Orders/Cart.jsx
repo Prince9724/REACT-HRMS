@@ -14,25 +14,50 @@ const Cart = ({ cartItems, setCartItems }) => {
   };
 
   const { subtotal, gst, serviceCharge, total } = calculateTotals(cartItems);
+  
   return (
-    <div className="border p-4 rounded">
-      <h3 className="font-bold">Cart</h3>
-      {cartItems.length === 0 && <p>No items</p>}
-      {cartItems.map(item => (
-        <div key={item.id} className="flex justify-between items-center my-1">
-          <span>{item.name} x{item.quantity}</span>
-          <span>₹{item.price * item.quantity}</span>
-          <div>
-            <button onClick={() => updateQty(item.id, -1)} className="bg-red-500 text-white px-2 mx-1">-</button>
-            <button onClick={() => updateQty(item.id, 1)} className="bg-green-500 text-white px-2">+</button>
+    <div className="bg-gray-50 rounded-xl p-4">
+      <h3 className="text-xl font-bold mb-3 flex items-center gap-2">🛒 Your Cart</h3>
+      {cartItems.length === 0 && (
+        <div className="text-center py-8 text-gray-400">
+          <div className="text-4xl mb-2">🛍️</div>
+          <p>Cart is empty</p>
+        </div>
+      )}
+      <div className="space-y-2 max-h-64 overflow-y-auto">
+        {cartItems.map(item => (
+          <div key={item.id} className="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm">
+            <div className="flex-1">
+              <p className="font-medium">{item.name}</p>
+              <p className="text-sm text-gray-600">₹{item.price} x {item.quantity}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => updateQty(item.id, -1)} 
+                className="w-7 h-7 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200"
+              >−</button>
+              <span className="w-6 text-center font-semibold">{item.quantity}</span>
+              <button 
+                onClick={() => updateQty(item.id, 1)} 
+                className="w-7 h-7 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200"
+              >+</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {cartItems.length > 0 && (
+        <div className="mt-4 pt-3 border-t">
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between"><span>Subtotal:</span><span>₹{subtotal}</span></div>
+            <div className="flex justify-between"><span>GST (5%):</span><span>₹{gst}</span></div>
+            <div className="flex justify-between"><span>Service Charge (5%):</span><span>₹{serviceCharge}</span></div>
+            <div className="flex justify-between font-bold text-lg pt-2 border-t mt-2">
+              <span>Total:</span><span className="text-green-600">₹{total}</span>
+            </div>
           </div>
         </div>
-      ))}
-      <hr className="my-2" />
-      <p>Subtotal: ₹{subtotal}</p>
-      <p>GST: ₹{gst}</p>
-      <p>Service Charge: ₹{serviceCharge}</p>
-      <p className="font-bold">Total: ₹{total}</p>
+      )}
     </div>
   );
 };

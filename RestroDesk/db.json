@@ -27,7 +27,8 @@
       "price": 250,
       "taxRate": 5,
       "available": true,
-      "description": "Creamy tomato gravy with paneer"
+      "description": "Creamy tomato gravy with paneer",
+      "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=200&h=150&fit=crop"
     },
     {
       "id": 2,
@@ -35,7 +36,9 @@
       "category": "Bread",
       "price": 40,
       "taxRate": 0,
-      "available": true
+      "available": true,
+      "description": "Smosha",
+      "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200&h=150&fit=crop"
     },
     {
       "id": 3,
@@ -43,8 +46,149 @@
       "category": "Beverage",
       "price": 50,
       "taxRate": 0,
-      "available": true
+      "available": true,
+      "description": "Chilled soft drink",
+      "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=200&h=150&fit=crop"
     }
   ],
-  "orders": []
+  "orders": [
+    {
+      "id": "65615a90-33f0-4b61-a608-e249480a8cb0",
+      "customerName": "Gaurav Bhai",
+      "customerMobile": "9876543210",
+      "tableNumber": 7,
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Garlic Naan",
+          "quantity": 1,
+          "price": 40,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold Drink",
+          "quantity": 3,
+          "price": 50,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 2,
+          "price": 250,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 690,
+      "gst": 34.5,
+      "serviceCharge": 34.5,
+      "discount": 0,
+      "totalAmount": 759,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-01T09:43:56.443Z"
+    },
+    {
+      "id": "fd27b2a2-ac39-4c56-bc0f-d6df6d60e75e",
+      "customerName": "Roshan Bhai",
+      "customerMobile": "9876543111",
+      "tableNumber": 12,
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 2,
+          "name": "Garlic Naan",
+          "quantity": 1,
+          "price": 40,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold Drink",
+          "quantity": 1,
+          "price": 50,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 340,
+      "gst": 17,
+      "serviceCharge": 17,
+      "discount": 0,
+      "totalAmount": 374,
+      "status": "Pending",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-01T09:58:22.017Z"
+    },
+    {
+      "id": "aa81f83a-cbc0-43b0-9cbb-8d6d76fa3fbd",
+      "customerName": "aaaa",
+      "customerMobile": "1234567890",
+      "tableNumber": 8,
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold Drink",
+          "quantity": 2,
+          "price": 50,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 350,
+      "gst": 17.5,
+      "serviceCharge": 17.5,
+      "discount": 0,
+      "totalAmount": 385,
+      "status": "Pending",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-01T11:07:04.961Z"
+    },
+    {
+      "id": "f3a90931-41d5-4a36-8720-cfbf36118c73",
+      "customerName": "bbbbbbbbbbb",
+      "customerMobile": "1234567890",
+      "tableNumber": 3,
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Garlic Naan",
+          "quantity": 2,
+          "price": 40,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 2,
+          "price": 250,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 580,
+      "gst": 29,
+      "serviceCharge": 29,
+      "discount": 0,
+      "totalAmount": 638,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-01T11:09:27.951Z"
+    }
+  ]
 }
