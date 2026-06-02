@@ -61,8 +61,7 @@ const MenuManagement = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {items.map(item => (
           <div key={item.id} className={`bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all ${!item.available ? 'opacity-60' : ''}`}>
-            <img src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=200&fit=crop'} alt={item.name} className="w-full h-40 object-cover" />
-            <div className="p-4">
+<img src={item.image || "https://media.istockphoto.com/id/1182393436/vector/fast-food-seamless-pattern-with-vector-line-icons-of-hamburger-pizza-hot-dog-beverage.jpg?s=612x612&w=0&k=20&c=jlj-n_CNsrd13tkHwC7MVo0cGUyyc8YP6wJQdCvMUGw="} alt={item.name} className="w-full h-40 object-cover" />            <div className="p-4">
               <div className="flex justify-between items-start">
                 <h3 className="text-xl font-bold">{item.name}</h3>
                 <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{item.category}</span>

@@ -6,10 +6,10 @@ import { fetchTables } from '../features/tables/tablesSlice';
 import Cart from '../components/Orders/Cart';
 import Spinner from '../components/Common/Spinner';
 import { requestLeave } from '../features/leave/leaveSlice';
-import {
-  UserCircleIcon,
-  BookOpenIcon,
-  CalendarIcon,
+import { 
+  UserCircleIcon, 
+  BookOpenIcon, 
+  CalendarIcon, 
   MagnifyingGlassIcon,
   PrinterIcon,
   PencilIcon,
@@ -18,7 +18,10 @@ import {
   PlusCircleIcon,
   CurrencyRupeeIcon,
   ClipboardDocumentListIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  ShoppingBagIcon,
+  ClockIcon,
+  ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline';
 
 const EmployeeDashboard = () => {
@@ -41,11 +44,25 @@ const EmployeeDashboard = () => {
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const isFirstLoad = useRef(true);
 
-  // Leave modal states
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [leaveFromDate, setLeaveFromDate] = useState('');
   const [leaveToDate, setLeaveToDate] = useState('');
   const [leaveReason, setLeaveReason] = useState('');
+
+  const addToCart = (item) => {
+    setCartItems(prevCart => {
+      const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
+      if (existingItem) {
+        return prevCart.map(cartItem =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prevCart, { ...item, quantity: 1 }];
+      }
+    });
+  };
 
   const handleRequestLeave = async () => {
     if (!leaveFromDate || !leaveToDate) {
@@ -81,7 +98,6 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     if (!initialLoadDone) return;
-
     const interval = setInterval(async () => {
       if (user) {
         await dispatch(fetchMyOrders(user.id));
@@ -89,7 +105,6 @@ const EmployeeDashboard = () => {
       await dispatch(fetchMenu());
       await dispatch(fetchTables());
     }, 10000);
-
     return () => clearInterval(interval);
   }, [dispatch, user, initialLoadDone]);
 
@@ -98,7 +113,6 @@ const EmployeeDashboard = () => {
   }
 
   const myTables = tables.filter(t => t.assignedTo === user?.id);
-  
   const activeOrderTables = myOrders
     .filter(o => o.status !== 'Completed' && o.id !== editingOrder?.id)
     .map(o => o.tableNumber);
@@ -242,58 +256,125 @@ const EmployeeDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <UserCircleIcon className="w-6 h-6" /> Waiter Panel
-            </h1>
-            <p className="text-gray-600">Welcome, {user?.name}</p>
-          </div>
-          <div className="flex gap-6 items-center flex-wrap">
-            <div className="text-center">
-              <div className="text-sm text-gray-500">Today's Orders</div>
-              <div className="font-bold text-xl">{todaysCount}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm text-gray-500">Today's Sales</div>
-              <div className="font-bold text-green-600 text-xl flex items-center gap-1">
-                <CurrencyRupeeIcon className="w-4 h-4" />{Math.floor(todaysTotal)}
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header with Stats - Like Manager Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Today's Performance Card */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-6 text-white">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-blue-200 text-sm mb-1">Today's Performance</p>
+                <p className="text-3xl font-bold">{todaysCount} Orders</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-400" />
+                  <span className="text-green-400 text-sm">Active Today</span>
+                </div>
+              </div>
+              <div className="bg-blue-400/20 rounded-xl p-3">
+                <ShoppingBagIcon className="w-8 h-8 text-blue-300" />
               </div>
             </div>
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${showHistory ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              <CalendarIcon className="w-4 h-4" />
-              {showHistory ? 'Show Today' : 'History'}
-            </button>
-            <button
-              onClick={() => setShowLeaveModal(true)}
-              className="px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 flex items-center gap-2"
-            >
-              <CalendarIcon className="w-4 h-4" /> Request Leave
-            </button>
+            <div className="mt-4 pt-4 border-t border-blue-400/30">
+              <div className="flex justify-between text-sm text-blue-200">
+                <span>Total Sales: ₹{Math.floor(todaysTotal)}</span>
+                <span>Tables: {myTables.length}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Welcome Card */}
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl shadow-xl p-6 text-white">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-purple-200 text-sm mb-1">Welcome Back</p>
+                <p className="text-2xl font-bold">{user?.name}</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <ClockIcon className="w-4 h-4 text-purple-300" />
+                  <span className="text-purple-200 text-sm">{new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
+              <div className="bg-purple-400/20 rounded-xl p-3">
+                <UserCircleIcon className="w-8 h-8 text-purple-300" />
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-purple-400/30">
+              <div className="flex justify-between text-sm text-purple-200">
+                <span>Role: Waiter</span>
+                <button 
+                  onClick={() => setShowLeaveModal(true)} 
+                  className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm transition flex items-center gap-1"
+                >
+                  <CalendarIcon className="w-3 h-3" /> Request Leave
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Bar */}
+        <div className="bg-white rounded-xl shadow-md p-4">
+          <div className="flex flex-wrap justify-between items-center gap-4">
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowHistory(false)} 
+                className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${!showHistory ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                <CalendarIcon className="w-4 h-4" /> Today's Orders
+              </button>
+              <button 
+                onClick={() => setShowHistory(true)} 
+                className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${showHistory ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                <CalendarIcon className="w-4 h-4" /> History
+              </button>
+            </div>
+            
+            <div className="flex gap-3">
+              {showHistory && (
+                <div className="flex items-center gap-2 border rounded-xl px-3 py-2 bg-gray-50">
+                  <CalendarIcon className="w-4 h-4 text-gray-500" />
+                  <input 
+                    type="date" 
+                    value={selectedDate} 
+                    onChange={e => setSelectedDate(e.target.value)} 
+                    className="outline-none bg-transparent"
+                  />
+                </div>
+              )}
+              <div className="flex items-center gap-2 border rounded-xl px-3 py-2 bg-gray-50">
+                <MagnifyingGlassIcon className="w-4 h-4 text-gray-500" />
+                <input 
+                  type="text" 
+                  placeholder="Search by name/mobile" 
+                  value={searchTerm} 
+                  onChange={e => setSearchTerm(e.target.value)} 
+                  className="outline-none bg-transparent w-48"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Menu Section */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-5">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <BookOpenIcon className="w-6 h-6" /> Menu
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-5">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+              <BookOpenIcon className="w-5 h-5 text-blue-600" /> Menu
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {menuItems.filter(i => i.available).map(item => (
-                <div key={item.id} className="border rounded-xl p-3 flex gap-3 hover:shadow-lg transition">
-                  <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
+                <div key={item.id} className="border rounded-xl p-3 flex gap-3 hover:shadow-lg transition-all hover:-translate-y-1 bg-white">
+                  <img 
+                    src={item.image || "https://media.istockphoto.com/id/1182393436/vector/fast-food-seamless-pattern-with-vector-line-icons-of-hamburger-pizza-hot-dog-beverage.jpg?s=612x612&w=0&k=20&c=jlj-n_CNsrd13tkHwC7MVo0cGUyyc8YP6wJQdCvMUGw="} 
+                    alt={item.name} 
+                    className="w-20 h-20 object-cover rounded-lg"
+                  />
                   <div className="flex-1">
-                    <h3 className="font-bold">{item.name}</h3>
+                    <h3 className="font-bold text-gray-800">{item.name}</h3>
                     <p className="text-xs text-gray-500">{item.category}</p>
-                    <p className="text-green-600 font-bold">₹{item.price}</p>
+                    <p className="text-green-600 font-bold mt-1">₹{item.price}</p>
                     <button
-                      onClick={() => setCartItems([...cartItems, { ...item, quantity: 1 }])}
+                      onClick={() => addToCart(item)}
                       className="mt-2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-700 flex items-center gap-1"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Add
@@ -304,14 +385,31 @@ const EmployeeDashboard = () => {
             </div>
           </div>
 
-          {/* Cart & Order Form */}
-          <div className="bg-white rounded-xl shadow-lg p-5">
+          {/* Cart Section */}
+          <div className="bg-white rounded-2xl shadow-lg p-5">
             <Cart cartItems={cartItems} setCartItems={setCartItems} />
             <div className="mt-6 space-y-3">
-              <input type="text" placeholder="Customer Name *" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" />
-              <input type="tel" placeholder="Mobile (10 digits) *" value={customerMobile} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setCustomerMobile(val); }} className="w-full border rounded-lg p-2" />
+              <input 
+                type="text" 
+                placeholder="Customer Name *" 
+                value={customerName} 
+                onChange={e => setCustomerName(e.target.value)} 
+                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
+              />
+              <input 
+                type="tel" 
+                placeholder="Mobile (10 digits) *" 
+                value={customerMobile} 
+                onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setCustomerMobile(val); }} 
+                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
+              />
 
-              <select value={tableNumber} onChange={e => setTableNumber(e.target.value)} className="w-full border rounded-lg p-2" required>
+              <select 
+                value={tableNumber} 
+                onChange={e => setTableNumber(e.target.value)} 
+                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none" 
+                required
+              >
                 <option value="">-- Select Table --</option>
                 {myTables.map(t => (
                   <option key={t.id} value={t.number} disabled={isTableBusy(t.number)}>
@@ -320,14 +418,28 @@ const EmployeeDashboard = () => {
                 ))}
               </select>
 
-              <textarea placeholder="Special instructions (less salt, extra spicy, etc.)" rows="2" value={notes} onChange={e => setNotes(e.target.value)} className="w-full border rounded-lg p-2 text-sm" />
-              <button onClick={handlePlaceOrder} className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
-                <CheckCircleIcon className="w-4 h-4" />
+              <textarea 
+                placeholder="Special instructions (less salt, extra spicy, etc.)" 
+                rows="2" 
+                value={notes} 
+                onChange={e => setNotes(e.target.value)} 
+                className="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+              />
+              
+              <button 
+                onClick={handlePlaceOrder} 
+                className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
+              >
+                <CheckCircleIcon className="w-5 h-5" />
                 {editingOrder ? 'Update Order' : 'Place Order'}
               </button>
+              
               {editingOrder && (
-                <button onClick={() => { setEditingOrder(null); setCartItems([]); setCustomerName(''); setCustomerMobile(''); setTableNumber(''); setNotes(''); }} className="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition flex items-center justify-center gap-2">
-                  <XCircleIcon className="w-4 h-4" /> Cancel Edit
+                <button 
+                  onClick={() => { setEditingOrder(null); setCartItems([]); setCustomerName(''); setCustomerMobile(''); setTableNumber(''); setNotes(''); }} 
+                  className="w-full bg-gray-400 text-white py-3 rounded-xl font-semibold hover:bg-gray-500 transition flex items-center justify-center gap-2"
+                >
+                  <XCircleIcon className="w-5 h-5" /> Cancel Edit
                 </button>
               )}
             </div>
@@ -335,49 +447,52 @@ const EmployeeDashboard = () => {
         </div>
 
         {/* Orders History */}
-        <div className="mt-8 bg-white rounded-xl shadow-lg p-5">
-          <div className="flex flex-wrap justify-between items-center mb-4 gap-3">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <ClipboardDocumentListIcon className="w-6 h-6" />
-              {showHistory ? 'Order History' : "Today's Orders"}
-            </h2>
-            <div className="flex gap-3">
-              {showHistory && (
-                <div className="flex items-center gap-2 border rounded-lg p-1 px-2">
-                  <CalendarIcon className="w-4 h-4 text-gray-500" />
-                  <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="outline-none" />
-                </div>
-              )}
-              <div className="flex items-center gap-2 border rounded-lg p-1 px-2">
-                <MagnifyingGlassIcon className="w-4 h-4 text-gray-500" />
-                <input type="text" placeholder="Search by name/mobile" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="outline-none w-40" />
-              </div>
-            </div>
-          </div>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+        <div className="bg-white rounded-2xl shadow-lg p-5">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+            <ClipboardDocumentListIcon className="w-5 h-5 text-blue-600" />
+            {showHistory ? 'Order History' : "Today's Orders"}
+          </h2>
+          <div className="space-y-3 max-h-96 overflow-y-auto">
             {displayedOrders.length === 0 && (
-              <p className="text-center text-gray-500 py-8">No orders found.</p>
+              <div className="text-center py-12">
+                <ShoppingBagIcon className="w-16 h-16 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No orders found</p>
+              </div>
             )}
             {displayedOrders.map(order => (
-              <div key={order.id} className="border rounded-lg p-3 hover:bg-gray-50 transition">
+              <div key={order.id} className="border rounded-xl p-4 hover:bg-gray-50 transition">
                 <div className="flex flex-wrap justify-between items-start">
                   <div className="flex-1">
-                    <p className="font-mono text-xs text-gray-500">#{order.id.slice(0, 8)}</p>
-                    <p className="font-semibold">{order.customerName} <span className="text-sm text-gray-500">({order.customerMobile})</span></p>
-                    <p className="text-xs text-gray-500">Table {order.tableNumber} | Status: <span className={`font-semibold ${order.status === 'Completed' ? 'text-green-600' : order.status === 'Pending' ? 'text-yellow-600' : 'text-blue-600'}`}>{order.status}</span></p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">#{order.id.slice(0, 8)}</span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        order.status === 'Completed' ? 'bg-green-100 text-green-700' : 
+                        order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {order.status}
+                      </span>
+                    </div>
+                    <p className="font-semibold text-gray-800">{order.customerName} <span className="text-sm text-gray-500">({order.customerMobile})</span></p>
+                    <p className="text-xs text-gray-500">Table {order.tableNumber}</p>
                     {order.notes && <p className="text-xs text-orange-600 mt-1">Note: {order.notes}</p>}
-                    <p className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleString()}</p>
+                    <p className="text-xs text-gray-400 mt-1">{new Date(order.createdAt).toLocaleString()}</p>
                   </div>
-                  <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                  <div className="flex items-center gap-2 mt-3 sm:mt-0">
                     <p className="font-bold text-green-600 text-lg flex items-center gap-1">
                       <CurrencyRupeeIcon className="w-4 h-4" />{Math.floor(order.totalAmount)}
                     </p>
                     {order.status !== 'Completed' && (
-                      <button onClick={() => editOrder(order)} className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 flex items-center gap-1">
+                      <button 
+                        onClick={() => editOrder(order)} 
+                        className="bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-blue-600 flex items-center gap-1"
+                      >
                         <PencilIcon className="w-3 h-3" /> Edit
                       </button>
                     )}
-                    <button onClick={() => printBill(order)} className="bg-gray-500 text-white px-2 py-1 rounded text-xs hover:bg-gray-600 flex items-center gap-1">
+                    <button 
+                      onClick={() => printBill(order)} 
+                      className="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-gray-600 flex items-center gap-1"
+                    >
                       <PrinterIcon className="w-3 h-3" /> Print
                     </button>
                   </div>
@@ -388,54 +503,54 @@ const EmployeeDashboard = () => {
         </div>
       </div>
 
-      {/* ✅ Leave Modal - Now inside return */}
+      {/* Leave Modal */}
       {showLeaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5" /> Request Leave
+              <CalendarIcon className="w-5 h-5 text-orange-500" /> Request Leave
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">From Date</label>
+                <label className="block text-sm font-medium mb-1 text-gray-700">From Date</label>
                 <input
                   type="date"
                   value={leaveFromDate}
                   onChange={e => setLeaveFromDate(e.target.value)}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
                   min={new Date().toISOString().split('T')[0]}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">To Date</label>
+                <label className="block text-sm font-medium mb-1 text-gray-700">To Date</label>
                 <input
                   type="date"
                   value={leaveToDate}
                   onChange={e => setLeaveToDate(e.target.value)}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
                   min={leaveFromDate || new Date().toISOString().split('T')[0]}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Reason (Optional)</label>
+                <label className="block text-sm font-medium mb-1 text-gray-700">Reason (Optional)</label>
                 <textarea
                   rows="2"
                   value={leaveReason}
                   onChange={e => setLeaveReason(e.target.value)}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
                   placeholder="Family function, medical, etc."
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-3 pt-3">
                 <button
                   onClick={() => setShowLeaveModal(false)}
-                  className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
+                  className="bg-gray-400 text-white px-5 py-2 rounded-xl hover:bg-gray-500 transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleRequestLeave}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition"
                 >
                   Submit Request
                 </button>
