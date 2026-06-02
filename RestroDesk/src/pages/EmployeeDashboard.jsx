@@ -40,7 +40,7 @@ const EmployeeDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const isFirstLoad = useRef(true);
-  
+
   // Leave modal states
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [leaveFromDate, setLeaveFromDate] = useState('');
@@ -98,7 +98,10 @@ const EmployeeDashboard = () => {
   }
 
   const myTables = tables.filter(t => t.assignedTo === user?.id);
-  const activeOrderTables = myOrders.filter(o => o.status !== 'Completed').map(o => o.tableNumber);
+  
+  const activeOrderTables = myOrders
+    .filter(o => o.status !== 'Completed' && o.id !== editingOrder?.id)
+    .map(o => o.tableNumber);
   const isTableBusy = (tableNo) => activeOrderTables.includes(parseInt(tableNo));
 
   const todayStr = new Date().toISOString().split('T')[0];
@@ -266,8 +269,8 @@ const EmployeeDashboard = () => {
               <CalendarIcon className="w-4 h-4" />
               {showHistory ? 'Show Today' : 'History'}
             </button>
-            <button 
-              onClick={() => setShowLeaveModal(true)} 
+            <button
+              onClick={() => setShowLeaveModal(true)}
               className="px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 flex items-center gap-2"
             >
               <CalendarIcon className="w-4 h-4" /> Request Leave
@@ -395,43 +398,43 @@ const EmployeeDashboard = () => {
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium mb-1">From Date</label>
-                <input 
-                  type="date" 
-                  value={leaveFromDate} 
-                  onChange={e => setLeaveFromDate(e.target.value)} 
-                  className="w-full border rounded-lg p-2" 
+                <input
+                  type="date"
+                  value={leaveFromDate}
+                  onChange={e => setLeaveFromDate(e.target.value)}
+                  className="w-full border rounded-lg p-2"
                   min={new Date().toISOString().split('T')[0]}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">To Date</label>
-                <input 
-                  type="date" 
-                  value={leaveToDate} 
-                  onChange={e => setLeaveToDate(e.target.value)} 
-                  className="w-full border rounded-lg p-2" 
+                <input
+                  type="date"
+                  value={leaveToDate}
+                  onChange={e => setLeaveToDate(e.target.value)}
+                  className="w-full border rounded-lg p-2"
                   min={leaveFromDate || new Date().toISOString().split('T')[0]}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Reason (Optional)</label>
-                <textarea 
-                  rows="2" 
-                  value={leaveReason} 
-                  onChange={e => setLeaveReason(e.target.value)} 
-                  className="w-full border rounded-lg p-2" 
-                  placeholder="Family function, medical, etc." 
+                <textarea
+                  rows="2"
+                  value={leaveReason}
+                  onChange={e => setLeaveReason(e.target.value)}
+                  className="w-full border rounded-lg p-2"
+                  placeholder="Family function, medical, etc."
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <button 
-                  onClick={() => setShowLeaveModal(false)} 
+                <button
+                  onClick={() => setShowLeaveModal(false)}
                   className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
                 >
                   Cancel
                 </button>
-                <button 
-                  onClick={handleRequestLeave} 
+                <button
+                  onClick={handleRequestLeave}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                 >
                   Submit Request

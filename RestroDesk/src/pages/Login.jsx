@@ -20,6 +20,7 @@ const Login = () => {
   };
 
   if (isLoading) return <Spinner />;
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
       <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96 border border-white/20">
@@ -51,11 +52,12 @@ const Login = () => {
           </button>
         </form>
         <p className="text-white/70 text-center text-sm mt-6">
-          Demo: manager@resto.com / 123 <br />
+          Demo: manager@resto.com / 123<br />
           Waiter: waiter@resto.com / 123
         </p>
       </div>
     </div>
   );
 };
+
 export default Login;

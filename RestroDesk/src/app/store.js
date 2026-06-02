@@ -7,13 +7,14 @@ import reportReducer from '../features/reports/reportSlice';
 import tablesReducer from '../features/tables/tablesSlice';
 import leaveReducer from '../features/leave/leaveSlice';
 
-// ✅ Load initial state from localStorage
+// ✅ Load state from localStorage
 const loadState = () => {
   try {
     const serializedState = localStorage.getItem('reduxState');
     if (serializedState === null) return undefined;
     return JSON.parse(serializedState);
   } catch (err) {
+    console.error('Error loading state:', err);
     return undefined;
   }
 };
@@ -24,7 +25,7 @@ const saveState = (state) => {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('reduxState', serializedState);
   } catch (err) {
-    // ignore
+    console.error('Error saving state:', err);
   }
 };
 
@@ -38,12 +39,12 @@ export const store = configureStore({
     employees: employeeReducer,
     reports: reportReducer,
     tables: tablesReducer,
-     leave: leaveReducer,
+    leave: leaveReducer,
   },
   preloadedState: persistedState,
 });
 
-// ✅ Subscribe to store changes and save to localStorage
+// ✅ Subscribe to store changes (save on every state change)
 store.subscribe(() => {
   saveState(store.getState());
 });
