@@ -51,9 +51,9 @@ const Cart = ({ cartItems, setCartItems }) => {
           <div className="space-y-1 text-sm">
             <div className="flex justify-between"><span>Subtotal:</span><span>₹{subtotal}</span></div>
             <div className="flex justify-between"><span>GST (5%):</span><span>₹{gst}</span></div>
-            <div className="flex justify-between"><span>Service Charge (5%):</span><span>₹{serviceCharge}</span></div>
+            <div className="flex justify-between"><span>Service Charge (5%):</span><span>₹{Math.floor(serviceCharge)}</span></div>
             <div className="flex justify-between font-bold text-lg pt-2 border-t mt-2">
-              <span>Total:</span><span className="text-green-600">₹{total}</span>
+              <span>Total:</span><span className="text-green-600">₹{Math.floor(total)}</span>
             </div>
           </div>
         </div>

@@ -22,4 +22,15 @@ const updateOrderStatus = async (id, status) => {
   return response.data;
 };
 
-export default { createOrder, fetchAllOrders, fetchOrdersByEmployee, updateOrderStatus };
+const updateOrder = async (id, orderData) => {
+  const response = await axios.patch(`/orders/${id}`, orderData);
+  return response.data;
+};
+
+export default { 
+  createOrder, 
+  fetchAllOrders, 
+  fetchOrdersByEmployee, 
+  updateOrderStatus, 
+  updateOrder 
+};

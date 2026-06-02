@@ -6,7 +6,15 @@ const fetchEmployees = async () => {
 };
 
 const addEmployee = async (empData) => {
-  const response = await axios.post('/users', { ...empData, role: 'employee' });
+  // ✅ Auto add joining date and time
+  const now = new Date();
+  const newEmp = { 
+    ...empData, 
+    role: 'employee',
+    joiningDate: now.toISOString().split('T')[0],  // YYYY-MM-DD
+    joiningTime: now.toLocaleTimeString('en-IN')   // HH:MM:SS
+  };
+  const response = await axios.post('/users', newEmp);
   return response.data;
 };
 

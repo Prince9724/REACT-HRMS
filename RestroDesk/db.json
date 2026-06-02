@@ -7,7 +7,9 @@
       "password": "123",
       "role": "manager",
       "contact": "9876543210",
-      "salary": 50000
+      "salary": 50000,
+      "joiningDate": "2026-06-01",
+      "joiningTime": "09:00:00 AM"
     },
     {
       "id": 2,
@@ -16,7 +18,20 @@
       "password": "123",
       "role": "employee",
       "contact": "9876543222",
-      "salary": 15000
+      "salary": 15000,
+      "joiningDate": "2026-06-01",
+      "joiningTime": "09:30:00 AM"
+    },
+    {
+      "id": 3,
+      "name": "dipu",
+      "email": "dipu@gmail.com",
+      "password": "123",
+      "role": "employee",
+      "contact": "1234567890",
+      "salary": 10000,
+      "joiningDate": "2026-06-01",
+      "joiningTime": "10:00:00 AM"
     }
   ],
   "menu": [
@@ -32,23 +47,78 @@
     },
     {
       "id": 2,
-      "name": "Garlic Naan",
-      "category": "Bread",
-      "price": 40,
+      "name": "Samosa",
+      "category": "Starter",
+      "price": 20,
       "taxRate": 0,
       "available": true,
-      "description": "Smosha",
+      "description": "Crispy samosa",
       "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200&h=150&fit=crop"
     },
     {
       "id": 3,
-      "name": "Cold Drink",
+      "name": "Cold coffee ",
       "category": "Beverage",
       "price": 50,
       "taxRate": 0,
       "available": true,
-      "description": "Chilled soft drink",
-      "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=200&h=150&fit=crop"
+      "description": "Chilled soft coffee",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_mKVSVjZ3PneZeA33dW8Wk1WzTf65YP_ScA&s"
+    },
+    {
+      "id": 4,
+      "name": "Pizza",
+      "category": "Main",
+      "price": 199,
+      "taxRate": 5,
+      "available": true,
+      "description": "Tasty pizza",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTs13kyoQZGlwBCUi73VW5UJvtV93NT5iEonQ&s"
+    },
+    {
+      "id": 5,
+      "name": "Dosa",
+      "category": "Main",
+      "price": 150,
+      "taxRate": 0,
+      "available": true,
+      "description": "Masala & cheese dosa",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9tXNH_xCEYOU9wjkNFLKfCHUf1mvc8QmR4g&s"
+    },
+    {
+      "name": "idle",
+      "category": "Main",
+      "price": 70,
+      "taxRate": 5,
+      "available": true,
+      "description": "spicy",
+      "image": "https://media.istockphoto.com/id/638506124/photo/idli-with-coconut-chutney-and-sambhar.jpg?s=612x612&w=0&k=20&c=ze1ngBM0LY4w9aqWx_tGe2vTAr4uf36elveTDZ83fgw=",
+      "id": 6
+    }
+  ],
+  "tables": [
+    {
+      "id": 1,
+      "number": 1,
+      "assignedTo": 2,
+      "status": "available"
+    },
+    {
+      "id": 2,
+      "number": 2,
+      "assignedTo": 3,
+      "status": "available"
+    },
+    {
+      "id": 3,
+      "number": 3,
+      "assignedTo": 2,
+      "status": "available"
+    },
+    {
+      "number": 4,
+      "assignedTo": 3,
+      "id": 4
     }
   ],
   "orders": [
@@ -59,7 +129,7 @@
       "tableNumber": 7,
       "items": [
         {
-          "menuItemId": 2,
+          "menuItemId": 6,
           "name": "Garlic Naan",
           "quantity": 1,
           "price": 40,
@@ -104,7 +174,7 @@
           "taxRate": 5
         },
         {
-          "menuItemId": 2,
+          "menuItemId": 6,
           "name": "Garlic Naan",
           "quantity": 1,
           "price": 40,
@@ -123,7 +193,7 @@
       "serviceCharge": 17,
       "discount": 0,
       "totalAmount": 374,
-      "status": "Pending",
+      "status": "Completed",
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-01T09:58:22.017Z"
@@ -154,7 +224,7 @@
       "serviceCharge": 17.5,
       "discount": 0,
       "totalAmount": 385,
-      "status": "Pending",
+      "status": "Completed",
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-01T11:07:04.961Z"
@@ -166,7 +236,7 @@
       "tableNumber": 3,
       "items": [
         {
-          "menuItemId": 2,
+          "menuItemId": 6,
           "name": "Garlic Naan",
           "quantity": 2,
           "price": 40,
@@ -189,6 +259,223 @@
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-01T11:09:27.951Z"
+    },
+    {
+      "id": "5ec0e9b6-a5ed-48d4-aee1-cc560d81b37a",
+      "customerName": "ayush",
+      "customerMobile": "1234567890",
+      "tableNumber": 5,
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 1,
+          "price": 40,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold Drink",
+          "quantity": 2,
+          "price": 50,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 390,
+      "gst": 19.5,
+      "serviceCharge": 19.5,
+      "discount": 0,
+      "totalAmount": 429,
+      "status": "Pending",
+      "paymentMethod": "Cash",
+      "createdBy": 3,
+      "createdAt": "2026-06-01T15:30:04.056Z"
+    },
+    {
+      "id": "001cf0f0-53de-4924-9e4d-9cb6f6031f23",
+      "customerName": "divya",
+      "customerMobile": "1234567890",
+      "tableNumber": 8,
+      "items": [
+        {
+          "menuItemId": 5,
+          "name": "Dosa",
+          "quantity": 1,
+          "price": 150,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 2,
+          "price": 40,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 4,
+          "name": "Pizza",
+          "quantity": 1,
+          "price": 199,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 429,
+      "gst": 21.45,
+      "serviceCharge": 21.45,
+      "discount": 0,
+      "totalAmount": 471.9,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 3,
+      "createdAt": "2026-06-01T15:35:45.042Z"
+    },
+    {
+      "id": "dbe8aa36-98c0-44d8-abca-0cc53e53db36",
+      "customerName": "qq",
+      "customerMobile": "1234567890",
+      "tableNumber": 3,
+      "items": [
+        {
+          "menuItemId": 4,
+          "name": "Pizza",
+          "quantity": 1,
+          "price": 199,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold Drink",
+          "quantity": 1,
+          "price": 50,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 249,
+      "gst": 12.45,
+      "serviceCharge": 12.450000000000001,
+      "discount": 0,
+      "totalAmount": 273.9,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-01T16:17:06.840Z"
+    },
+    {
+      "id": "fb874942-c62d-4ff1-bc37-84e5ec333b83",
+      "customerName": "shivam",
+      "customerMobile": "1234567890",
+      "tableNumber": 1,
+      "notes": "spicy",
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 1,
+          "price": 40,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 290,
+      "gst": 14.5,
+      "serviceCharge": 14.5,
+      "discount": 0,
+      "totalAmount": 319,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-02T07:01:51.786Z"
+    },
+    {
+      "id": "87dcaf81-50d7-4a66-b928-459c9763e209",
+      "customerName": "aaaaa",
+      "customerMobile": "1234567890",
+      "tableNumber": 4,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 6,
+          "name": "idle",
+          "quantity": 1,
+          "price": 70,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 4,
+          "name": "Pizza",
+          "quantity": 1,
+          "price": 199,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 519,
+      "gst": 25.95,
+      "serviceCharge": 25.950000000000003,
+      "discount": 0,
+      "totalAmount": 570.9000000000001,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-02T08:20:14.558Z"
+    },
+    {
+      "id": "cc742618-587a-43fd-8250-cbe38a450f83",
+      "customerName": "yash",
+      "customerMobile": "1111234567890",
+      "tableNumber": 4,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 1,
+          "price": 20,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 1,
+          "price": 50,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 6,
+          "name": "idle",
+          "quantity": 1,
+          "price": 70,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 140,
+      "gst": 7,
+      "serviceCharge": 7,
+      "discount": 0,
+      "totalAmount": 154,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-02T08:44:04.566Z"
     }
   ]
 }

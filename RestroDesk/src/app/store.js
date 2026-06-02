@@ -4,6 +4,30 @@ import menuReducer from '../features/menu/menuSlice';
 import orderReducer from '../features/orders/orderSlice';
 import employeeReducer from '../features/employees/employeeSlice';
 import reportReducer from '../features/reports/reportSlice';
+import tablesReducer from '../features/tables/tablesSlice';
+
+// ✅ Load initial state from localStorage
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem('reduxState');
+    if (serializedState === null) return undefined;
+    return JSON.parse(serializedState);
+  } catch (err) {
+    return undefined;
+  }
+};
+
+// ✅ Save state to localStorage
+const saveState = (state) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('reduxState', serializedState);
+  } catch (err) {
+    // ignore
+  }
+};
+
+const persistedState = loadState();
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +36,12 @@ export const store = configureStore({
     orders: orderReducer,
     employees: employeeReducer,
     reports: reportReducer,
+    tables: tablesReducer,
   },
+  preloadedState: persistedState,
+});
+
+// ✅ Subscribe to store changes and save to localStorage
+store.subscribe(() => {
+  saveState(store.getState());
 });

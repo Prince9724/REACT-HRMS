@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchMenu } from '../features/menu/menuSlice';
-import { createOrder, fetchMyOrders } from '../features/orders/orderSlice';
+import { createOrder, fetchMyOrders, updateOrder } from '../features/orders/orderSlice';
+import { fetchTables } from '../features/tables/tablesSlice';
 import Cart from '../components/Orders/Cart';
 import Spinner from '../components/Common/Spinner';
 
@@ -10,20 +11,118 @@ const EmployeeDashboard = () => {
   const { user } = useAppSelector(state => state.auth);
   const { items: menuItems, isLoading: menuLoading } = useAppSelector(state => state.menu);
   const { myOrders, isLoading: ordersLoading } = useAppSelector(state => state.orders);
+  const { list: tables, isLoading: tablesLoading } = useAppSelector(state => state.tables);
+
   const [cartItems, setCartItems] = useState([]);
   const [customerName, setCustomerName] = useState('');
   const [customerMobile, setCustomerMobile] = useState('');
   const [tableNumber, setTableNumber] = useState('');
+  const [notes, setNotes] = useState('');
+  const [editingOrder, setEditingOrder] = useState(null);
 
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // ✅ Track initial load only – after that no spinner
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const isFirstLoad = useRef(true);
+
+  // ✅ Initial load
   useEffect(() => {
-    dispatch(fetchMenu());
-    if (user) dispatch(fetchMyOrders(user.id));
+    const load = async () => {
+      await Promise.all([
+        dispatch(fetchMenu()),
+        dispatch(fetchTables()),
+        user && dispatch(fetchMyOrders(user.id))
+      ]);
+      setInitialLoadDone(true);
+      isFirstLoad.current = false;
+    };
+    load();
   }, [dispatch, user]);
+
+  // ✅ Silent background refresh – NO SPINNER, NO BLINK
+  useEffect(() => {
+    if (!initialLoadDone) return;
+    
+    const interval = setInterval(async () => {
+      if (user) {
+        await dispatch(fetchMyOrders(user.id));
+      }
+      await dispatch(fetchMenu());
+      await dispatch(fetchTables());
+    }, 10000); // 10 seconds
+    
+    return () => clearInterval(interval);
+  }, [dispatch, user, initialLoadDone]);
+
+  // ✅ Show spinner ONLY on very first load
+  if (!initialLoadDone) {
+    return <Spinner />;
+  }
+
+  // ✅ Get tables assigned to this waiter
+  const myTables = tables.filter(t => t.assignedTo === user?.id);
+  
+  // ✅ Get busy tables (orders not completed)
+  const activeOrderTables = myOrders.filter(o => o.status !== 'Completed').map(o => o.tableNumber);
+  const isTableBusy = (tableNo) => activeOrderTables.includes(parseInt(tableNo));
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todaysOrders = myOrders.filter(o => o.createdAt.startsWith(todayStr));
+  const todaysTotal = todaysOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+  const todaysCount = todaysOrders.length;
+
+  let displayedOrders = showHistory
+    ? myOrders.filter(o => o.createdAt.startsWith(selectedDate))
+    : todaysOrders;
+
+  if (searchTerm.trim()) {
+    const term = searchTerm.toLowerCase();
+    displayedOrders = displayedOrders.filter(o =>
+      o.customerName.toLowerCase().includes(term) ||
+      o.customerMobile.includes(term)
+    );
+  }
+  displayedOrders = [...displayedOrders].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const editOrder = (order) => {
+    if (order.status === 'Completed') {
+      alert('Completed orders cannot be modified');
+      return;
+    }
+    const cart = order.items.map(item => ({
+      id: item.menuItemId,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      taxRate: item.taxRate
+    }));
+    setCartItems(cart);
+    setCustomerName(order.customerName);
+    setCustomerMobile(order.customerMobile);
+    setTableNumber(order.tableNumber);
+    setNotes(order.notes || '');
+    setEditingOrder(order);
+  };
 
   const handlePlaceOrder = async () => {
     if (!customerName || !customerMobile || cartItems.length === 0)
-      return alert('Please fill customer name, mobile and add items');
-    
+      return alert('Please fill all fields');
+
+    if (!/^\d{10}$/.test(customerMobile)) {
+      return alert('Mobile number must be exactly 10 digits');
+    }
+
+    if (!tableNumber) {
+      return alert('Please select a table');
+    }
+
+    if (isTableBusy(tableNumber)) {
+      return alert('This table is currently busy with an active order. Please wait until order is completed.');
+    }
+
     let subtotal = 0, gst = 0;
     cartItems.forEach(item => {
       const itemTotal = item.price * item.quantity;
@@ -32,57 +131,116 @@ const EmployeeDashboard = () => {
     });
     const serviceCharge = subtotal * 0.05;
     const totalAmount = subtotal + gst + serviceCharge;
-    
+
     const orderData = {
-      customerName, customerMobile, tableNumber: parseInt(tableNumber),
-      items: cartItems.map(({ id, name, price, quantity, taxRate }) => ({ menuItemId: id, name, quantity, price, taxRate })),
-      subtotal, gst, serviceCharge, discount: 0, totalAmount,
-      status: 'Pending', paymentMethod: 'Cash', createdBy: user.id,
+      customerName,
+      customerMobile,
+      tableNumber: parseInt(tableNumber),
+      notes,
+      items: cartItems.map(({ id, name, price, quantity, taxRate }) => ({
+        menuItemId: id,
+        name,
+        quantity,
+        price,
+        taxRate
+      })),
+      subtotal,
+      gst,
+      serviceCharge,
+      discount: 0,
+      totalAmount,
+      status: 'Pending',
+      paymentMethod: 'Cash',
+      createdBy: user.id,
     };
-    await dispatch(createOrder(orderData));
-    setCartItems([]); setCustomerName(''); setCustomerMobile(''); setTableNumber('');
-    dispatch(fetchMyOrders(user.id));
+
+    if (editingOrder) {
+      await dispatch(updateOrder({ id: editingOrder.id, updates: orderData }));
+      setEditingOrder(null);
+    } else {
+      await dispatch(createOrder(orderData));
+    }
+    setCartItems([]);
+    setCustomerName('');
+    setCustomerMobile('');
+    setTableNumber('');
+    setNotes('');
+    await dispatch(fetchMyOrders(user.id));
   };
 
-  if (menuLoading || ordersLoading) return <Spinner />;
-  
+  const printBill = (order) => {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html><head><title>Invoice ${order.id.slice(0,8)}</title>
+      <style>body{font-family:Arial;padding:20px} table{border-collapse:collapse;width:100%} th,td{border:1px solid #ddd;padding:8px} .total{font-weight:bold;margin-top:20px}</style>
+      </head><body>
+      <h2>Restaurant POS</h2>
+      <p>Order #${order.id.slice(0,8)}<br>Date: ${new Date(order.createdAt).toLocaleString()}</p>
+      <p>Customer: ${order.customerName} (${order.customerMobile})<br>Table: ${order.tableNumber}</p>
+      ${order.notes ? `<p>Instructions: ${order.notes}</p>` : ''}
+      <table border="1" cellpadding="8" cellspacing="0" style="width:100%;border-collapse:collapse">
+        <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+        <tbody>
+          ${order.items.map(item => `<tr><td>${item.name}</td><td>${item.quantity}</td><td>₹${item.price}</td><td>₹${item.price * item.quantity}</td></tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="total"><strong>Total: ₹${Math.floor(order.totalAmount)}</strong></div>
+      <p>Thank you!</p>
+      </body></html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  if (myTables.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">⚠️ No Tables Assigned</h2>
+          <p className="text-gray-600">You have not been assigned any tables yet.</p>
+          <p className="text-gray-500 text-sm mt-2">Please contact the manager to assign tables to you.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex justify-between items-center">
+        <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">🧑‍🍳 Waiter Panel</h1>
-            <p className="text-gray-600">Welcome back, {user?.name}</p>
+            <h1 className="text-2xl font-bold">🧑‍🍳 Waiter Panel</h1>
+            <p className="text-gray-600">Welcome, {user?.name}</p>
           </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Today's Date</div>
-            <div className="font-semibold">{new Date().toLocaleDateString()}</div>
+          <div className="flex gap-6 items-center">
+            <div className="text-center">
+              <div className="text-sm text-gray-500">Today's Orders</div>
+              <div className="font-bold text-xl">{todaysCount}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm text-gray-500">Today's Sales</div>
+              <div className="font-bold text-green-600 text-xl">₹{Math.floor(todaysTotal)}</div>
+            </div>
+            <button onClick={() => setShowHistory(!showHistory)} className={`px-4 py-2 rounded-lg transition ${showHistory ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
+              {showHistory ? '📅 Show Today' : '📜 History'}
+            </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Menu Section */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-5">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">📋 Menu</h2>
+            <h2 className="text-2xl font-bold mb-4">📋 Menu</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {menuItems.filter(i => i.available).map(item => (
-                <div key={item.id} className="border rounded-xl p-3 flex gap-3 hover:shadow-lg transition-all hover:-translate-y-1 bg-white">
-                  <img 
-                    src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&h=100&fit=crop'} 
-                    alt={item.name} 
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
+                <div key={item.id} className="border rounded-xl p-3 flex gap-3 hover:shadow-lg transition">
+                  <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
                   <div className="flex-1">
-                    <h3 className="font-bold text-lg">{item.name}</h3>
+                    <h3 className="font-bold">{item.name}</h3>
                     <p className="text-xs text-gray-500">{item.category}</p>
-                    <p className="text-green-600 font-bold mt-1">₹{item.price}</p>
-                    <button 
-                      onClick={() => setCartItems([...cartItems, { ...item, quantity: 1 }])} 
-                      className="mt-2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-700 transition"
-                    >
-                      + Add to Cart
-                    </button>
+                    <p className="text-green-600 font-bold">₹{item.price}</p>
+                    <button onClick={() => setCartItems([...cartItems, { ...item, quantity: 1 }])} className="mt-2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-700">+ Add</button>
                   </div>
                 </div>
               ))}
@@ -93,61 +251,72 @@ const EmployeeDashboard = () => {
           <div className="bg-white rounded-xl shadow-lg p-5">
             <Cart cartItems={cartItems} setCartItems={setCartItems} />
             <div className="mt-6 space-y-3">
-              <input 
-                type="text" 
-                placeholder="Customer Name *" 
-                value={customerName} 
-                onChange={e => setCustomerName(e.target.value)} 
-                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
-              />
-              <input 
-                type="tel" 
-                placeholder="Mobile Number *" 
-                value={customerMobile} 
-                onChange={e => setCustomerMobile(e.target.value)} 
-                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
-              />
-              <input 
-                type="number" 
-                placeholder="Table Number" 
-                value={tableNumber} 
-                onChange={e => setTableNumber(e.target.value)} 
-                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
-              />
-              <button 
-                onClick={handlePlaceOrder} 
-                className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
-              >
-                Place Order
+              <input type="text" placeholder="Customer Name *" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" />
+              <input type="tel" placeholder="Mobile (10 digits) *" value={customerMobile} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setCustomerMobile(val); }} className="w-full border rounded-lg p-2" />
+              
+              {/* Table Dropdown */}
+              <select value={tableNumber} onChange={e => setTableNumber(e.target.value)} className="w-full border rounded-lg p-2" required>
+                <option value="">-- Select Table --</option>
+                {myTables.map(t => (
+                  <option key={t.id} value={t.number} disabled={isTableBusy(t.number)}>
+                    Table {t.number} {isTableBusy(t.number) ? '🔴 (Busy)' : '🟢 (Available)'}
+                  </option>
+                ))}
+              </select>
+              
+              <textarea placeholder="Special instructions (less salt, extra spicy, etc.)" rows="2" value={notes} onChange={e => setNotes(e.target.value)} className="w-full border rounded-lg p-2 text-sm" />
+              <button onClick={handlePlaceOrder} className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition">
+                {editingOrder ? '✏️ Update Order' : '✅ Place Order'}
               </button>
+              {editingOrder && (
+                <button onClick={() => { setEditingOrder(null); setCartItems([]); setCustomerName(''); setCustomerMobile(''); setTableNumber(''); setNotes(''); }} className="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition">
+                  ❌ Cancel Edit
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Order History */}
+        {/* Orders History */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-5">
-          <h2 className="text-2xl font-bold mb-3">📜 My Order History</h2>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {myOrders.map(order => (
-              <div key={order.id} className="border-b pb-2 flex justify-between items-center hover:bg-gray-50 p-2 rounded">
-                <div>
-                  <p className="font-medium">
-                    <span className="font-mono text-xs">#{order.id.slice(0,8)}</span> - {order.customerName} 
-                    <span className="text-gray-500 text-sm ml-2">({order.customerMobile})</span>
-                  </p>
-                  <p className="text-xs text-gray-500">Table {order.tableNumber} | {order.status}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-green-600">₹{order.totalAmount}</p>
-                  <p className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleTimeString()}</p>
+          <div className="flex flex-wrap justify-between items-center mb-4 gap-3">
+            <h2 className="text-2xl font-bold">{showHistory ? '📜 Order History' : "📅 Today's Orders"}</h2>
+            <div className="flex gap-3">
+              {showHistory && (
+                <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="border rounded-lg p-2" />
+              )}
+              <input type="text" placeholder="🔍 Search by name/mobile" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="border rounded-lg p-2 w-48" />
+            </div>
+          </div>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {displayedOrders.length === 0 && (
+              <p className="text-center text-gray-500 py-8">No orders found.</p>
+            )}
+            {displayedOrders.map(order => (
+              <div key={order.id} className="border rounded-lg p-3 hover:bg-gray-50 transition">
+                <div className="flex flex-wrap justify-between items-start">
+                  <div className="flex-1">
+                    <p className="font-mono text-xs text-gray-500">#{order.id.slice(0,8)}</p>
+                    <p className="font-semibold">{order.customerName} <span className="text-sm text-gray-500">({order.customerMobile})</span></p>
+                    <p className="text-xs text-gray-500">Table {order.tableNumber} | Status: <span className={`font-semibold ${order.status === 'Completed' ? 'text-green-600' : order.status === 'Pending' ? 'text-yellow-600' : 'text-blue-600'}`}>{order.status}</span></p>
+                    {order.notes && <p className="text-xs text-orange-600 mt-1">📝 Note: {order.notes}</p>}
+                    <p className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleString()}</p>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                    <p className="font-bold text-green-600 text-lg">₹{Math.floor(order.totalAmount)}</p>
+                    {order.status !== 'Completed' && (
+                      <button onClick={() => editOrder(order)} className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600">✏️ Edit</button>
+                    )}
+                    <button onClick={() => printBill(order)} className="bg-gray-500 text-white px-2 py-1 rounded text-xs hover:bg-gray-600">🖨️ Print</button>
+                  </div>
                 </div>
               </div>
             ))}
-            {myOrders.length === 0 && <p className="text-gray-500 text-center py-4">No orders yet. Start by placing an order!</p>}
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default EmployeeDashboard;

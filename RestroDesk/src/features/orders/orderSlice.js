@@ -17,6 +17,11 @@ export const updateOrderStatus = createAsyncThunk('orders/updateStatus', async (
   return await orderService.updateOrderStatus(id, status);
 });
 
+// ✅ Add this new thunk for full order update
+export const updateOrder = createAsyncThunk('orders/update', async ({ id, updates }) => {
+  return await orderService.updateOrder(id, updates);
+});
+
 const orderSlice = createSlice({
   name: 'orders',
   initialState: { allOrders: [], myOrders: [], isLoading: false, error: null },
@@ -38,11 +43,20 @@ const orderSlice = createSlice({
         state.myOrders = action.payload;
       })
       .addCase(createOrder.fulfilled, (state, action) => {
-        // Optionally add to both lists
         state.allOrders.push(action.payload);
         state.myOrders.push(action.payload);
       })
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const updateList = (list) => {
+          const idx = list.findIndex(o => o.id === updated.id);
+          if (idx !== -1) list[idx] = updated;
+        };
+        updateList(state.allOrders);
+        updateList(state.myOrders);
+      })
+      // ✅ Add handler for updateOrder
+      .addCase(updateOrder.fulfilled, (state, action) => {
         const updated = action.payload;
         const updateList = (list) => {
           const idx = list.findIndex(o => o.id === updated.id);
