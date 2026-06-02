@@ -5,6 +5,7 @@ import orderReducer from '../features/orders/orderSlice';
 import employeeReducer from '../features/employees/employeeSlice';
 import reportReducer from '../features/reports/reportSlice';
 import tablesReducer from '../features/tables/tablesSlice';
+import leaveReducer from '../features/leave/leaveSlice';
 
 // ✅ Load initial state from localStorage
 const loadState = () => {
@@ -37,6 +38,7 @@ export const store = configureStore({
     employees: employeeReducer,
     reports: reportReducer,
     tables: tablesReducer,
+     leave: leaveReducer,
   },
   preloadedState: persistedState,
 });

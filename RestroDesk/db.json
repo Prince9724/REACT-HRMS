@@ -121,6 +121,18 @@
       "id": 4
     }
   ],
+   "leaveRequests": [
+    {
+      "id": 1,
+      "employeeId": 2,
+      "employeeName": "Waiter A",
+      "fromDate": "2026-06-05",
+      "toDate": "2026-06-07",
+      "reason": "Family function",
+      "status": "pending",
+      "requestedAt": "2026-06-02T10:00:00.000Z"
+    }
+  ],
   "orders": [
     {
       "id": "65615a90-33f0-4b61-a608-e249480a8cb0",
