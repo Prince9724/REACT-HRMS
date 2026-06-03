@@ -39,13 +39,15 @@ const LeaveRequests = () => {
       await dispatch(reassignAllTables());
       dispatch(fetchTables());
       dispatch(fetchAllLeaveRequests());
+      alert(`${request.employeeName} leave approved successfully!`);
     }
   };
 
-  const handleReject = async (id) => {
-    if (window.confirm('Reject this leave request?')) {
+  const handleReject = async (id, employeeName) => {
+    if (window.confirm(`Reject leave request for ${employeeName}?`)) {
       await dispatch(rejectLeave({ id }));
       dispatch(fetchAllLeaveRequests());
+      alert(`Leave request for ${employeeName} has been rejected.`);
     }
   };
 
@@ -56,19 +58,22 @@ const LeaveRequests = () => {
       dispatch(fetchTables());
       dispatch(fetchEmployees());
       dispatch(fetchAllLeaveRequests());
+      alert(`${employeeName} is now active. Tables redistributed.`);
     }
   };
 
+  // Filter pending requests with search
   let pendingRequests = allRequests.filter(r => r.status === 'pending');
   if (searchTerm.trim()) {
     const term = searchTerm.toLowerCase();
     pendingRequests = pendingRequests.filter(req =>
       req.employeeName.toLowerCase().includes(term) ||
-      req.reason?.toLowerCase().includes(term)
+      (req.reason && req.reason.toLowerCase().includes(term))
     );
   }
 
-  let employeesOnLeave = employees.filter(e => e.role === 'employee' && e.isOnLeave);
+  // Employees on leave with search
+  let employeesOnLeave = employees.filter(e => e.role === 'employee' && e.isOnLeave === true);
   if (searchTerm.trim()) {
     const term = searchTerm.toLowerCase();
     employeesOnLeave = employeesOnLeave.filter(emp =>
@@ -77,32 +82,40 @@ const LeaveRequests = () => {
     );
   }
 
+  // ✅ FIXED: History requests with proper filters
   let historyRequests = allRequests.filter(r => r.status !== 'pending');
+  
+  // ✅ Apply status filter - FIXED
   if (historyFilter !== 'all') {
     historyRequests = historyRequests.filter(r => r.status === historyFilter);
   }
+  
+  // ✅ Apply date filter - FIXED
   if (historyDateFilter) {
     historyRequests = historyRequests.filter(r => {
       const requestDate = new Date(r.requestedAt).toISOString().split('T')[0];
       return requestDate === historyDateFilter;
     });
   }
+  
+  // ✅ Apply search filter
   if (searchTerm.trim()) {
     const term = searchTerm.toLowerCase();
     historyRequests = historyRequests.filter(req =>
       req.employeeName.toLowerCase().includes(term) ||
-      req.reason?.toLowerCase().includes(term)
+      (req.reason && req.reason.toLowerCase().includes(term))
     );
   }
+  
+  // Sort history by date (newest first)
   historyRequests = [...historyRequests].sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
 
   if (isLoading) return <Spinner />;
 
   return (
     <div className="space-y-6">
-      {/* Header Stats Cards - White Background with Shadow & Hover */}
+      {/* Header Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        {/* Pending Requests Card */}
         <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
@@ -115,7 +128,6 @@ const LeaveRequests = () => {
           </div>
         </div>
 
-        {/* On Leave Card */}
         <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
@@ -128,7 +140,6 @@ const LeaveRequests = () => {
           </div>
         </div>
 
-        {/* Approved Card */}
         <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
@@ -141,7 +152,6 @@ const LeaveRequests = () => {
           </div>
         </div>
 
-        {/* Rejected Card */}
         <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
@@ -180,7 +190,11 @@ const LeaveRequests = () => {
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="flex border-b">
           <button
-            onClick={() => setActiveTab('pending')}
+            onClick={() => {
+              setActiveTab('pending');
+              setHistoryFilter('all');
+              setHistoryDateFilter('');
+            }}
             className={`flex-1 px-6 py-4 text-center font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
               activeTab === 'pending'
                 ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white'
@@ -197,7 +211,11 @@ const LeaveRequests = () => {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('onleave')}
+            onClick={() => {
+              setActiveTab('onleave');
+              setHistoryFilter('all');
+              setHistoryDateFilter('');
+            }}
             className={`flex-1 px-6 py-4 text-center font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
               activeTab === 'onleave'
                 ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white'
@@ -214,14 +232,18 @@ const LeaveRequests = () => {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('history')}
+            onClick={() => {
+              setActiveTab('history');
+              setHistoryFilter('all');
+              setHistoryDateFilter('');
+            }}
             className={`flex-1 px-6 py-4 text-center font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
               activeTab === 'history'
                 ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white'
                 : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            <FunnelIcon className="w-5 h-5" /> History
+            <FunnelIcon className="w-5 h-5" /> History ({historyRequests.length})
           </button>
         </div>
 
@@ -272,7 +294,7 @@ const LeaveRequests = () => {
                           <CheckCircleIcon className="w-5 h-5" /> Approve
                         </button>
                         <button
-                          onClick={() => handleReject(req.id)}
+                          onClick={() => handleReject(req.id, req.employeeName)}
                           className="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 shadow-md"
                         >
                           <XCircleIcon className="w-5 h-5" /> Reject
@@ -328,26 +350,33 @@ const LeaveRequests = () => {
           </div>
         )}
 
-        {/* History Tab */}
+        {/* History Tab - FIXED Filter */}
         {activeTab === 'history' && (
           <div className="p-5">
             <div className="flex flex-wrap justify-between items-center mb-5 gap-3">
               <div className="flex gap-3">
+                {/* ✅ Status Filter - Now working properly */}
                 <select
                   value={historyFilter}
-                  onChange={e => setHistoryFilter(e.target.value)}
+                  onChange={(e) => {
+                    setHistoryFilter(e.target.value);
+                  }}
                   className="border border-gray-200 rounded-xl px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-[#1a237e]"
                 >
-                  <option value="all">All Status</option>
-                  <option value="approved">Approved Only</option>
-                  <option value="rejected">Rejected Only</option>
+                  <option value="all">📋 All Status</option>
+                  <option value="approved">✅ Approved Only</option>
+                  <option value="rejected">❌ Rejected Only</option>
                 </select>
+                
+                {/* ✅ Date Filter */}
                 <input
                   type="date"
                   value={historyDateFilter}
-                  onChange={e => setHistoryDateFilter(e.target.value)}
+                  onChange={(e) => setHistoryDateFilter(e.target.value)}
                   className="border border-gray-200 rounded-xl px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-[#1a237e]"
                 />
+                
+                {/* ✅ Clear Filters Button */}
                 {(historyFilter !== 'all' || historyDateFilter) && (
                   <button
                     onClick={() => {
@@ -387,9 +416,7 @@ const LeaveRequests = () => {
                     {historyRequests.map(req => (
                       <tr key={req.id} className="border-b hover:bg-gray-50 transition">
                         <td className="p-4">
-                          <div>
-                            <p className="font-semibold text-gray-800">{req.employeeName}</p>
-                          </div>
+                          <p className="font-semibold text-gray-800">{req.employeeName}</p>
                         </td>
                         <td className="p-4">
                           <div className="flex items-center gap-1 text-sm text-gray-600">

@@ -34,6 +34,18 @@
       "joiningDate": "2026-06-01",
       "joiningTime": "10:00:00 AM",
       "isOnLeave": false
+    },
+    {
+      "name": "ramu ",
+      "email": "ramu@gamil.com",
+      "password": "123",
+      "role": "employee",
+      "contact": "1234567890",
+      "salary": "10000",
+      "isOnLeave": false,
+      "joiningDate": "2026-06-03",
+      "joiningTime": "5:09:59 pm",
+      "id": 4
     }
   ],
   "menu": [
@@ -106,6 +118,16 @@
       "description": "nothing",
       "image": "",
       "id": 7
+    },
+    {
+      "name": "aaloopuri",
+      "category": "Starter",
+      "price": 30,
+      "taxRate": 5,
+      "available": true,
+      "description": "cheese",
+      "image": "",
+      "id": 8
     }
   ],
   "tables": [
@@ -124,12 +146,12 @@
     {
       "id": 3,
       "number": 3,
-      "assignedTo": 2,
+      "assignedTo": 4,
       "status": "available"
     },
     {
       "number": 4,
-      "assignedTo": 3,
+      "assignedTo": 2,
       "id": 4
     }
   ],
@@ -644,18 +666,153 @@
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-03T06:02:43.992Z"
+    },
+    {
+      "id": "0011f761-bad8-49b3-ad0a-4cc89f464908",
+      "customerName": "krihna",
+      "customerMobile": "1234567890",
+      "tableNumber": 2,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 1,
+          "price": 20,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 4,
+          "name": "Pizza",
+          "quantity": 1,
+          "price": 199,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 2,
+          "price": 50,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 319,
+      "gst": 15.95,
+      "serviceCharge": 15.950000000000001,
+      "discount": 0,
+      "totalAmount": 350.9,
+      "status": "Served",
+      "paymentMethod": "Cash",
+      "createdBy": 3,
+      "createdAt": "2026-06-03T06:46:39.477Z"
+    },
+    {
+      "id": "8ad8ecae-70f1-44fe-83c2-d1f84c2564ee",
+      "customerName": "raushan ",
+      "customerMobile": "1234567890",
+      "tableNumber": 1,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 1,
+          "price": 50,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 2,
+          "price": 20,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 90,
+      "gst": 4.5,
+      "serviceCharge": 4.5,
+      "discount": 0,
+      "totalAmount": 99,
+      "status": "Served",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-03T07:48:51.875Z"
+    },
+    {
+      "id": "3a87caed-18a2-4fd6-bd56-19674068f81a",
+      "customerName": "custummer",
+      "customerMobile": "1234567899",
+      "tableNumber": 1,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 2,
+          "price": 50,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 5,
+          "name": "Dosa",
+          "quantity": 2,
+          "price": 150,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 400,
+      "gst": 20,
+      "serviceCharge": 20,
+      "discount": 0,
+      "totalAmount": 440,
+      "status": "Pending",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-03T09:22:48.890Z"
+    },
+    {
+      "id": "a3321dac-8e85-4b0b-b4e7-0802d23a44a8",
+      "customerName": "sachin",
+      "customerMobile": "1234567890",
+      "tableNumber": 1,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 1,
+          "price": 20,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 8,
+          "name": "aaloopuri",
+          "quantity": 2,
+          "price": 30,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 80,
+      "gst": 4,
+      "serviceCharge": 4,
+      "discount": 0,
+      "totalAmount": 88,
+      "status": "In Progress",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-03T11:44:24.174Z"
     }
   ],
   "leaveRequests": [
     {
+      "id": 1,
       "employeeId": 3,
       "employeeName": "dipu",
       "fromDate": "2026-06-03",
       "toDate": "2026-06-03",
       "reason": "sick",
-      "status": "completed",
-      "requestedAt": "2026-06-02T13:00:03.357Z",
-      "id": 1
+      "status": "rejected",
+      "requestedAt": "2026-06-02T10:00:00.000Z"
     }
   ]
 }

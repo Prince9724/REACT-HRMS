@@ -167,18 +167,6 @@
       "id": 14
     },
     {
-      "firstName": "suraj",
-      "role": "manager",
-      "department": "Web Development",
-      "salary": 300000,
-      "email": "suraj@gmail.com",
-      "contact": "2000000001",
-      "birthdate": "2001-01-01",
-      "password": "1234",
-      "joiningDate": "5/13/2026, 3:54:10 PM",
-      "id": 15
-    },
-    {
       "firstName": "darshan",
       "role": "employee",
       "department": "Web Development",
@@ -237,6 +225,18 @@
       "password": "1234",
       "joiningDate": "5/19/2026, 3:20:52 PM",
       "id": 20
+    },
+    {
+      "firstName": "ramu",
+      "role": "employee",
+      "department": "Web Development",
+      "salary": 25000,
+      "email": "ramu@gmail.com",
+      "contact": "1111111111",
+      "birthdate": "2001-01-01",
+      "password": "1234",
+      "joiningDate": "6/3/2026, 12:50:17 PM",
+      "id": 21
     }
   ],
   "leaves": [
@@ -1361,6 +1361,17 @@
       "checkIn": "03:29 PM",
       "checkOut": "",
       "id": 95
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "department": "AI/ML",
+      "salary": 60000,
+      "date": "6/3/2026",
+      "checkIn": "12:54 PM",
+      "checkOut": "",
+      "id": 96
     }
   ],
   "holidays": [

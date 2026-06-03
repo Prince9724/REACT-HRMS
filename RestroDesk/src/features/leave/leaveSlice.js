@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../services/axiosInstance';
-import { reassignAllTables, fetchTables } from '../tables/tablesSlice'; // ✅ Fixed path
+import { reassignAllTables, fetchTables } from '../tables/tablesSlice';
 
 // Fetch all leave requests (manager)
 export const fetchAllLeaveRequests = createAsyncThunk('leave/fetchAll', async () => {
@@ -25,27 +25,28 @@ export const requestLeave = createAsyncThunk('leave/request', async (leaveData) 
   return res.data;
 });
 
-// Approve leave (manager) - with table redistribution
+// Approve leave (manager)
 export const approveLeave = createAsyncThunk('leave/approve', async ({ id, employeeId }, { dispatch }) => {
   // Update leave request status
   await axios.patch(`/leaveRequests/${id}`, { status: 'approved' });
   // Update employee isOnLeave to true
   await axios.patch(`/users/${employeeId}`, { isOnLeave: true });
   
-  // ✅ Reassign tables after employee goes on leave
+  // Reassign tables after employee goes on leave
   await dispatch(reassignAllTables());
   await dispatch(fetchTables());
   
   return { id, employeeId };
 });
 
-// Reject leave (manager)
-export const rejectLeave = createAsyncThunk('leave/reject', async ({ id }) => {
+// Reject leave (manager) - ✅ FIXED
+export const rejectLeave = createAsyncThunk('leave/reject', async ({ id }, { dispatch }) => {
+  // Update leave request status to 'rejected'
   await axios.patch(`/leaveRequests/${id}`, { status: 'rejected' });
-  return id;
+  return { id };
 });
 
-// Mark employee back from leave (manager) - with table redistribution
+// Mark employee back from leave (manager)
 export const markBackFromLeave = createAsyncThunk('leave/markBack', async (employeeId, { dispatch }) => {
   await axios.patch(`/users/${employeeId}`, { isOnLeave: false });
   
@@ -55,7 +56,7 @@ export const markBackFromLeave = createAsyncThunk('leave/markBack', async (emplo
     await axios.patch(`/leaveRequests/${req.id}`, { status: 'completed' });
   }
   
-  // ✅ Reassign tables after employee returns from leave
+  // Reassign tables after employee returns from leave
   await dispatch(reassignAllTables());
   await dispatch(fetchTables());
   
@@ -97,10 +98,11 @@ const leaveSlice = createSlice({
         const myIdx = state.myRequests.findIndex(r => r.id === action.payload.id);
         if (myIdx !== -1) state.myRequests[myIdx].status = 'approved';
       })
+      // ✅ FIXED: rejectLeave handler
       .addCase(rejectLeave.fulfilled, (state, action) => {
-        const idx = state.allRequests.findIndex(r => r.id === action.payload);
+        const idx = state.allRequests.findIndex(r => r.id === action.payload.id);
         if (idx !== -1) state.allRequests[idx].status = 'rejected';
-        const myIdx = state.myRequests.findIndex(r => r.id === action.payload);
+        const myIdx = state.myRequests.findIndex(r => r.id === action.payload.id);
         if (myIdx !== -1) state.myRequests[myIdx].status = 'rejected';
       })
       .addCase(markBackFromLeave.fulfilled, (state, action) => {

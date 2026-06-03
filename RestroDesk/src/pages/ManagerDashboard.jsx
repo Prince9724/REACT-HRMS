@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchEmployees } from '../features/employees/employeeSlice';
 import { fetchAllOrders } from '../features/orders/orderSlice';
@@ -23,7 +23,6 @@ import {
   ChartBarIcon, 
   HomeIcon,
   ArrowTrendingUpIcon,
-  DocumentTextIcon,
   FireIcon,
   StarIcon,
   HandThumbUpIcon,
@@ -156,10 +155,10 @@ const DashboardHome = () => {
   const completedOrders = filteredOrders.filter(o => o.status === 'Completed').length;
   
   const orderStatusData = [
-    { name: 'Pending', value: pendingOrders, color: '#f59e0b' },
-    { name: 'In Progress', value: inProgressOrders, color: '#3b82f6' },
-    { name: 'Served', value: servedOrders, color: '#10b981' },
-    { name: 'Completed', value: completedOrders, color: '#6b7280' }
+    { name: 'Pending', value: pendingOrders },
+    { name: 'In Progress', value: inProgressOrders },
+    { name: 'Served', value: servedOrders },
+    { name: 'Completed', value: completedOrders }
   ];
   
   const COLORS = ['#f59e0b', '#3b82f6', '#10b981', '#6b7280'];
@@ -293,7 +292,6 @@ const DashboardHome = () => {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Daily Sales Chart - Fixed with Math.floor */}
         <div className="bg-white rounded-2xl shadow-lg p-5">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -319,7 +317,6 @@ const DashboardHome = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Order Status Distribution */}
         <div className="bg-white rounded-2xl shadow-lg p-5">
           <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
             <ClockIcon className="w-5 h-5 text-purple-600" /> Order Status Distribution
@@ -503,7 +500,14 @@ const DashboardHome = () => {
 const ManagerDashboard = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const handleLogout = () => { dispatch(logout()); navigate('/login'); };
+  
+  const isActive = (path) => {
+    if (path === '/manager' && location.pathname === '/manager') return true;
+    if (path !== '/manager' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
   
   return (
     <div className="flex h-screen bg-gray-100">
@@ -513,29 +517,71 @@ const ManagerDashboard = () => {
           <p className="text-blue-100 text-sm mt-1">Restaurant Dashboard</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          <Link to="/manager" className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition group">
-            <HomeIcon className="w-5 h-5 text-gray-500 group-hover:text-blue-600" /> 
-            <span className="text-gray-700 group-hover:text-blue-600">Dashboard</span>
+          <Link 
+            to="/manager" 
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
+              isActive('/manager') 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <HomeIcon className={`w-5 h-5 ${isActive('/manager') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <span>Dashboard</span>
           </Link>
-          <Link to="/manager/employees" className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition group">
-            <UsersIcon className="w-5 h-5 text-gray-500 group-hover:text-blue-600" /> 
-            <span className="text-gray-700 group-hover:text-blue-600">Employees</span>
+          <Link 
+            to="/manager/employees" 
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
+              isActive('/manager/employees') 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <UsersIcon className={`w-5 h-5 ${isActive('/manager/employees') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <span>Employees</span>
           </Link>
-          <Link to="/manager/menu" className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition group">
-            <CakeIcon className="w-5 h-5 text-gray-500 group-hover:text-blue-600" /> 
-            <span className="text-gray-700 group-hover:text-blue-600">Menu</span>
+          <Link 
+            to="/manager/menu" 
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
+              isActive('/manager/menu') 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <CakeIcon className={`w-5 h-5 ${isActive('/manager/menu') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <span>Menu</span>
           </Link>
-          <Link to="/manager/tables" className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition group">
-            <TableCellsIcon className="w-5 h-5 text-gray-500 group-hover:text-blue-600" /> 
-            <span className="text-gray-700 group-hover:text-blue-600">Tables</span>
+          <Link 
+            to="/manager/tables" 
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
+              isActive('/manager/tables') 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <TableCellsIcon className={`w-5 h-5 ${isActive('/manager/tables') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <span>Tables</span>
           </Link>
-          <Link to="/manager/orders" className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition group">
-            <ShoppingBagIcon className="w-5 h-5 text-gray-500 group-hover:text-blue-600" /> 
-            <span className="text-gray-700 group-hover:text-blue-600">All Orders</span>
+          <Link 
+            to="/manager/orders" 
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
+              isActive('/manager/orders') 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <ShoppingBagIcon className={`w-5 h-5 ${isActive('/manager/orders') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <span>All Orders</span>
           </Link>
-          <Link to="/manager/leave" className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 transition group">
-            <CalendarIcon className="w-5 h-5 text-gray-500 group-hover:text-blue-600" /> 
-            <span className="text-gray-700 group-hover:text-blue-600">Leave Requests</span>
+          <Link 
+            to="/manager/leave" 
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
+              isActive('/manager/leave') 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <CalendarIcon className={`w-5 h-5 ${isActive('/manager/leave') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <span>Leave Requests</span>
           </Link>
         </nav>
         <div className="p-4 border-t">
