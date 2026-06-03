@@ -82,40 +82,43 @@ const MenuManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Stats Cards */}
+      {/* Header Stats Cards - White Background with Shadow & Hover */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-r from-[#1a237e] to-[#283593] rounded-2xl shadow-xl p-5 text-white">
+        {/* Total Items Card */}
+        <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-blue-200 text-sm mb-1">Total Items</p>
-              <p className="text-3xl font-bold">{items.length}</p>
+              <p className="text-gray-500 text-sm mb-1">Total Items</p>
+              <p className="text-3xl font-bold text-gray-800">{items.length}</p>
             </div>
-            <div className="bg-blue-400/20 rounded-xl p-3">
-              <CakeIcon className="w-8 h-8 text-blue-300" />
+            <div className="bg-blue-100 rounded-xl p-3">
+              <CakeIcon className="w-8 h-8 text-blue-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl shadow-xl p-5 text-white">
+        {/* Available Items Card */}
+        <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-green-200 text-sm mb-1">Available</p>
-              <p className="text-3xl font-bold">{availableCount}</p>
+              <p className="text-gray-500 text-sm mb-1">Available</p>
+              <p className="text-3xl font-bold text-green-600">{availableCount}</p>
             </div>
-            <div className="bg-green-400/20 rounded-xl p-3">
-              <CheckCircleIcon className="w-8 h-8 text-green-300" />
+            <div className="bg-green-100 rounded-xl p-3">
+              <CheckCircleIcon className="w-8 h-8 text-green-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-xl p-5 text-white">
+        {/* Unavailable Items Card */}
+        <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-red-200 text-sm mb-1">Unavailable</p>
-              <p className="text-3xl font-bold">{unavailableCount}</p>
+              <p className="text-gray-500 text-sm mb-1">Unavailable</p>
+              <p className="text-3xl font-bold text-red-600">{unavailableCount}</p>
             </div>
-            <div className="bg-red-400/20 rounded-xl p-3">
-              <XCircleIcon className="w-8 h-8 text-red-300" />
+            <div className="bg-red-100 rounded-xl p-3">
+              <XCircleIcon className="w-8 h-8 text-red-600" />
             </div>
           </div>
         </div>
@@ -140,7 +143,7 @@ const MenuManagement = () => {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* Add/Edit Modal - Same as before */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">

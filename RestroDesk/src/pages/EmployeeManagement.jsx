@@ -96,40 +96,43 @@ const EmployeeManagement = () => {
 
   return (
     <div className="space-y-6 p-4">
-      {/* Header Stats Cards */}
+      {/* Header Stats Cards - White Background with Shadow & Hover */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-r from-[#1a237e] to-[#283593] rounded-2xl shadow-xl p-5 text-white">
+        {/* Total Employees Card */}
+        <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-blue-200 text-sm mb-1">Total Employees</p>
-              <p className="text-3xl font-bold">{list.length}</p>
+              <p className="text-gray-500 text-sm mb-1">Total Employees</p>
+              <p className="text-3xl font-bold text-gray-800">{list.length}</p>
             </div>
-            <div className="bg-blue-400/20 rounded-xl p-3">
-              <UsersIcon className="w-8 h-8 text-blue-300" />
+            <div className="bg-blue-100 rounded-xl p-3">
+              <UsersIcon className="w-8 h-8 text-blue-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl shadow-xl p-5 text-white">
+        {/* Active Employees Card */}
+        <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-green-200 text-sm mb-1">Active</p>
-              <p className="text-3xl font-bold">{activeEmployees}</p>
+              <p className="text-gray-500 text-sm mb-1">Active Employees</p>
+              <p className="text-3xl font-bold text-green-600">{activeEmployees}</p>
             </div>
-            <div className="bg-green-400/20 rounded-xl p-3">
-              <CheckCircleIcon className="w-8 h-8 text-green-300" />
+            <div className="bg-green-100 rounded-xl p-3">
+              <CheckCircleIcon className="w-8 h-8 text-green-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-2xl shadow-xl p-5 text-white">
+        {/* On Leave Employees Card */}
+        <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-red-200 text-sm mb-1">On Leave</p>
-              <p className="text-3xl font-bold">{leaveEmployees}</p>
+              <p className="text-gray-500 text-sm mb-1">On Leave</p>
+              <p className="text-3xl font-bold text-red-600">{leaveEmployees}</p>
             </div>
-            <div className="bg-red-400/20 rounded-xl p-3">
-              <XCircleIcon className="w-8 h-8 text-red-300" />
+            <div className="bg-red-100 rounded-xl p-3">
+              <XCircleIcon className="w-8 h-8 text-red-600" />
             </div>
           </div>
         </div>
@@ -392,7 +395,7 @@ const EmployeeManagement = () => {
 
               {filteredEmployees.length === 0 && (
                 <tr>
-                  <td colSpan="9">
+                  <td colSpan="9" className="p-6 text-center">
                     <div className="py-16 flex flex-col items-center justify-center text-center">
                       <UsersIcon className="w-16 h-16 text-gray-300 mb-3" />
                       <h3 className="text-xl font-bold text-gray-800 mb-1">No Employees Found</h3>
@@ -409,4 +412,4 @@ const EmployeeManagement = () => {
   );
 };
 
-export default EmployeeManagement;  
+export default EmployeeManagement;

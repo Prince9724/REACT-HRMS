@@ -21,7 +21,7 @@
       "salary": 15000,
       "joiningDate": "2026-06-01",
       "joiningTime": "09:30:00 AM",
-      "isOnLeave": true
+      "isOnLeave": false
     },
     {
       "id": 3,
@@ -112,24 +112,24 @@
     {
       "id": 1,
       "number": 1,
-      "assignedTo": 3,
+      "assignedTo": 2,
       "status": "available"
     },
     {
       "id": 2,
       "number": 2,
-      "assignedTo": null,
+      "assignedTo": 3,
       "status": "available"
     },
     {
       "id": 3,
       "number": 3,
-      "assignedTo": 3,
+      "assignedTo": 2,
       "status": "available"
     },
     {
       "number": 4,
-      "assignedTo": 2,
+      "assignedTo": 3,
       "id": 4
     }
   ],
@@ -605,6 +605,45 @@
       "paymentMethod": "Cash",
       "createdBy": 3,
       "createdAt": "2026-06-02T16:03:04.137Z"
+    },
+    {
+      "id": "757f4898-ee74-44f6-8933-16f7eca50447",
+      "customerName": "bhavin ",
+      "customerMobile": "1234567890",
+      "tableNumber": 1,
+      "notes": "extra cheese",
+      "items": [
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 1,
+          "price": 50,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 4,
+          "name": "Pizza",
+          "quantity": 2,
+          "price": 199,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 6,
+          "name": "idle",
+          "quantity": 1,
+          "price": 70,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 518,
+      "gst": 25.9,
+      "serviceCharge": 25.900000000000002,
+      "discount": 0,
+      "totalAmount": 569.8,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-03T06:02:43.992Z"
     }
   ],
   "leaveRequests": [
@@ -614,7 +653,7 @@
       "fromDate": "2026-06-03",
       "toDate": "2026-06-03",
       "reason": "sick",
-      "status": "pending",
+      "status": "completed",
       "requestedAt": "2026-06-02T13:00:03.357Z",
       "id": 1
     }

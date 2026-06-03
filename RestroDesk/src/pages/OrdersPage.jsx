@@ -95,7 +95,7 @@ const OrdersPage = () => {
       </style>
       </head><body>
       <div class="header">
-        <h2>🍽️ Restaurant POS</h2>
+        <h2>Restaurant POS</h2>
         <p>Order #${order.id.slice(0,8)} | Date: ${new Date(order.createdAt).toLocaleString()}</p>
       </div>
       <p><strong>Customer:</strong> ${order.customerName} (${order.customerMobile})</p>
@@ -106,9 +106,9 @@ const OrdersPage = () => {
         <tbody>
           ${order.items.map(item => `<tr><td>${item.name}</td><td>${item.quantity}</td><td>₹${item.price}</td><td>₹${item.price * item.quantity}</td>`).join('')}
         </tbody>
-       </table>
+       </td>
       <div class="total">Total Amount: ₹${Math.floor(order.totalAmount)}</div>
-      <div class="footer">Thank you! Visit again 😊</div>
+      <div class="footer">Thank you! Visit again</div>
       </body></html>
     `);
     printWindow.document.close();
@@ -123,8 +123,8 @@ const OrdersPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with Stats */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
+      {/* Header with Stats - Matching Manager Dashboard Colors */}
+      <div className="bg-gradient-to-r from-[#1a237e] to-[#4a148c] rounded-2xl shadow-lg p-6 text-white">
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex items-center gap-3">
             <ClipboardDocumentListIcon className="w-8 h-8" />
@@ -160,13 +160,13 @@ const OrdersPage = () => {
           <div className="flex gap-3">
             <button 
               onClick={() => setShowHistory(false)} 
-              className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${!showHistory ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${!showHistory ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
               <CalendarIcon className="w-4 h-4" /> Today's Orders
             </button>
             <button 
               onClick={() => setShowHistory(true)} 
-              className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${showHistory ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${showHistory ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
               <CalendarIcon className="w-4 h-4" /> History
             </button>
@@ -214,8 +214,8 @@ const OrdersPage = () => {
               {/* Order Header */}
               <div className="flex flex-wrap justify-between items-start border-b pb-4 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="bg-indigo-100 rounded-xl px-3 py-2">
-                    <span className="font-mono text-sm font-bold text-indigo-700">#{order.id.slice(0,8)}</span>
+                  <div className="bg-gradient-to-r from-[#1a237e] to-[#4a148c] rounded-xl px-3 py-2">
+                    <span className="font-mono text-sm font-bold text-white">#{order.id.slice(0,8)}</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -230,7 +230,7 @@ const OrdersPage = () => {
                     </div>
                     {order.notes && (
                       <p className="text-sm text-orange-600 mt-2 flex items-center gap-1">
-                        📝 Note: {order.notes}
+                        Note: {order.notes}
                       </p>
                     )}
                   </div>
@@ -243,7 +243,7 @@ const OrdersPage = () => {
                   <select 
                     value={order.status} 
                     onChange={e => handleStatusChange(order.id, e.target.value)} 
-                    className="border rounded-lg p-2 text-sm bg-white cursor-pointer hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="border rounded-lg p-2 text-sm bg-white cursor-pointer hover:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]"
                   >
                     <option>Pending</option>
                     <option>In Progress</option>
@@ -261,7 +261,7 @@ const OrdersPage = () => {
               
               {/* Order Items */}
               <details className="group">
-                <summary className="cursor-pointer text-indigo-600 text-sm font-semibold flex items-center gap-2 hover:text-indigo-800 transition">
+                <summary className="cursor-pointer text-[#1a237e] text-sm font-semibold flex items-center gap-2 hover:text-[#4a148c] transition">
                   <EyeIcon className="w-4 h-4" /> View Order Items
                 </summary>
                 <div className="mt-3 bg-gray-50 rounded-xl p-4">

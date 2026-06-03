@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchEmployees } from '../features/employees/employeeSlice';
@@ -27,9 +27,14 @@ import {
   FireIcon,
   StarIcon,
   HandThumbUpIcon,
-  ArrowRightStartOnRectangleIcon
+  ArrowRightStartOnRectangleIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  UserGroupIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const DashboardHome = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +46,10 @@ const DashboardHome = () => {
   const [filter, setFilter] = useState('today');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [dailySales, setDailySales] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
     dispatch(fetchAllOrders());
     dispatch(fetchEmployees());
@@ -56,14 +64,14 @@ const DashboardHome = () => {
     dispatch(fetchTables());
   }, 5000);
 
-  const getFilteredOrders = () => {
+  const getFilteredOrders = useCallback(() => {
     if (filter === 'today') {
       const today = new Date().toISOString().split('T')[0];
       return allOrders.filter(order => order.createdAt.startsWith(today));
     } else {
       return allOrders.filter(order => order.createdAt.startsWith(selectedDate));
     }
-  };
+  }, [filter, selectedDate, allOrders]);
   
   const filteredOrders = getFilteredOrders();
   const totalSales = filteredOrders.reduce((sum, o) => sum + o.totalAmount, 0);
@@ -81,10 +89,39 @@ const DashboardHome = () => {
     
     const salesData = last7Days.map(date => ({
       date: date.slice(5),
-      sales: allOrders.filter(o => o.createdAt.startsWith(date)).reduce((sum, o) => sum + o.totalAmount, 0)
+      sales: Math.floor(allOrders.filter(o => o.createdAt.startsWith(date)).reduce((sum, o) => sum + o.totalAmount, 0)),
+      orders: allOrders.filter(o => o.createdAt.startsWith(date)).length
     }));
     setDailySales(salesData);
   }, [allOrders]);
+  
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    
+    const categories = {
+      'Main': 0, 'Starter': 0, 'Bread': 0, 'Dessert': 0, 'Beverage': 0
+    };
+    
+    filteredOrders.forEach(order => {
+      order.items.forEach(item => {
+        const menuItem = menu.find(m => m.id === item.menuItemId);
+        if (menuItem && categories[menuItem.category] !== undefined) {
+          categories[menuItem.category] += item.quantity;
+        }
+      });
+    });
+    
+    const newCategoryData = Object.entries(categories)
+      .filter(([_, value]) => value > 0)
+      .map(([name, value]) => ({ name, value }));
+    
+    if (JSON.stringify(newCategoryData) !== JSON.stringify(categoryData)) {
+      setCategoryData(newCategoryData);
+    }
+  }, [filteredOrders, menu]);
   
   const dishCount = {};
   filteredOrders.forEach(order => {
@@ -100,190 +137,363 @@ const DashboardHome = () => {
   
   const allWaiters = employees.filter(e => e.role === 'employee');
   const activeWaiters = allWaiters.filter(w => !w.isOnLeave);
+  const onLeaveWaiters = allWaiters.filter(w => w.isOnLeave);
+  
+  const waiterPerformance = allWaiters.map(waiter => {
+    const waiterOrders = filteredOrders.filter(o => o.createdBy === waiter.id);
+    return {
+      id: waiter.id,
+      name: waiter.name,
+      ordersCount: waiterOrders.length,
+      totalSales: waiterOrders.reduce((sum, o) => sum + o.totalAmount, 0),
+      isOnLeave: waiter.isOnLeave || false
+    };
+  }).sort((a,b) => b.ordersCount - a.ordersCount).slice(0,5);
+  
+  const pendingOrders = filteredOrders.filter(o => o.status === 'Pending').length;
+  const inProgressOrders = filteredOrders.filter(o => o.status === 'In Progress').length;
+  const servedOrders = filteredOrders.filter(o => o.status === 'Served').length;
+  const completedOrders = filteredOrders.filter(o => o.status === 'Completed').length;
+  
+  const orderStatusData = [
+    { name: 'Pending', value: pendingOrders, color: '#f59e0b' },
+    { name: 'In Progress', value: inProgressOrders, color: '#3b82f6' },
+    { name: 'Served', value: servedOrders, color: '#10b981' },
+    { name: 'Completed', value: completedOrders, color: '#6b7280' }
+  ];
+  
+  const COLORS = ['#f59e0b', '#3b82f6', '#10b981', '#6b7280'];
   
   const getDishIcon = (index) => {
-    if (index === 0) return <FireIcon className="w-4 h-4 text-orange-500" />;
-    if (index === 1) return <StarIcon className="w-4 h-4 text-yellow-500" />;
-    if (index === 2) return <HandThumbUpIcon className="w-4 h-4 text-blue-500" />;
-    return null;
+    if (index === 0) return <TrophyIcon className="w-5 h-5 text-yellow-500" />;
+    if (index === 1) return <StarIcon className="w-5 h-5 text-blue-500" />;
+    if (index === 2) return <FireIcon className="w-5 h-5 text-orange-500" />;
+    return <HandThumbUpIcon className="w-5 h-5 text-green-500" />;
   };
   
   return (
     <div className="space-y-6">
-      {/* Main Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Total Income Card - Dark Blue */}
-        <div className="bg-[#1a237e] rounded-2xl shadow-xl p-6 text-white">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-blue-200 text-sm mb-1">Total Income</p>
-              <p className="text-4xl font-bold">₹{Math.floor(totalSales)}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <ArrowTrendingUpIcon className="w-4 h-4 text-green-400" />
-                <span className="text-green-400 text-sm">+{Math.floor(salesIncrease)}% Increase</span>
-              </div>
-            </div>
-            <div className="bg-blue-400/20 rounded-xl p-3">
-              <CurrencyRupeeIcon className="w-8 h-8 text-blue-300" />
-            </div>
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-r from-[#1a237e] via-[#283593] to-[#4a148c] rounded-2xl shadow-xl p-6 text-white">
+        <div className="flex flex-wrap justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">Dashboard Overview</h1>
+            <p className="text-blue-100 mt-1">Welcome back! Here's your restaurant performance summary</p>
           </div>
-          <div className="mt-4 pt-4 border-t border-blue-400/30">
-            <div className="flex justify-between text-sm text-blue-200">
-              <span>Food: ₹{Math.floor(totalSales * 0.6)}</span>
-              <span>Beverage: ₹{Math.floor(totalSales * 0.25)}</span>
-              <span>Others: ₹{Math.floor(totalSales * 0.15)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Balance Card - Purple */}
-        <div className="bg-[#4a148c] rounded-2xl shadow-xl p-6 text-white">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-purple-200 text-sm mb-1">Total Balance</p>
-              <p className="text-4xl font-bold">₹{Math.floor(totalSales)}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <ArrowTrendingUpIcon className="w-4 h-4 text-green-400" />
-                <span className="text-green-400 text-sm">+{Math.floor(salesIncrease)}% from last period</span>
-              </div>
-            </div>
-            <div className="bg-purple-400/20 rounded-xl p-3">
-              <DocumentTextIcon className="w-8 h-8 text-purple-300" />
-            </div>
+          <div className="flex items-center gap-2 bg-white/20 rounded-xl px-4 py-2">
+            <CalendarIcon className="w-5 h-5" />
+            <span className="text-sm">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </div>
         </div>
       </div>
 
-      {/* Small Stats Cards - No Expense Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-green-500">
-          <div className="flex justify-between items-center">
+      {/* Main KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="bg-white rounded-2xl shadow-lg p-5 border-l-4 border-blue-500 hover:shadow-xl transition-all">
+          <div className="flex justify-between items-start">
             <div>
-              <p className="text-gray-500 text-sm">Total Income</p>
-              <p className="text-2xl font-bold text-gray-800">₹{Math.floor(totalSales)}</p>
-              <p className="text-green-600 text-xs mt-1">+{Math.floor(salesIncrease)}% Increase</p>
+              <p className="text-gray-500 text-sm font-medium">Total Revenue</p>
+              <p className="text-3xl font-bold text-gray-800">₹{Math.floor(totalSales)}</p>
+              <div className="flex items-center gap-1 mt-2">
+                <ArrowTrendingUpIcon className="w-4 h-4 text-green-500" />
+                <span className="text-green-600 text-xs font-semibold">+{Math.floor(salesIncrease)}%</span>
+                <span className="text-gray-400 text-xs">vs last period</span>
+              </div>
             </div>
-            <div className="bg-green-100 rounded-lg p-2">
-              <ArrowTrendingUpIcon className="w-5 h-5 text-green-600" />
+            <div className="bg-blue-100 rounded-xl p-3">
+              <CurrencyRupeeIcon className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500">
-          <div className="flex justify-between items-center">
+
+        <div className="bg-white rounded-2xl shadow-lg p-5 border-l-4 border-green-500 hover:shadow-xl transition-all">
+          <div className="flex justify-between items-start">
             <div>
-              <p className="text-gray-500 text-sm">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-800">{totalOrders}</p>
+              <p className="text-gray-500 text-sm font-medium">Total Orders</p>
+              <p className="text-3xl font-bold text-gray-800">{totalOrders}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-yellow-600 text-xs">{pendingOrders} pending</span>
+                <span className="text-green-600 text-xs">{completedOrders} completed</span>
+              </div>
             </div>
-            <div className="bg-blue-100 rounded-lg p-2">
-              <ShoppingBagIcon className="w-5 h-5 text-blue-600" />
+            <div className="bg-green-100 rounded-xl p-3">
+              <ShoppingBagIcon className="w-6 h-6 text-green-600" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-purple-500">
-          <div className="flex justify-between items-center">
+
+        <div className="bg-white rounded-2xl shadow-lg p-5 border-l-4 border-purple-500 hover:shadow-xl transition-all">
+          <div className="flex justify-between items-start">
             <div>
-              <p className="text-gray-500 text-sm">Total Employees</p>
-              <p className="text-2xl font-bold text-gray-800">{employees.length}</p>
-              <p className="text-xs text-gray-500">Active: {activeWaiters.length}</p>
+              <p className="text-gray-500 text-sm font-medium">Total Employees</p>
+              <p className="text-3xl font-bold text-gray-800">{employees.length}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-green-600 text-xs">{activeWaiters.length} active</span>
+                <span className="text-red-600 text-xs">{onLeaveWaiters.length} on leave</span>
+              </div>
             </div>
-            <div className="bg-purple-100 rounded-lg p-2">
-              <UsersIcon className="w-5 h-5 text-purple-600" />
+            <div className="bg-purple-100 rounded-xl p-3">
+              <UsersIcon className="w-6 h-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-5 border-l-4 border-orange-500 hover:shadow-xl transition-all">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-gray-500 text-sm font-medium">Menu Items</p>
+              <p className="text-3xl font-bold text-gray-800">{menu.length}</p>
+              <div className="mt-2">
+                <span className="text-green-600 text-xs">{menu.filter(m => m.available).length} available</span>
+              </div>
+            </div>
+            <div className="bg-orange-100 rounded-xl p-3">
+              <CakeIcon className="w-6 h-6 text-orange-600" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-white rounded-xl shadow-md p-4">
-        <div className="flex gap-4 border-b pb-2">
+      <div className="bg-white rounded-2xl shadow-lg p-4">
+        <div className="flex flex-wrap gap-3">
           <button 
             onClick={() => setFilter('today')}
-            className={`px-4 py-2 font-semibold rounded-t-lg transition flex items-center gap-2 ${filter === 'today' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`px-5 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 ${
+              filter === 'today' 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
           >
             <CalendarIcon className="w-4 h-4" /> Today's Report
           </button>
           <button 
             onClick={() => setFilter('history')}
-            className={`px-4 py-2 font-semibold rounded-t-lg transition flex items-center gap-2 ${filter === 'history' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`px-5 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 ${
+              filter === 'history' 
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
           >
             <CalendarIcon className="w-4 h-4" /> History
           </button>
+          {filter === 'history' && (
+            <div className="flex items-center gap-2 ml-auto">
+              <CalendarIcon className="w-4 h-4 text-gray-500" />
+              <input 
+                type="date" 
+                value={selectedDate} 
+                onChange={e => setSelectedDate(e.target.value)}
+                className="border rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#1a237e] outline-none"
+              />
+            </div>
+          )}
         </div>
-        
-        {filter === 'history' && (
-          <div className="mt-4 flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5 text-gray-500" />
-            <input 
-              type="date" 
-              value={selectedDate} 
-              onChange={e => setSelectedDate(e.target.value)}
-              className="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-            <span className="text-sm text-gray-500">Select date to view report</span>
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Sales Chart - Fixed with Math.floor */}
+        <div className="bg-white rounded-2xl shadow-lg p-5">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <ChartBarIcon className="w-5 h-5 text-blue-600" /> Daily Sales Trend
+            </h3>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-xs text-gray-500">Revenue (₹)</span>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={dailySales}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+              <XAxis dataKey="date" stroke="#666" fontSize={12} />
+              <YAxis stroke="#666" fontSize={12} tickFormatter={(value) => `₹${Math.floor(value)}`} />
+              <Tooltip 
+                formatter={(value) => [`₹${Math.floor(value)}`, 'Revenue']}
+                contentStyle={{ backgroundColor: 'white', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                labelFormatter={(label) => `Date: ${label}`}
+              />
+              <Bar dataKey="sales" fill="#3b82f6" radius={[8,8,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Order Status Distribution */}
+        <div className="bg-white rounded-2xl shadow-lg p-5">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <ClockIcon className="w-5 h-5 text-purple-600" /> Order Status Distribution
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={orderStatusData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={5}
+                dataKey="value"
+              >
+                {orderStatusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => [`${value} orders`, 'Count']} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Category Distribution & Top Dishes */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-2xl shadow-lg p-5">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <CakeIcon className="w-5 h-5 text-orange-600" /> Category Distribution
+          </h3>
+          <div className="space-y-3">
+            {categoryData.length > 0 ? (
+              categoryData.map((cat) => {
+                const maxValue = Math.max(...categoryData.map(c => c.value), 1);
+                return (
+                  <div key={cat.name}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">{cat.name}</span>
+                      <span className="font-semibold text-gray-800">{cat.value} items sold</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${(cat.value / maxValue) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-gray-500 text-center py-8">No data available</p>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-5">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <TrophyIcon className="w-5 h-5 text-yellow-600" /> Top Selling Dishes
+          </h3>
+          {topDishes.length > 0 ? (
+            <div className="space-y-3">
+              {topDishes.map((dish, idx) => (
+                <div key={dish.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white flex items-center justify-center font-bold text-sm">
+                      {idx + 1}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">{dish.name}</p>
+                      <p className="text-xs text-gray-500">{dish.count} orders</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {getDishIcon(idx)}
+                    <span className="text-lg font-bold text-green-600">{dish.count}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No orders found for selected date</p>
+          )}
+        </div>
+      </div>
+
+      {/* Waiter Performance Table */}
+      <div className="bg-white rounded-2xl shadow-lg p-5">
+        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <UserGroupIcon className="w-5 h-5 text-green-600" /> Waiter Performance
+        </h3>
+        {waiterPerformance.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">No waiter performance data available</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-gray-50 rounded-xl">
+                <tr>
+                  <th className="p-4 text-left text-gray-700 font-semibold">Waiter</th>
+                  <th className="p-4 text-center text-gray-700 font-semibold">Orders</th>
+                  <th className="p-4 text-right text-gray-700 font-semibold">Total Sales</th>
+                  <th className="p-4 text-center text-gray-700 font-semibold">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {waiterPerformance.map((waiter) => (
+                  <tr key={waiter.id} className="border-b hover:bg-gray-50 transition">
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white flex items-center justify-center font-bold">
+                          {waiter.name?.charAt(0)?.toUpperCase()}
+                        </div>
+                        <span className="font-semibold text-gray-800">{waiter.name}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className="font-semibold text-blue-600">{waiter.ordersCount}</span>
+                    </td>
+                    <td className="p-4 text-right">
+                      <span className="font-semibold text-green-600">₹{Math.floor(waiter.totalSales)}</span>
+                    </td>
+                    <td className="p-4 text-center">
+                      {waiter.isOnLeave ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs">
+                          <XCircleIcon className="w-3 h-3" /> Leave
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">
+                          <CheckCircleIcon className="w-3 h-3" /> Active
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
 
-      {/* Daily Selling Chart */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-            <ChartBarIcon className="w-5 h-5 text-blue-600" /> Daily Selling
-          </h3>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span className="text-sm text-gray-500">Sales (₹)</span>
+      {/* Quick Stats Footer - 3 Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white rounded-xl shadow-md p-4 flex items-center gap-3">
+          <div className="bg-blue-100 rounded-xl p-3">
+            <TableCellsIcon className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Total Tables</p>
+            <p className="text-xl font-bold text-gray-800">{tables.length}</p>
+            <p className="text-xs text-green-600">{tables.filter(t => t.assignedTo).length} assigned</p>
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={dailySales}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis dataKey="date" stroke="#666" />
-            <YAxis stroke="#666" />
-            <Tooltip 
-              formatter={(value) => [`₹${value}`, 'Sales']}
-              contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-            />
-            <Bar dataKey="sales" fill="#3b82f6" radius={[8,8,0,0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Best Dishes Table */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <CakeIcon className="w-5 h-5 text-orange-500" /> Best Dishes
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 rounded-lg">
-              <tr>
-                <th className="text-left py-3 px-4 font-semibold text-gray-600">Dishes</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-600">Orders</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topDishes.length > 0 ? (
-                topDishes.map((dish, idx) => (
-                  <tr key={dish.name} className="border-b hover:bg-gray-50 transition">
-                    <td className="py-3 px-4 font-medium text-gray-800 flex items-center gap-2">
-                      {getDishIcon(idx)}
-                      {dish.name}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-semibold">
-                        {dish.count} orders
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="2" className="py-8 text-center text-gray-500">No orders found for selected date</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        
+        <div className="bg-white rounded-xl shadow-md p-4 flex items-center gap-3">
+          <div className="bg-yellow-100 rounded-xl p-3">
+            <ClockIcon className="w-6 h-6 text-yellow-600" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Pending Orders</p>
+            <p className="text-xl font-bold text-yellow-600">{pendingOrders}</p>
+            <p className="text-xs text-gray-500">Awaiting action</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-md p-4 flex items-center gap-3">
+          <div className="bg-green-100 rounded-xl p-3">
+            <CheckCircleIcon className="w-6 h-6 text-green-600" />
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Completed Orders</p>
+            <p className="text-xl font-bold text-green-600">{completedOrders}</p>
+            <p className="text-xs text-gray-500">Successfully delivered</p>
+          </div>
         </div>
       </div>
     </div>
@@ -297,9 +507,8 @@ const ManagerDashboard = () => {
   
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
       <div className="w-72 bg-white shadow-xl flex flex-col">
-        <div className="p-6 border-b bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="p-6 border-b bg-gradient-to-r from-[#1a237e] to-[#4a148c]">
           <h2 className="text-xl font-bold text-white">Manager Panel</h2>
           <p className="text-blue-100 text-sm mt-1">Restaurant Dashboard</p>
         </div>
