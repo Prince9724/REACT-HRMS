@@ -36,15 +36,15 @@
       "isOnLeave": false
     },
     {
-      "name": "ramu ",
-      "email": "ramu@gamil.com",
+      "name": "employe",
+      "email": "emp@gmail.com",
       "password": "123",
       "role": "employee",
       "contact": "1234567890",
-      "salary": "10000",
+      "salary": "15000",
       "isOnLeave": false,
       "joiningDate": "2026-06-03",
-      "joiningTime": "5:09:59 pm",
+      "joiningTime": "7:24:47 pm",
       "id": 4
     }
   ],
@@ -110,16 +110,6 @@
       "id": 6
     },
     {
-      "name": "dish",
-      "category": "Starter",
-      "price": 122,
-      "taxRate": 5,
-      "available": true,
-      "description": "nothing",
-      "image": "",
-      "id": 7
-    },
-    {
       "name": "aaloopuri",
       "category": "Starter",
       "price": 30,
@@ -128,6 +118,16 @@
       "description": "cheese",
       "image": "",
       "id": 8
+    },
+    {
+      "name": "coffee",
+      "category": "Starter",
+      "price": 70,
+      "taxRate": 5,
+      "available": true,
+      "description": "premuim coffee",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZb632q3t-D6iN3TiW863qXQv_ObPEy_1gfQ&s",
+      "id": 9
     }
   ],
   "tables": [
@@ -153,6 +153,16 @@
       "number": 4,
       "assignedTo": 2,
       "id": 4
+    },
+    {
+      "number": 5,
+      "assignedTo": 3,
+      "id": 5
+    },
+    {
+      "number": 6,
+      "assignedTo": 4,
+      "id": 6
     }
   ],
   "orders": [
@@ -733,7 +743,7 @@
       "serviceCharge": 4.5,
       "discount": 0,
       "totalAmount": 99,
-      "status": "Served",
+      "status": "Completed",
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-03T07:48:51.875Z"
@@ -765,7 +775,7 @@
       "serviceCharge": 20,
       "discount": 0,
       "totalAmount": 440,
-      "status": "Pending",
+      "status": "Completed",
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-03T09:22:48.890Z"
@@ -797,10 +807,81 @@
       "serviceCharge": 4,
       "discount": 0,
       "totalAmount": 88,
-      "status": "In Progress",
+      "status": "Completed",
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-03T11:44:24.174Z"
+    },
+    {
+      "id": "e4b0b77a-3cff-4c65-83ed-ec0989310d4a",
+      "customerName": "customer-1",
+      "customerMobile": "1234567890",
+      "tableNumber": 4,
+      "notes": "extra cheese",
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 3,
+          "price": 20,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 310,
+      "gst": 15.5,
+      "serviceCharge": 15.5,
+      "discount": 0,
+      "totalAmount": 341,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-03T13:52:30.298Z"
+    },
+    {
+      "id": "fba66754-d806-4a96-9e6b-1f35e5aa7ecf",
+      "customerName": "customer",
+      "customerMobile": "1234579000",
+      "tableNumber": 1,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 2,
+          "price": 20,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 9,
+          "name": "coffee",
+          "quantity": 1,
+          "price": 70,
+          "taxRate": 5
+        }
+      ],
+      "subtotal": 360,
+      "gst": 18,
+      "serviceCharge": 18,
+      "discount": 0,
+      "totalAmount": 396,
+      "status": "Pending",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-04T07:42:03.290Z"
     }
   ],
   "leaveRequests": [
