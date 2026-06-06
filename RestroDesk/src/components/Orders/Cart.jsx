@@ -76,6 +76,7 @@ const Cart = ({ cartItems, setCartItems }) => {
             </div>
           </div>
         </div>
+        
       )}
     </div>
   );
