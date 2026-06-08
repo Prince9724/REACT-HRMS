@@ -12,15 +12,17 @@ import MenuManagement from './MenuManagement';
 import OrdersPage from './OrdersPage';
 import TableManagement from './TableManagement';
 import LeaveRequests from './LeaveRequests';
+import GroupAnalytics from './GroupAnalytics';
+import { ChartPieIcon, TagIcon } from '@heroicons/react/24/outline';
 import { usePolling } from '../app/hooks';
-import { 
-  UsersIcon, 
-  ShoppingBagIcon, 
-  CurrencyRupeeIcon, 
-  CakeIcon, 
-  CalendarIcon, 
-  TableCellsIcon, 
-  ChartBarIcon, 
+import {
+  UsersIcon,
+  ShoppingBagIcon,
+  CurrencyRupeeIcon,
+  CakeIcon,
+  CalendarIcon,
+  TableCellsIcon,
+  ChartBarIcon,
   HomeIcon,
   ArrowTrendingUpIcon,
   FireIcon,
@@ -41,12 +43,12 @@ const DashboardHome = () => {
   const { list: employees } = useAppSelector(state => state.employees);
   const { items: menu } = useAppSelector(state => state.menu);
   const { list: tables } = useAppSelector(state => state.tables);
-  
+
   const [filter, setFilter] = useState('today');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [dailySales, setDailySales] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
-  
+
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -71,21 +73,28 @@ const DashboardHome = () => {
       return allOrders.filter(order => order.createdAt.startsWith(selectedDate));
     }
   }, [filter, selectedDate, allOrders]);
-  
+
   const filteredOrders = getFilteredOrders();
   const totalSales = filteredOrders.reduce((sum, o) => sum + o.totalAmount, 0);
   const totalOrders = filteredOrders.length;
-  
+
+  // ✅ Discount Statistics
+  const ordersWithDiscount = filteredOrders.filter(o => o.discount > 0);
+  const totalDiscountGiven = ordersWithDiscount.reduce((sum, o) => sum + (o.discount || 0), 0);
+  const avgDiscountPerOrder = ordersWithDiscount.length > 0 
+    ? (totalDiscountGiven / ordersWithDiscount.length).toFixed(0) 
+    : 0;
+
   const previousPeriodSales = totalSales * 0.6;
   const salesIncrease = ((totalSales - previousPeriodSales) / previousPeriodSales) * 100;
-  
+
   useEffect(() => {
     const last7Days = [...Array(7)].map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
       return d.toISOString().split('T')[0];
     });
-    
+
     const salesData = last7Days.map(date => ({
       date: date.slice(5),
       sales: Math.floor(allOrders.filter(o => o.createdAt.startsWith(date)).reduce((sum, o) => sum + o.totalAmount, 0)),
@@ -93,17 +102,17 @@ const DashboardHome = () => {
     }));
     setDailySales(salesData);
   }, [allOrders]);
-  
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    
+
     const categories = {
       'Main': 0, 'Starter': 0, 'Bread': 0, 'Dessert': 0, 'Beverage': 0
     };
-    
+
     filteredOrders.forEach(order => {
       order.items.forEach(item => {
         const menuItem = menu.find(m => m.id === item.menuItemId);
@@ -112,16 +121,16 @@ const DashboardHome = () => {
         }
       });
     });
-    
+
     const newCategoryData = Object.entries(categories)
       .filter(([_, value]) => value > 0)
       .map(([name, value]) => ({ name, value }));
-    
+
     if (JSON.stringify(newCategoryData) !== JSON.stringify(categoryData)) {
       setCategoryData(newCategoryData);
     }
   }, [filteredOrders, menu]);
-  
+
   const dishCount = {};
   filteredOrders.forEach(order => {
     order.items.forEach(item => {
@@ -131,13 +140,13 @@ const DashboardHome = () => {
   });
   const topDishes = Object.entries(dishCount)
     .map(([name, count]) => ({ name, count }))
-    .sort((a,b) => b.count - a.count)
-    .slice(0,5);
-  
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
   const allWaiters = employees.filter(e => e.role === 'employee');
   const activeWaiters = allWaiters.filter(w => !w.isOnLeave);
   const onLeaveWaiters = allWaiters.filter(w => w.isOnLeave);
-  
+
   const waiterPerformance = allWaiters.map(waiter => {
     const waiterOrders = filteredOrders.filter(o => o.createdBy === waiter.id);
     return {
@@ -147,29 +156,29 @@ const DashboardHome = () => {
       totalSales: waiterOrders.reduce((sum, o) => sum + o.totalAmount, 0),
       isOnLeave: waiter.isOnLeave || false
     };
-  }).sort((a,b) => b.ordersCount - a.ordersCount).slice(0,5);
-  
+  }).sort((a, b) => b.ordersCount - a.ordersCount).slice(0, 5);
+
   const pendingOrders = filteredOrders.filter(o => o.status === 'Pending').length;
   const inProgressOrders = filteredOrders.filter(o => o.status === 'In Progress').length;
   const servedOrders = filteredOrders.filter(o => o.status === 'Served').length;
   const completedOrders = filteredOrders.filter(o => o.status === 'Completed').length;
-  
+
   const orderStatusData = [
     { name: 'Pending', value: pendingOrders },
     { name: 'In Progress', value: inProgressOrders },
     { name: 'Served', value: servedOrders },
     { name: 'Completed', value: completedOrders }
   ];
-  
+
   const COLORS = ['#f59e0b', '#3b82f6', '#10b981', '#6b7280'];
-  
+
   const getDishIcon = (index) => {
     if (index === 0) return <TrophyIcon className="w-5 h-5 text-yellow-500" />;
     if (index === 1) return <StarIcon className="w-5 h-5 text-blue-500" />;
     if (index === 2) return <FireIcon className="w-5 h-5 text-orange-500" />;
     return <HandThumbUpIcon className="w-5 h-5 text-green-500" />;
   };
-  
+
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
@@ -253,35 +262,55 @@ const DashboardHome = () => {
         </div>
       </div>
 
+      {/* ✅ Discount Statistics Card */}
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl shadow-lg p-5 border border-green-200">
+        <div className="flex items-center gap-2 mb-3">
+          <TagIcon className="w-5 h-5 text-green-600" />
+          <h3 className="text-lg font-bold text-gray-800">Discount Summary</h3>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <p className="text-xs text-gray-500">Total Discount Given</p>
+            <p className="text-2xl font-bold text-green-600">₹{Math.floor(totalDiscountGiven)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Orders with Discount</p>
+            <p className="text-2xl font-bold text-gray-800">{ordersWithDiscount.length}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Avg Discount per Order</p>
+            <p className="text-2xl font-bold text-blue-600">₹{avgDiscountPerOrder}</p>
+          </div>
+        </div>
+      </div>
+
       {/* Filter Tabs */}
       <div className="bg-white rounded-2xl shadow-lg p-4">
         <div className="flex flex-wrap gap-3">
-          <button 
+          <button
             onClick={() => setFilter('today')}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 ${
-              filter === 'today' 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+            className={`px-5 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 ${filter === 'today'
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <CalendarIcon className="w-4 h-4" /> Today's Report
           </button>
-          <button 
+          <button
             onClick={() => setFilter('history')}
-            className={`px-5 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 ${
-              filter === 'history' 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+            className={`px-5 py-2.5 rounded-xl font-semibold transition flex items-center gap-2 ${filter === 'history'
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <CalendarIcon className="w-4 h-4" /> History
           </button>
           {filter === 'history' && (
             <div className="flex items-center gap-2 ml-auto">
               <CalendarIcon className="w-4 h-4 text-gray-500" />
-              <input 
-                type="date" 
-                value={selectedDate} 
+              <input
+                type="date"
+                value={selectedDate}
                 onChange={e => setSelectedDate(e.target.value)}
                 className="border rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#1a237e] outline-none"
               />
@@ -307,12 +336,12 @@ const DashboardHome = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
               <XAxis dataKey="date" stroke="#666" fontSize={12} />
               <YAxis stroke="#666" fontSize={12} tickFormatter={(value) => `₹${Math.floor(value)}`} />
-              <Tooltip 
+              <Tooltip
                 formatter={(value) => [`₹${Math.floor(value)}`, 'Revenue']}
                 contentStyle={{ backgroundColor: 'white', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 labelFormatter={(label) => `Date: ${label}`}
               />
-              <Bar dataKey="sales" fill="#3b82f6" radius={[8,8,0,0]} />
+              <Bar dataKey="sales" fill="#3b82f6" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -360,7 +389,7 @@ const DashboardHome = () => {
                       <span className="font-semibold text-gray-800">{cat.value} items sold</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${(cat.value / maxValue) * 100}%` }}
                       />
@@ -470,7 +499,7 @@ const DashboardHome = () => {
             <p className="text-xs text-green-600">{tables.filter(t => t.assignedTo).length} assigned</p>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-md p-4 flex items-center gap-3">
           <div className="bg-yellow-100 rounded-xl p-3">
             <ClockIcon className="w-6 h-6 text-yellow-600" />
@@ -481,7 +510,7 @@ const DashboardHome = () => {
             <p className="text-xs text-gray-500">Awaiting action</p>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-md p-4 flex items-center gap-3">
           <div className="bg-green-100 rounded-xl p-3">
             <CheckCircleIcon className="w-6 h-6 text-green-600" />
@@ -502,13 +531,13 @@ const ManagerDashboard = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const handleLogout = () => { dispatch(logout()); navigate('/login'); };
-  
+
   const isActive = (path) => {
     if (path === '/manager' && location.pathname === '/manager') return true;
     if (path !== '/manager' && location.pathname.startsWith(path)) return true;
     return false;
   };
-  
+
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-72 bg-white shadow-xl flex flex-col">
@@ -517,71 +546,75 @@ const ManagerDashboard = () => {
           <p className="text-blue-100 text-sm mt-1">Restaurant Dashboard</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          <Link 
-            to="/manager" 
-            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
-              isActive('/manager') 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+          <Link
+            to="/manager"
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${isActive('/manager')
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
+              }`}
           >
-            <HomeIcon className={`w-5 h-5 ${isActive('/manager') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <HomeIcon className={`w-5 h-5 ${isActive('/manager') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
             <span>Dashboard</span>
           </Link>
-          <Link 
-            to="/manager/employees" 
-            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
-              isActive('/manager/employees') 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+          <Link
+            to="/manager/employees"
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${isActive('/manager/employees')
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
+              }`}
           >
-            <UsersIcon className={`w-5 h-5 ${isActive('/manager/employees') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <UsersIcon className={`w-5 h-5 ${isActive('/manager/employees') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
             <span>Employees</span>
           </Link>
-          <Link 
-            to="/manager/menu" 
-            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
-              isActive('/manager/menu') 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+          <Link
+            to="/manager/menu"
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${isActive('/manager/menu')
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
+              }`}
           >
-            <CakeIcon className={`w-5 h-5 ${isActive('/manager/menu') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <CakeIcon className={`w-5 h-5 ${isActive('/manager/menu') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
             <span>Menu</span>
           </Link>
-          <Link 
-            to="/manager/tables" 
-            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
-              isActive('/manager/tables') 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+          <Link
+            to="/manager/tables"
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${isActive('/manager/tables')
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
+              }`}
           >
-            <TableCellsIcon className={`w-5 h-5 ${isActive('/manager/tables') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <TableCellsIcon className={`w-5 h-5 ${isActive('/manager/tables') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
             <span>Tables</span>
           </Link>
-          <Link 
-            to="/manager/orders" 
-            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
-              isActive('/manager/orders') 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+          <Link
+            to="/manager/orders"
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${isActive('/manager/orders')
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
+              }`}
           >
-            <ShoppingBagIcon className={`w-5 h-5 ${isActive('/manager/orders') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <ShoppingBagIcon className={`w-5 h-5 ${isActive('/manager/orders') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
             <span>All Orders</span>
           </Link>
-          <Link 
-            to="/manager/leave" 
-            className={`flex items-center gap-3 p-3 rounded-xl transition group ${
-              isActive('/manager/leave') 
-                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md' 
+          <Link
+            to="/manager/leave"
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${isActive('/manager/leave')
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
                 : 'text-gray-700 hover:bg-gray-100'
-            }`}
+              }`}
           >
-            <CalendarIcon className={`w-5 h-5 ${isActive('/manager/leave') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} /> 
+            <CalendarIcon className={`w-5 h-5 ${isActive('/manager/leave') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
             <span>Leave Requests</span>
+          </Link>
+          <Link
+            to="/manager/analytics"
+            className={`flex items-center gap-3 p-3 rounded-xl transition group ${isActive('/manager/analytics')
+                ? 'bg-gradient-to-r from-[#1a237e] to-[#4a148c] text-white shadow-md'
+                : 'text-gray-700 hover:bg-gray-100'
+              }`}
+          >
+            <ChartPieIcon className={`w-5 h-5 ${isActive('/manager/analytics') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'}`} />
+            <span>Group Analytics</span>
           </Link>
         </nav>
         <div className="p-4 border-t">
@@ -590,7 +623,7 @@ const ManagerDashboard = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto p-6">
         <Routes>
           <Route path="/" element={<DashboardHome />} />
@@ -599,6 +632,7 @@ const ManagerDashboard = () => {
           <Route path="/tables/*" element={<TableManagement />} />
           <Route path="/orders/*" element={<OrdersPage />} />
           <Route path="/leave/*" element={<LeaveRequests />} />
+          <Route path="/analytics" element={<GroupAnalytics />} />
         </Routes>
       </div>
     </div>

@@ -14,7 +14,9 @@ import {
     ClockIcon,
     CheckCircleIcon,
     XCircleIcon,
-    ArrowPathIcon
+    ArrowPathIcon,
+    TagIcon,
+    FunnelIcon
 } from '@heroicons/react/24/outline';
 
 const OrdersPage = () => {
@@ -23,6 +25,7 @@ const OrdersPage = () => {
     const [showHistory, setShowHistory] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [discountFilter, setDiscountFilter] = useState('all'); // 'all', 'hasDiscount', 'noDiscount'
     const [initialLoadDone, setInitialLoadDone] = useState(false);
 
     useEffect(() => {
@@ -44,12 +47,12 @@ const OrdersPage = () => {
 
     if (!initialLoadDone && isLoading) return <Spinner />;
 
-    // Filter orders
+    // Filter orders by date
     let filteredOrders = showHistory
         ? allOrders.filter(o => o.createdAt.startsWith(selectedDate))
         : allOrders.filter(o => o.createdAt.startsWith(new Date().toISOString().split('T')[0]));
 
-    // Search
+    // Filter by search
     if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
         filteredOrders = filteredOrders.filter(o =>
@@ -57,6 +60,13 @@ const OrdersPage = () => {
             o.customerMobile.includes(term) ||
             o.id.toLowerCase().includes(term)
         );
+    }
+
+    // ✅ Filter by discount
+    if (discountFilter === 'hasDiscount') {
+        filteredOrders = filteredOrders.filter(o => o.discount > 0);
+    } else if (discountFilter === 'noDiscount') {
+        filteredOrders = filteredOrders.filter(o => !o.discount || o.discount === 0);
     }
 
     // Newest first
@@ -88,73 +98,20 @@ const OrdersPage = () => {
       <head>
         <title>Invoice ${order.id.slice(0, 8)}</title>
         <style>
-          body {
-            font-family: 'Arial', sans-serif;
-            padding: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-          }
-          .header {
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-          }
-          .header h2 {
-            margin: 0;
-            color: #1a237e;
-          }
-          .header p {
-            margin: 5px 0;
-            color: #666;
-            font-size: 12px;
-          }
-          .customer-info {
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 8px;
-          }
-          .customer-info p {
-            margin: 5px 0;
-            font-size: 14px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-          }
-          th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-          }
-          th {
-            background-color: #f2f2f2;
-          }
-          .totals {
-            text-align: right;
-            margin-top: 10px;
-          }
-          .totals p {
-            margin: 5px 0;
-          }
-          .grand-total {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a237e;
-            border-top: 2px solid #333;
-            padding-top: 10px;
-            margin-top: 10px;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-            font-size: 12px;
-            color: #666;
-          }
+          body{font-family:'Arial',sans-serif;padding:20px;max-width:400px;margin:0 auto}
+          .header{text-align:center;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:20px}
+          .header h2{margin:0;color:#1a237e}
+          .header p{margin:5px 0;color:#666;font-size:12px}
+          .customer-info{margin-bottom:20px;padding:10px;background:#f5f5f5;border-radius:8px}
+          .customer-info p{margin:5px 0;font-size:14px}
+          table{width:100%;border-collapse:collapse;margin-bottom:20px}
+          th,td{border:1px solid #ddd;padding:8px;text-align:left}
+          th{background-color:#f2f2f2}
+          .totals{text-align:right;margin-top:10px}
+          .totals p{margin:5px 0}
+          .grand-total{font-size:18px;font-weight:bold;color:#1a237e;border-top:2px solid #333;padding-top:10px;margin-top:10px}
+          .discount{color:green;font-weight:bold}
+          .footer{text-align:center;margin-top:30px;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666}
         </style>
       </head>
       <body>
@@ -163,45 +120,33 @@ const OrdersPage = () => {
           <p>Order #${order.id.slice(0, 8)}</p>
           <p>Date: ${new Date(order.createdAt).toLocaleString()}</p>
         </div>
-        
         <div class="customer-info">
-          <p><strong>Customer:</strong> ${order.customerName}</p>
-          <p><strong>Mobile:</strong> ${order.customerMobile}</p>
-          <p><strong>Table:</strong> ${order.tableNumber}</p>
-          <p><strong>Waiter ID:</strong> ${order.createdBy}</p>
+          <p><strong>Customer:</strong> ${order.customerName} (${order.customerMobile})</p>
+          <p><strong>Table:</strong> ${order.tableNumber} | <strong>Waiter ID:</strong> ${order.createdBy}</p>
+          ${order.numberOfPeople ? `<p><strong>People:</strong> ${order.numberOfPeople}</p>` : ''}
           ${order.notes ? `<p><strong>Instructions:</strong> ${order.notes}</p>` : ''}
         </div>
-        
         <table>
-          <thead>
-            <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
-          </thead>
+          <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
           <tbody>
             ${order.items.map(item => `
               <tr>
                 <td>${item.name}</td>
                 <td style="text-align:center">${item.quantity}</td>
-                <td>₹${item.price}</td>
-                <td>₹${item.price * item.quantity}</td>
+                <td style="text-align:right">₹${item.price}</td>
+                <td style="text-align:right">₹${item.price * item.quantity}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
-        
         <div class="totals">
           <p><strong>Subtotal:</strong> ₹${Math.floor(order.subtotal)}</p>
           <p><strong>GST (5%):</strong> ₹${Math.floor(order.gst)}</p>
           <p><strong>Service Charge (5%):</strong> ₹${Math.floor(order.serviceCharge)}</p>
-          ${order.discount > 0 ? `<p><strong>Discount:</strong> -₹${Math.floor(order.discount)}</p>` : ''}
-          <div class="grand-total">
-            <strong>Total Amount: ₹${Math.floor(order.totalAmount)}</strong>
-          </div>
+          ${order.discount > 0 ? `<p class="discount"><strong>Discount (10% off):</strong> -₹${Math.floor(order.discount)}</p>` : ''}
+          <div class="grand-total"><strong>Total Amount: ₹${Math.floor(order.totalAmount)}</strong></div>
         </div>
-        
-        <div class="footer">
-          <p>Thank you for dining with us!</p>
-          <p>Visit again</p>
-        </div>
+        <div class="footer">Thank you for dining with us! Visit again</div>
       </body>
     </html>
   `);
@@ -214,10 +159,12 @@ const OrdersPage = () => {
     const totalSales = filteredOrders.reduce((sum, o) => sum + o.totalAmount, 0);
     const pendingCount = filteredOrders.filter(o => o.status === 'Pending').length;
     const completedCount = filteredOrders.filter(o => o.status === 'Completed').length;
+    const ordersWithDiscount = filteredOrders.filter(o => o.discount > 0).length;
+    const totalDiscount = filteredOrders.reduce((sum, o) => sum + (o.discount || 0), 0);
 
     return (
         <div className="space-y-6">
-            {/* Header with Stats - Matching Manager Dashboard Colors */}
+            {/* Header with Stats */}
             <div className="bg-gradient-to-r from-[#1a237e] to-[#4a148c] rounded-2xl shadow-lg p-6 text-white">
                 <div className="flex flex-wrap justify-between items-center gap-4">
                     <div className="flex items-center gap-3">
@@ -227,7 +174,7 @@ const OrdersPage = () => {
                             <p className="text-indigo-100 text-sm">Manage and track all customer orders</p>
                         </div>
                     </div>
-                    <div className="flex gap-4 text-center">
+                    <div className="flex flex-wrap gap-4 text-center">
                         <div className="bg-white/20 rounded-xl px-4 py-2">
                             <div className="text-xs opacity-80">Total Orders</div>
                             <div className="text-2xl font-bold">{totalOrdersCount}</div>
@@ -243,6 +190,10 @@ const OrdersPage = () => {
                         <div className="bg-white/20 rounded-xl px-4 py-2">
                             <div className="text-xs opacity-80">Completed</div>
                             <div className="text-2xl font-bold">{completedCount}</div>
+                        </div>
+                        <div className="bg-green-400/30 rounded-xl px-4 py-2">
+                            <div className="text-xs opacity-80">Discount Given</div>
+                            <div className="text-2xl font-bold">₹{Math.floor(totalDiscount)}</div>
                         </div>
                     </div>
                 </div>
@@ -266,7 +217,7 @@ const OrdersPage = () => {
                         </button>
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-wrap gap-3">
                         {showHistory && (
                             <div className="flex items-center gap-2 border rounded-xl px-3 py-2 bg-gray-50">
                                 <CalendarIcon className="w-4 h-4 text-gray-500" />
@@ -278,6 +229,19 @@ const OrdersPage = () => {
                                 />
                             </div>
                         )}
+                        {/* ✅ Discount Filter */}
+                        <div className="flex items-center gap-2 border rounded-xl px-3 py-2 bg-gray-50">
+                            <TagIcon className="w-4 h-4 text-gray-500" />
+                            <select
+                                value={discountFilter}
+                                onChange={e => setDiscountFilter(e.target.value)}
+                                className="outline-none bg-transparent text-sm"
+                            >
+                                <option value="all">All Orders</option>
+                                <option value="hasDiscount">With Discount</option>
+                                <option value="noDiscount">Without Discount</option>
+                            </select>
+                        </div>
                         <div className="flex items-center gap-2 border rounded-xl px-3 py-2 bg-gray-50">
                             <MagnifyingGlassIcon className="w-4 h-4 text-gray-500" />
                             <input
@@ -331,6 +295,12 @@ const OrdersPage = () => {
                                 </div>
 
                                 <div className="flex items-center gap-3 mt-3 sm:mt-0">
+                                    {/* ✅ Discount Badge */}
+                                    {order.discount > 0 && (
+                                        <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-green-100 text-green-700 flex items-center gap-1">
+                                            <TagIcon className="w-3 h-3" /> -₹{Math.floor(order.discount)}
+                                        </span>
+                                    )}
                                     <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${statusColors[order.status]}`}>
                                         {statusIcons[order.status]} {order.status}
                                     </span>

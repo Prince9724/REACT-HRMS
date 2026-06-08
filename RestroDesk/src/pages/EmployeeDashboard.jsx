@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { fetchMenu } from '../features/menu/menuSlice';
-import { createOrder, fetchMyOrders, updateOrder, updateOrderStatus } from '../features/orders/orderSlice';
+import { createOrder, fetchMyOrders, updateOrder, updateOrderStatus, fetchAllOrders } from '../features/orders/orderSlice';
 import { fetchTables } from '../features/tables/tablesSlice';
 import Cart from '../components/Orders/Cart';
 import Spinner from '../components/Common/Spinner';
@@ -21,14 +21,16 @@ import {
   ExclamationTriangleIcon,
   ShoppingBagIcon,
   ClockIcon,
-  ArrowTrendingUpIcon
+  ArrowTrendingUpIcon,
+  UserGroupIcon,
+  TagIcon
 } from '@heroicons/react/24/outline';
 
 const EmployeeDashboard = () => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(state => state.auth);
   const { items: menuItems } = useAppSelector(state => state.menu);
-  const { myOrders } = useAppSelector(state => state.orders);
+  const { myOrders, allOrders } = useAppSelector(state => state.orders);
   const { list: tables } = useAppSelector(state => state.tables);
 
   const [cartItems, setCartItems] = useState([]);
@@ -37,6 +39,8 @@ const EmployeeDashboard = () => {
   const [tableNumber, setTableNumber] = useState('');
   const [notes, setNotes] = useState('');
   const [editingOrder, setEditingOrder] = useState(null);
+  const [numberOfPeople, setNumberOfPeople] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
 
   const [showHistory, setShowHistory] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -64,7 +68,32 @@ const EmployeeDashboard = () => {
     });
   };
 
-  // ✅ Function to complete order (employee can mark order as Completed)
+  // Calculate discount (10% flat, min ₹500, max ₹200)
+  const calculateDiscount = (subtotal) => {
+    if (subtotal >= 500) {
+      let discount = subtotal * 0.10;
+      if (discount > 200) discount = 200;
+      return Math.floor(discount);
+    }
+    return 0;
+  };
+
+  // Calculate cart totals with discount
+  const calculateCartTotals = () => {
+    let subtotal = 0, gst = 0;
+    cartItems.forEach(item => {
+      const itemTotal = item.price * item.quantity;
+      subtotal += itemTotal;
+      gst += (itemTotal * (item.taxRate || 5)) / 100;
+    });
+    const serviceCharge = subtotal * 0.05;
+    const discount = calculateDiscount(subtotal);
+    const totalAmount = subtotal + gst + serviceCharge - discount;
+    return { subtotal, gst, serviceCharge, discount, totalAmount };
+  };
+
+  const cartTotals = calculateCartTotals();
+
   const handleCompleteOrder = async (order) => {
     if (order.status === 'Completed') {
       alert('Order is already completed');
@@ -73,6 +102,7 @@ const EmployeeDashboard = () => {
     if (window.confirm(`Mark order #${order.id.slice(0, 8)} as Completed? This will free up the table.`)) {
       await dispatch(updateOrderStatus({ id: order.id, status: 'Completed' }));
       await dispatch(fetchMyOrders(user.id));
+      await dispatch(fetchAllOrders());
       await dispatch(fetchTables());
       alert('Order completed successfully! Table is now available.');
     }
@@ -102,6 +132,7 @@ const EmployeeDashboard = () => {
       await Promise.all([
         dispatch(fetchMenu()),
         dispatch(fetchTables()),
+        dispatch(fetchAllOrders()),
         user && dispatch(fetchMyOrders(user.id))
       ]);
       setInitialLoadDone(true);
@@ -118,6 +149,7 @@ const EmployeeDashboard = () => {
       }
       await dispatch(fetchMenu());
       await dispatch(fetchTables());
+      await dispatch(fetchAllOrders());
     }, 10000);
     return () => clearInterval(interval);
   }, [dispatch, user, initialLoadDone]);
@@ -127,7 +159,9 @@ const EmployeeDashboard = () => {
   }
 
   const myTables = tables.filter(t => t.assignedTo === user?.id);
-  const activeOrderTables = myOrders
+
+  // ✅ FIXED: Check all orders globally, not just employee's orders
+  const activeOrderTables = allOrders
     .filter(o => o.status !== 'Completed' && o.id !== editingOrder?.id)
     .map(o => o.tableNumber);
   const isTableBusy = (tableNo) => activeOrderTables.includes(parseInt(tableNo));
@@ -171,34 +205,37 @@ const EmployeeDashboard = () => {
   };
 
   const handlePlaceOrder = async () => {
-    if (!customerName || !customerMobile || cartItems.length === 0)
-      return alert('Please fill all fields');
+    console.log("=== Order Placement Started ===");
 
+    // Validation
+    if (!customerName || !customerMobile || cartItems.length === 0) {
+      alert('Please fill all fields');
+      return;
+    }
     if (!/^\d{10}$/.test(customerMobile)) {
-      return alert('Mobile number must be exactly 10 digits');
+      alert('Mobile number must be exactly 10 digits');
+      return;
     }
-
     if (!tableNumber) {
-      return alert('Please select a table');
+      alert('Please select a table');
+      return;
     }
-
+    if (!numberOfPeople) {
+      alert('Please select number of people');
+      return;
+    }
     if (isTableBusy(tableNumber)) {
-      return alert('This table is currently busy with an active order. Please wait until order is completed.');
+      alert('This table is currently busy');
+      return;
     }
 
-    let subtotal = 0, gst = 0;
-    cartItems.forEach(item => {
-      const itemTotal = item.price * item.quantity;
-      subtotal += itemTotal;
-      gst += (itemTotal * (item.taxRate || 5)) / 100;
-    });
-    const serviceCharge = subtotal * 0.05;
-    const totalAmount = subtotal + gst + serviceCharge;
+    const { subtotal, gst, serviceCharge, discount, totalAmount } = cartTotals;
 
     const orderData = {
       customerName,
       customerMobile,
       tableNumber: parseInt(tableNumber),
+      numberOfPeople: parseInt(numberOfPeople),
       notes,
       items: cartItems.map(({ id, name, price, quantity, taxRate }) => ({
         menuItemId: id,
@@ -210,27 +247,36 @@ const EmployeeDashboard = () => {
       subtotal,
       gst,
       serviceCharge,
-      discount: 0,
+      discount,
       totalAmount,
       status: 'Pending',
       paymentMethod: 'Cash',
       createdBy: user.id,
     };
 
-    if (editingOrder) {
-      await dispatch(updateOrder({ id: editingOrder.id, updates: orderData }));
-      setEditingOrder(null);
-    } else {
-      await dispatch(createOrder(orderData));
-    }
-    setCartItems([]);
-    setCustomerName('');
-    setCustomerMobile('');
-    setTableNumber('');
-    setNotes('');
-    await dispatch(fetchMyOrders(user.id));
-  };
+    console.log("Order Data:", orderData);
 
+    try {
+      if (editingOrder) {
+        await dispatch(updateOrder({ id: editingOrder.id, updates: orderData }));
+        setEditingOrder(null);
+      } else {
+        await dispatch(createOrder(orderData));
+      }
+      setCartItems([]);
+      setCustomerName('');
+      setCustomerMobile('');
+      setTableNumber('');
+      setNotes('');
+      setNumberOfPeople('');
+      await dispatch(fetchMyOrders(user.id));
+      await dispatch(fetchAllOrders());
+      alert('Order placed successfully!');
+    } catch (error) {
+      console.error("Order error:", error);
+      alert('Failed to place order');
+    }
+  };
   const printBill = (order) => {
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -238,126 +284,55 @@ const EmployeeDashboard = () => {
       <head>
         <title>Invoice ${order.id.slice(0, 8)}</title>
         <style>
-          body {
-            font-family: 'Arial', sans-serif;
-            padding: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-          }
-          .header {
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-          }
-          .header h2 {
-            margin: 0;
-            color: #1a237e;
-          }
-          .header p {
-            margin: 5px 0;
-            color: #666;
-            font-size: 12px;
-          }
-          .customer-info {
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 8px;
-          }
-          .customer-info p {
-            margin: 5px 0;
-            font-size: 14px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-          }
-          th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-          }
-          th {
-            background-color: #f2f2f2;
-          }
-          .totals {
-            text-align: right;
-            margin-top: 10px;
-          }
-          .totals p {
-            margin: 5px 0;
-          }
-          .grand-total {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a237e;
-            border-top: 2px solid #333;
-            padding-top: 10px;
-            margin-top: 10px;
-          }
-          .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-            font-size: 12px;
-            color: #666;
-          }
-          .note {
-            font-size: 12px;
-            color: #888;
-            margin-top: 10px;
-            font-style: italic;
-          }
+          body{font-family:'Arial',sans-serif;padding:20px;max-width:400px;margin:0 auto}
+          .header{text-align:center;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:20px}
+          .header h2{margin:0;color:#1a237e}
+          .header p{margin:5px 0;color:#666;font-size:12px}
+          .customer-info{margin-bottom:20px;padding:10px;background:#f5f5f5;border-radius:8px}
+          .customer-info p{margin:5px 0;font-size:14px}
+          table{width:100%;border-collapse:collapse;margin-bottom:20px}
+          th,td{border:1px solid #ddd;padding:8px;text-align:left}
+          th{background-color:#f2f2f2}
+          .totals{text-align:right;margin-top:10px}
+          .totals p{margin:5px 0}
+          .grand-total{font-size:18px;font-weight:bold;color:#1a237e;border-top:2px solid #333;padding-top:10px;margin-top:10px}
+          .discount{color:green;font-weight:bold}
+          .footer{text-align:center;margin-top:30px;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666}
         </style>
       </head>
       <body>
         <div class="header">
-          <h2>🍽️ Restaurant POS</h2>
+          <h2>Restaurant POS</h2>
           <p>Order #${order.id.slice(0, 8)}</p>
           <p>Date: ${new Date(order.createdAt).toLocaleString()}</p>
         </div>
-        
         <div class="customer-info">
-          <p><strong>Customer:</strong> ${order.customerName}</p>
-          <p><strong>Mobile:</strong> ${order.customerMobile}</p>
-          <p><strong>Table:</strong> ${order.tableNumber}</p>
-          <p><strong>Waiter ID:</strong> ${order.createdBy}</p>
+          <p><strong>Customer:</strong> ${order.customerName} (${order.customerMobile})</p>
+          <p><strong>Table:</strong> ${order.tableNumber} | <strong>Waiter ID:</strong> ${order.createdBy}</p>
+          ${order.numberOfPeople ? `<p><strong>People:</strong> ${order.numberOfPeople}</p>` : ''}
           ${order.notes ? `<p><strong>Instructions:</strong> ${order.notes}</p>` : ''}
         </div>
-        
         <table>
-          <thead>
-            <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
-          </thead>
+          <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
           <tbody>
             ${order.items.map(item => `
               <tr>
                 <td>${item.name}</td>
                 <td style="text-align:center">${item.quantity}</td>
-                <td>₹${item.price}</td>
-                <td>₹${item.price * item.quantity}</td>
+                <td style="text-align:right">₹${item.price}</td>
+                <td style="text-align:right">₹${item.price * item.quantity}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
-        
         <div class="totals">
           <p><strong>Subtotal:</strong> ₹${Math.floor(order.subtotal)}</p>
           <p><strong>GST (5%):</strong> ₹${Math.floor(order.gst)}</p>
           <p><strong>Service Charge (5%):</strong> ₹${Math.floor(order.serviceCharge)}</p>
-          ${order.discount > 0 ? `<p><strong>Discount:</strong> -₹${Math.floor(order.discount)}</p>` : ''}
-          <div class="grand-total">
-            <strong>Total Amount: ₹${Math.floor(order.totalAmount)}</strong>
-          </div>
+          ${order.discount > 0 ? `<p class="discount"><strong>Discount (10% off):</strong> -₹${Math.floor(order.discount)}</p>` : ''}
+          <div class="grand-total"><strong>Total Amount: ₹${Math.floor(order.totalAmount)}</strong></div>
         </div>
-        
-        <div class="footer">
-          <p>Thank you for dining with us!</p>
-          <p>Visit again 😊</p>
-        </div>
+        <div class="footer">Thank you for dining with us! Visit again</div>
       </body>
     </html>
   `);
@@ -422,10 +397,7 @@ const EmployeeDashboard = () => {
             <div className="mt-4 pt-4 border-t border-purple-400/30">
               <div className="flex justify-between text-sm text-purple-200">
                 <span>Role: Waiter</span>
-                <button
-                  onClick={() => setShowLeaveModal(true)}
-                  className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm transition flex items-center gap-1"
-                >
+                <button onClick={() => setShowLeaveModal(true)} className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm transition flex items-center gap-1">
                   <CalendarIcon className="w-3 h-3" /> Request Leave
                 </button>
               </div>
@@ -437,41 +409,23 @@ const EmployeeDashboard = () => {
         <div className="bg-white rounded-xl shadow-md p-4">
           <div className="flex flex-wrap justify-between items-center gap-4">
             <div className="flex gap-3">
-              <button
-                onClick={() => setShowHistory(false)}
-                className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${!showHistory ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-              >
+              <button onClick={() => setShowHistory(false)} className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${!showHistory ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                 <CalendarIcon className="w-4 h-4" /> Today's Orders
               </button>
-              <button
-                onClick={() => setShowHistory(true)}
-                className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${showHistory ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-              >
+              <button onClick={() => setShowHistory(true)} className={`px-5 py-2 rounded-xl font-semibold transition flex items-center gap-2 ${showHistory ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                 <CalendarIcon className="w-4 h-4" /> History
               </button>
             </div>
-
             <div className="flex gap-3">
               {showHistory && (
                 <div className="flex items-center gap-2 border rounded-xl px-3 py-2 bg-gray-50">
                   <CalendarIcon className="w-4 h-4 text-gray-500" />
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={e => setSelectedDate(e.target.value)}
-                    className="outline-none bg-transparent"
-                  />
+                  <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="outline-none bg-transparent" />
                 </div>
               )}
               <div className="flex items-center gap-2 border rounded-xl px-3 py-2 bg-gray-50">
                 <MagnifyingGlassIcon className="w-4 h-4 text-gray-500" />
-                <input
-                  type="text"
-                  placeholder="Search by name/mobile"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="outline-none bg-transparent w-48"
-                />
+                <input type="text" placeholder="Search by name/mobile" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="outline-none bg-transparent w-48" />
               </div>
             </div>
           </div>
@@ -486,19 +440,12 @@ const EmployeeDashboard = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {menuItems.filter(i => i.available).map(item => (
                 <div key={item.id} className="border rounded-xl p-3 flex gap-3 hover:shadow-lg transition-all hover:-translate-y-1 bg-white">
-                  <img
-                    src={item.image || "https://media.istockphoto.com/id/1182393436/vector/fast-food-seamless-pattern-with-vector-line-icons-of-hamburger-pizza-hot-dog-beverage.jpg?s=612x612&w=0&k=20&c=jlj-n_CNsrd13tkHwC7MVo0cGUyyc8YP6wJQdCvMUGw="}
-                    alt={item.name}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
+                  <img src={item.image || "https://media.istockphoto.com/id/1182393436/vector/fast-food-seamless-pattern-with-vector-line-icons-of-hamburger-pizza-hot-dog-beverage.jpg?s=612x612&w=0&k=20&c=jlj-n_CNsrd13tkHwC7MVo0cGUyyc8YP6wJQdCvMUGw="} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-800">{item.name}</h3>
                     <p className="text-xs text-gray-500">{item.category}</p>
                     <p className="text-green-600 font-bold mt-1">₹{item.price}</p>
-                    <button
-                      onClick={() => addToCart(item)}
-                      className="mt-2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-700 flex items-center gap-1"
-                    >
+                    <button onClick={() => addToCart(item)} className="mt-2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-700 flex items-center gap-1">
                       <PlusCircleIcon className="w-3 h-3" /> Add
                     </button>
                   </div>
@@ -510,28 +457,41 @@ const EmployeeDashboard = () => {
           {/* Cart Section */}
           <div className="bg-white rounded-2xl shadow-lg p-5">
             <Cart cartItems={cartItems} setCartItems={setCartItems} />
-            <div className="mt-6 space-y-3">
-              <input
-                type="text"
-                placeholder="Customer Name *"
-                value={customerName}
-                onChange={e => setCustomerName(e.target.value)}
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
-              />
-              <input
-                type="tel"
-                placeholder="Mobile (10 digits) *"
-                value={customerMobile}
-                onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setCustomerMobile(val); }}
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
-              />
 
-              <select
-                value={tableNumber}
-                onChange={e => setTableNumber(e.target.value)}
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                required
-              >
+            {/* Discount Info */}
+            {cartTotals.subtotal >= 500 && (
+              <div className="mt-3 p-3 bg-green-50 rounded-xl border border-green-200">
+                <div className="flex items-center gap-2 text-green-700">
+                  <TagIcon className="w-4 h-4" />
+                  <span className="text-sm font-semibold">10% Discount Applied!</span>
+                </div>
+                <p className="text-xs text-green-600 mt-1">Min order ₹500 | Max ₹200 off</p>
+              </div>
+            )}
+
+            <div className="mt-6 space-y-3">
+              <input type="text" placeholder="Customer Name *" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none" />
+              <input type="tel" placeholder="Mobile (10 digits) *" value={customerMobile} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if (val.length <= 10) setCustomerMobile(val); }} className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none" />
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <UserGroupIcon className="w-4 h-4" /> Number of People *
+                </label>
+                <select
+                  value={numberOfPeople}
+                  onChange={e => setNumberOfPeople(e.target.value)}
+                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
+                  required
+                >
+                  <option value="">-- Select Group Size --</option>
+                  <option value="1">Single (1 person)</option>
+                  <option value="2">Couple (2 persons)</option>
+                  <option value="3">Small Group (3-4 persons)</option>
+                  <option value="5">Large Group (5+ persons)</option>
+                </select>
+              </div>
+
+              <select value={tableNumber} onChange={e => setTableNumber(e.target.value)} className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none" required>
                 <option value="">-- Select Table --</option>
                 {myTables.map(t => (
                   <option key={t.id} value={t.number} disabled={isTableBusy(t.number)}>
@@ -540,27 +500,15 @@ const EmployeeDashboard = () => {
                 ))}
               </select>
 
-              <textarea
-                placeholder="Special instructions (less salt, extra spicy, etc.)"
-                rows="2"
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                className="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
-              />
+              <textarea placeholder="Special instructions (less salt, extra spicy, etc.)" rows="2" value={notes} onChange={e => setNotes(e.target.value)} className="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-400 outline-none" />
 
-              <button
-                onClick={handlePlaceOrder}
-                className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
-              >
+              <button onClick={handlePlaceOrder} className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
                 <CheckCircleIcon className="w-5 h-5" />
                 {editingOrder ? 'Update Order' : 'Place Order'}
               </button>
 
               {editingOrder && (
-                <button
-                  onClick={() => { setEditingOrder(null); setCartItems([]); setCustomerName(''); setCustomerMobile(''); setTableNumber(''); setNotes(''); }}
-                  className="w-full bg-gray-400 text-white py-3 rounded-xl font-semibold hover:bg-gray-500 transition flex items-center justify-center gap-2"
-                >
+                <button onClick={() => { setEditingOrder(null); setCartItems([]); setCustomerName(''); setCustomerMobile(''); setTableNumber(''); setNotes(''); setNumberOfPeople(''); }} className="w-full bg-gray-400 text-white py-3 rounded-xl font-semibold hover:bg-gray-500 transition flex items-center justify-center gap-2">
                   <XCircleIcon className="w-5 h-5" /> Cancel Edit
                 </button>
               )}
@@ -568,7 +516,7 @@ const EmployeeDashboard = () => {
           </div>
         </div>
 
-        {/* Orders History - Added Complete Order Button */}
+        {/* Orders History */}
         <div className="bg-white rounded-2xl shadow-lg p-5">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
             <ClipboardDocumentListIcon className="w-5 h-5 text-blue-600" />
@@ -587,9 +535,7 @@ const EmployeeDashboard = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">#{order.id.slice(0, 8)}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                          order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
-                        }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.status === 'Completed' ? 'bg-green-100 text-green-700' : order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
                         {order.status}
                       </span>
                     </div>
@@ -604,25 +550,15 @@ const EmployeeDashboard = () => {
                     </p>
                     {order.status !== 'Completed' && (
                       <>
-                        <button
-                          onClick={() => editOrder(order)}
-                          className="bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-blue-600 flex items-center gap-1"
-                        >
+                        <button onClick={() => editOrder(order)} className="bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-blue-600 flex items-center gap-1">
                           <PencilIcon className="w-3 h-3" /> Edit
                         </button>
-                        {/* ✅ Complete Order Button - Employee can mark order as Completed */}
-                        <button
-                          onClick={() => handleCompleteOrder(order)}
-                          className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-green-700 flex items-center gap-1"
-                        >
+                        <button onClick={() => handleCompleteOrder(order)} className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-green-700 flex items-center gap-1">
                           <CheckCircleIcon className="w-3 h-3" /> Complete
                         </button>
                       </>
                     )}
-                    <button
-                      onClick={() => printBill(order)}
-                      className="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-gray-600 flex items-center gap-1"
-                    >
+                    <button onClick={() => printBill(order)} className="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-gray-600 flex items-center gap-1">
                       <PrinterIcon className="w-3 h-3" /> Print
                     </button>
                   </div>
@@ -643,47 +579,19 @@ const EmployeeDashboard = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-gray-700">From Date</label>
-                <input
-                  type="date"
-                  value={leaveFromDate}
-                  onChange={e => setLeaveFromDate(e.target.value)}
-                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                  min={new Date().toISOString().split('T')[0]}
-                />
+                <input type="date" value={leaveFromDate} onChange={e => setLeaveFromDate(e.target.value)} className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none" min={new Date().toISOString().split('T')[0]} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-gray-700">To Date</label>
-                <input
-                  type="date"
-                  value={leaveToDate}
-                  onChange={e => setLeaveToDate(e.target.value)}
-                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                  min={leaveFromDate || new Date().toISOString().split('T')[0]}
-                />
+                <input type="date" value={leaveToDate} onChange={e => setLeaveToDate(e.target.value)} className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none" min={leaveFromDate || new Date().toISOString().split('T')[0]} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-gray-700">Reason (Optional)</label>
-                <textarea
-                  rows="2"
-                  value={leaveReason}
-                  onChange={e => setLeaveReason(e.target.value)}
-                  className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
-                  placeholder="Family function, medical, etc."
-                />
+                <textarea rows="2" value={leaveReason} onChange={e => setLeaveReason(e.target.value)} className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Family function, medical, etc." />
               </div>
               <div className="flex justify-end gap-3 pt-3">
-                <button
-                  onClick={() => setShowLeaveModal(false)}
-                  className="bg-gray-400 text-white px-5 py-2 rounded-xl hover:bg-gray-500 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleRequestLeave}
-                  className="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition"
-                >
-                  Submit Request
-                </button>
+                <button onClick={() => setShowLeaveModal(false)} className="bg-gray-400 text-white px-5 py-2 rounded-xl hover:bg-gray-500 transition">Cancel</button>
+                <button onClick={handleRequestLeave} className="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition">Submit Request</button>
               </div>
             </div>
           </div>
