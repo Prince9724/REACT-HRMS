@@ -1237,6 +1237,53 @@
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-08T10:45:37.382Z"
+    },
+    {
+      "id": "7b10c99b-d3d6-4eda-a68b-fffacfee15f8",
+      "customerName": "first-cutmor",
+      "customerMobile": "1234567890",
+      "tableNumber": 1,
+      "numberOfPeople": 3,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 4,
+          "name": "Pizza",
+          "quantity": 3,
+          "price": 199,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 3,
+          "price": 50,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 1,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 5,
+          "name": "Dosa",
+          "quantity": 1,
+          "price": 150,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 1147,
+      "gst": 57.35,
+      "serviceCharge": 57.35,
+      "discount": 114,
+      "totalAmount": 1147.6999999999998,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-09T03:50:58.930Z"
     }
   ],
   "leaveRequests": [
