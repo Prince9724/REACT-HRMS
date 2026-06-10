@@ -9,20 +9,383 @@
       "role": "admin",
       "isActive": true,
       "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "fullName": "Rajesh Sharma",
+      "email": "seller@shopsphere.com",
+      "password": "seller123",
+      "mobile": "9876543211",
+      "role": "seller",
+      "isActive": true,
+      "createdAt": "2024-01-15T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "fullName": "Priya Patel",
+      "email": "customer@shopsphere.com",
+      "password": "customer123",
+      "mobile": "9876543212",
+      "role": "customer",
+      "isActive": true,
+      "createdAt": "2024-02-01T00:00:00Z"
+    },
+    {
+      "fullName": "Prince gond",
+      "email": "princegondrw123@gmail.com",
+      "password": "123456",
+      "mobile": "1234567890",
+      "role": "customer",
+      "isActive": true,
+      "createdAt": "2026-06-10T08:34:32.524Z",
+      "id": 4
+    },
+    {
+      "fullName": "prince",
+      "email": "prince@gmail.com",
+      "password": "12345",
+      "mobile": "1234567890",
+      "role": "seller",
+      "isActive": true,
+      "createdAt": "2026-06-10T08:35:46.332Z",
+      "id": 5
+    },
+    {
+      "fullName": "seller",
+      "email": "seller@gmail.com",
+      "password": "123456",
+      "mobile": "1234567890",
+      "role": "seller",
+      "isActive": true,
+      "createdAt": "2026-06-10T09:01:50.238Z",
+      "id": 6
     }
   ],
-  "products": [],
+  "products": [
+    {
+      "id": 1,
+      "name": "Apple iPhone 15 Pro",
+      "slug": "apple-iphone-15-pro",
+      "description": "Latest iPhone with A17 Pro chip, titanium design, and advanced camera system. 48MP main camera with 5x optical zoom.",
+      "category": "Electronics",
+      "brand": "Apple",
+      "price": 1299,
+      "discount": 10,
+      "finalPrice": 1169,
+      "stockQuantity": 50,
+      "images": [
+        "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.5,
+      "totalReviews": 12,
+      "createdAt": "2024-02-10T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Samsung Galaxy S24 Ultra",
+      "slug": "samsung-galaxy-s24-ultra",
+      "description": "Premium Android smartphone with AI features, S Pen included, 200MP camera and 100x zoom.",
+      "category": "Electronics",
+      "brand": "Samsung",
+      "price": 1199,
+      "discount": 15,
+      "finalPrice": 1019,
+      "stockQuantity": 75,
+      "images": [
+        "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.3,
+      "totalReviews": 8,
+      "createdAt": "2024-02-12T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "name": "Men's Cotton T-Shirt",
+      "slug": "mens-cotton-t-shirt",
+      "description": "100% premium cotton t-shirt, comfortable and breathable. Available in multiple colors.",
+      "category": "Fashion",
+      "brand": "Nike",
+      "price": 29,
+      "discount": 20,
+      "finalPrice": 23,
+      "stockQuantity": 200,
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.7,
+      "totalReviews": 45,
+      "createdAt": "2024-02-15T00:00:00Z"
+    },
+    {
+      "id": 4,
+      "name": "Women's Running Shoes",
+      "slug": "womens-running-shoes",
+      "description": "Lightweight running shoes with cushioning support. Perfect for daily running and workouts.",
+      "category": "Fashion",
+      "brand": "Adidas",
+      "price": 89,
+      "discount": 25,
+      "finalPrice": 67,
+      "stockQuantity": 150,
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "pending",
+      "rating": 0,
+      "totalReviews": 0,
+      "createdAt": "2024-03-01T00:00:00Z"
+    },
+    {
+      "id": 5,
+      "name": "Sony 55 inch 4K Smart TV",
+      "slug": "sony-55-inch-4k-smart-tv",
+      "description": "4K Ultra HD Smart TV with Google TV, Dolby Vision, and 4K HDR processor.",
+      "category": "Electronics",
+      "brand": "Sony",
+      "price": 699,
+      "discount": 12,
+      "finalPrice": 615,
+      "stockQuantity": 30,
+      "images": [
+        "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.6,
+      "totalReviews": 23,
+      "createdAt": "2024-02-20T00:00:00Z"
+    },
+    {
+      "id": 6,
+      "name": "Sony WH-1000XM5 Headphones",
+      "slug": "sony-wh-1000xm5-headphones",
+      "description": "Industry-leading noise cancellation, 30-hour battery life, premium sound quality.",
+      "category": "Electronics",
+      "brand": "Sony",
+      "price": 299,
+      "discount": 18,
+      "finalPrice": 245,
+      "stockQuantity": 100,
+      "images": [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.8,
+      "totalReviews": 67,
+      "createdAt": "2024-02-18T00:00:00Z"
+    },
+    {
+      "id": 7,
+      "name": "Stainless Steel Water Bottle",
+      "slug": "stainless-steel-water-bottle",
+      "description": "Double wall insulated water bottle, keeps drinks cold for 24 hours and hot for 12 hours.",
+      "category": "Home & Living",
+      "brand": "Milton",
+      "price": 19,
+      "discount": 10,
+      "finalPrice": 17,
+      "stockQuantity": 500,
+      "images": [
+        "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "pending",
+      "rating": 0,
+      "totalReviews": 0,
+      "createdAt": "2024-03-02T00:00:00Z"
+    },
+    {
+      "id": 8,
+      "name": "Premium Yoga Mat",
+      "slug": "premium-yoga-mat",
+      "description": "Non-slip exercise mat for yoga and fitness. 6mm thick for extra comfort.",
+      "category": "Sports",
+      "brand": "Decathlon",
+      "price": 25,
+      "discount": 15,
+      "finalPrice": 21,
+      "stockQuantity": 300,
+      "images": [
+        "https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.4,
+      "totalReviews": 34,
+      "createdAt": "2024-02-25T00:00:00Z"
+    },
+    {
+      "id": 9,
+      "name": "The Psychology of Money",
+      "slug": "the-psychology-of-money",
+      "description": "Timeless lessons on wealth, greed, and happiness by Morgan Housel.",
+      "category": "Books",
+      "brand": "Harriman House",
+      "price": 15,
+      "discount": 20,
+      "finalPrice": 12,
+      "stockQuantity": 120,
+      "images": [
+        "https://images.unsplash.com/photo-1589998059171-988d887df646?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.9,
+      "totalReviews": 89,
+      "createdAt": "2024-02-28T00:00:00Z"
+    },
+    {
+      "id": 10,
+      "name": "Smart Watch Pro",
+      "slug": "smart-watch-pro",
+      "description": "Fitness tracker with heart rate monitor, GPS, and 7-day battery life.",
+      "category": "Electronics",
+      "brand": "Apple",
+      "price": 399,
+      "discount": 10,
+      "finalPrice": 359,
+      "stockQuantity": 80,
+      "images": [
+        "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500"
+      ],
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "status": "approved",
+      "rating": 4.5,
+      "totalReviews": 56,
+      "createdAt": "2024-03-01T00:00:00Z"
+    },
+    {
+      "name": "laptop",
+      "category": "Electronics",
+      "brand": "lenevo",
+      "description": "Lenovo i5 11th Gen Laptop – Excellent Working ConditionHi everyone, I am selling my Lenovo laptop which is in pristine condition and works flawlessly. It is perfect for students, working professionals, coding, and casual gaming.Key Specifications:Processor: Intel Core i5 (11th Generation) – Fast and smooth performance.RAM: 16 GB – Smooth multitasking with no lag.Storage: 512 GB NVMe SSD – Super-fast boot time and ample storage.Battery: Good battery backup (Lasts up to [Insert hours, e.g., 4-5] hours easily).OS: Windows [Insert version, e.g., 11] Original.Condition:Scratchless screen and well-maintained body.No internal or external faults.All ports, camera, keyboard, and trackpad are working 100%.What’s Included:Original Lenovo LaptopOriginal ChargerReason for Selling: Upgraded to a new device.Price: ₹[Insert Price] (Slightly negotiable for serious buyers).Location: [Insert Your Location]Interested buyers can DM me for more details or pictures!",
+      "price": 51000,
+      "discount": 5,
+      "stockQuantity": 2,
+      "images": [
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCblcxb3RI3FLnD0fhENw89fEDlc0B0UIt77OGdG3Una-yubPQ2ed1HVrJ&s=10"
+      ],
+      "finalPrice": 48450,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "laptop",
+      "status": "pending",
+      "rating": 0,
+      "totalReviews": 0,
+      "createdAt": "2026-06-10T09:21:43.534Z",
+      "id": 12
+    }
+  ],
   "categories": [
-    { "id": 1, "name": "Electronics", "slug": "electronics", "icon": "FiSmartphone", "isActive": true },
-    { "id": 2, "name": "Fashion", "slug": "fashion", "icon": "FiShoppingBag", "isActive": true },
-    { "id": 3, "name": "Home & Living", "slug": "home-living", "icon": "FiHome", "isActive": true },
-    { "id": 4, "name": "Books", "slug": "books", "icon": "FiBook", "isActive": true },
-    { "id": 5, "name": "Sports", "slug": "sports", "icon": "FiAward", "isActive": true }
+    {
+      "id": 1,
+      "name": "Electronics",
+      "slug": "electronics",
+      "icon": "FiSmartphone",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name": "Fashion",
+      "slug": "fashion",
+      "icon": "FiShoppingBag",
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name": "Home & Living",
+      "slug": "home-living",
+      "icon": "FiHome",
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "name": "Books",
+      "slug": "books",
+      "icon": "FiBook",
+      "isActive": true
+    },
+    {
+      "id": 5,
+      "name": "Sports",
+      "slug": "sports",
+      "icon": "FiAward",
+      "isActive": true
+    }
   ],
   "wishlist": [],
   "cart": [],
   "orders": [],
-  "reviews": [],
-  "addresses": [],
+  "reviews": [
+    {
+      "id": 1,
+      "productId": 1,
+      "userId": 3,
+      "userName": "Priya Patel",
+      "rating": 5,
+      "comment": "Excellent phone! Very fast and great camera. Battery life is amazing.",
+      "createdAt": "2024-02-20T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "productId": 2,
+      "userId": 3,
+      "userName": "Priya Patel",
+      "rating": 4,
+      "comment": "Good phone but battery life could be better. Camera is excellent though.",
+      "createdAt": "2024-02-22T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "productId": 3,
+      "userId": 3,
+      "userName": "Priya Patel",
+      "rating": 5,
+      "comment": "Very comfortable t-shirt, quality is great. True to size.",
+      "createdAt": "2024-02-25T00:00:00Z"
+    },
+    {
+      "id": 4,
+      "productId": 6,
+      "userId": 3,
+      "userName": "Priya Patel",
+      "rating": 5,
+      "comment": "Best noise cancellation headphones I've ever used. Worth every penny.",
+      "createdAt": "2024-02-28T00:00:00Z"
+    }
+  ],
+  "addresses": [
+    {
+      "id": 1,
+      "userId": 3,
+      "fullName": "Priya Patel",
+      "mobile": "9876543212",
+      "addressLine1": "123 Main Street",
+      "addressLine2": "Near City Park",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pincode": "400001",
+      "isDefault": true,
+      "createdAt": "2024-02-01T00:00:00Z"
+    }
+  ],
   "notifications": []
 }
