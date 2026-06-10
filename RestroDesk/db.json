@@ -128,6 +128,16 @@
       "description": "premuim coffee",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZb632q3t-D6iN3TiW863qXQv_ObPEy_1gfQ&s",
       "id": 9
+    },
+    {
+      "name": "panjabi ",
+      "category": "Main",
+      "price": 350,
+      "taxRate": 5,
+      "available": true,
+      "description": "panjabi ",
+      "image": "",
+      "id": 10
     }
   ],
   "tables": [
@@ -1284,6 +1294,39 @@
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-09T03:50:58.930Z"
+    },
+    {
+      "id": "73006a3c-5251-47d2-b1f3-2e49d7d1fae5",
+      "customerName": "alkesh sir",
+      "customerMobile": "9909856466",
+      "tableNumber": 1,
+      "numberOfPeople": 2,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Paneer Butter Masala",
+          "quantity": 2,
+          "price": 250,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 2,
+          "price": 50,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 600,
+      "gst": 30,
+      "serviceCharge": 30,
+      "discount": 60,
+      "totalAmount": 600,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-10T10:19:21.890Z"
     }
   ],
   "leaveRequests": [
