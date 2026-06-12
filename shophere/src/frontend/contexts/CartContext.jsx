@@ -17,43 +17,52 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
+    const savedCart = localStorage.getItem('shopsphere_cart');
     if (savedCart) {
-      const items = JSON.parse(savedCart);
-      setCartItems(items);
-      updateCartSummary(items);
+      try {
+        const items = JSON.parse(savedCart);
+        setCartItems(items);
+        updateCartSummary(items);
+      } catch (e) {
+        console.error('Error loading cart:', e);
+      }
     }
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
+    localStorage.setItem('shopsphere_cart', JSON.stringify(cartItems));
     updateCartSummary(cartItems);
   }, [cartItems]);
 
   const updateCartSummary = (items) => {
-    const count = items.reduce((total, item) => total + item.quantity, 0);
-    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const count = items.reduce((total, item) => total + (item.quantity || 1), 0);
+    const total = items.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
     setCartCount(count);
     setCartTotal(total);
+    console.log('Cart updated - Count:', count, 'Total:', total);
   };
 
   // Add item to cart
   const addToCart = (product, quantity = 1) => {
+    console.log('Adding to cart:', product);
+    
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       
       if (existingItem) {
+        console.log('Item exists, updating quantity');
         return prevItems.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: (item.quantity || 1) + quantity }
             : item
         );
       } else {
+        console.log('New item, adding to cart');
         return [...prevItems, {
           id: product.id,
           name: product.name,
-          price: product.finalPrice,
+          price: product.finalPrice || product.price,
           image: product.images?.[0] || '',
           quantity: quantity,
           stock: product.stockQuantity
