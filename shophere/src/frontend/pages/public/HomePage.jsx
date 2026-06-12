@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
+import { useCart } from '../../contexts/CartContext';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import { FiShoppingBag, FiTruck, FiShield, FiHeadphones, FiStar, FiArrowRight } from 'react-icons/fi';
@@ -11,10 +12,10 @@ const HomePage = () => {
   const [newArrivals, setNewArrivals] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
   
-  // Configurable limits - Future mein badha sakte ho
-  const FEATURED_LIMIT = 12;  // 12 products dikhenge
-  const NEW_ARRIVALS_LIMIT = 12;  // 12 products dikhenge
+  const FEATURED_LIMIT = 8;
+  const NEW_ARRIVALS_LIMIT = 8;
 
   useEffect(() => {
     fetchHomeData();
@@ -27,20 +28,14 @@ const HomePage = () => {
     
     if (productsResult.success) {
       const allProducts = productsResult.data;
-      
-      // Sort by newest first
       const sortedByNewest = [...allProducts].sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt)
       );
       
-      // Featured products = newest products (up to FEATURED_LIMIT)
       setFeaturedProducts(sortedByNewest.slice(0, FEATURED_LIMIT));
-      
-      // New arrivals = next products (up to NEW_ARRIVALS_LIMIT)
       setNewArrivals(sortedByNewest.slice(FEATURED_LIMIT, FEATURED_LIMIT + NEW_ARRIVALS_LIMIT));
     }
     
-    // Categories - saari dikhao
     const categoriesResult = await categoryService.getAllCategories();
     if (categoriesResult.success) {
       setCategories(categoriesResult.data);
@@ -102,16 +97,16 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Categories Section */}
+        {/* Categories Section - Fixed Link */}
         {categories.length > 0 && (
           <section className="py-12 bg-white">
             <div className="max-w-7xl mx-auto px-4">
               <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">Shop by Category</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {categories.map(cat => (
                   <Link
                     key={cat.id}
-                    to={`/products?category=${cat.name}`}
+                    to={`/products?category=${encodeURIComponent(cat.name)}`}
                     className="group text-center p-4 bg-gray-50 rounded-lg hover:bg-primary transition hover:shadow-lg"
                   >
                     <div className="text-3xl mb-2 group-hover:text-white">📂</div>
@@ -123,7 +118,7 @@ const HomePage = () => {
           </section>
         )}
 
-        {/* Featured Products - Newest Products */}
+        {/* Featured Products */}
         {featuredProducts.length > 0 && (
           <section className="py-12 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4">
@@ -133,18 +128,21 @@ const HomePage = () => {
                   View All <FiArrowRight />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {featuredProducts.map(product => (
-                  <Link to={`/product/${product.id}`} key={product.id} className="group">
-                    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
+                  <div key={product.id} className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <Link to={`/product/${product.id}`}>
                       <div className="relative h-48 overflow-hidden bg-gray-100">
                         <img
-                          src={product.images?.[0] || 'https://via.placeholder.com/300'}
+                          src={product.images?.[0] || 'https://picsum.photos/300/200?random=' + product.id}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = `https://picsum.photos/300/200?random=${product.id}`;
+                          }}
                         />
                         {product.discount > 0 && (
-                          <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
                             {product.discount}% OFF
                           </span>
                         )}
@@ -153,66 +151,27 @@ const HomePage = () => {
                         <h3 className="font-semibold text-gray-800 group-hover:text-primary transition line-clamp-1">
                           {product.name}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">{product.brand}</p>
+                        <p className="text-sm text-gray-500 mt-1">{product.brand || 'Generic'}</p>
                         <div className="mt-2">
                           <StarRating rating={product.rating} />
                         </div>
                         <div className="mt-2 flex items-center gap-2">
-                          <span className="text-lg font-bold text-primary">${product.finalPrice}</span>
+                          <span className="text-xl font-bold text-primary">${product.finalPrice}</span>
                           {product.discount > 0 && (
                             <span className="text-sm text-gray-400 line-through">${product.price}</span>
                           )}
                         </div>
                       </div>
+                    </Link>
+                    <div className="px-4 pb-4">
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-primary text-white py-2 rounded-lg hover:bg-orange-600 transition"
+                      >
+                        Add to Cart
+                      </button>
                     </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* New Arrivals */}
-        {newArrivals.length > 0 && (
-          <section className="py-12 bg-white">
-            <div className="max-w-7xl mx-auto px-4">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800">New Arrivals</h2>
-                <Link to="/products" className="text-primary hover:text-orange-600 flex items-center gap-1">
-                  View All <FiArrowRight />
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                {newArrivals.map(product => (
-                  <Link to={`/product/${product.id}`} key={product.id} className="group">
-                    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
-                      <div className="relative h-48 overflow-hidden bg-gray-100">
-                        <img
-                          src={product.images?.[0] || 'https://via.placeholder.com/300'}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
-                        <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                          New
-                        </span>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold text-gray-800 group-hover:text-primary transition line-clamp-1">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-gray-500 mt-1">{product.brand}</p>
-                        <div className="mt-2">
-                          <StarRating rating={product.rating} />
-                        </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="text-lg font-bold text-primary">${product.finalPrice}</span>
-                          {product.discount > 0 && (
-                            <span className="text-sm text-gray-400 line-through">${product.price}</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>
@@ -220,11 +179,11 @@ const HomePage = () => {
         )}
 
         {/* Features Section */}
-        <section className="py-12 bg-gray-50">
+        <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {features.map((Feature, index) => (
-                <div key={index} className="text-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+                <div key={index} className="text-center p-6 bg-gray-50 rounded-xl shadow-md hover:shadow-lg transition">
                   <Feature.icon size={48} className="text-primary mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">{Feature.title}</h3>
                   <p className="text-gray-600">{Feature.description}</p>
@@ -240,7 +199,7 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default HomePage;  
 
 // const FEATURED_LIMIT = 30;  // 30 products dikhenge
 // const NEW_ARRIVALS_LIMIT = 30;  // 30 products dikhenge

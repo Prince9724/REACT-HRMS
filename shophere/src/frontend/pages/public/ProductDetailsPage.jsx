@@ -2,425 +2,228 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
-import { productService } from '../../services/productService';
-import { FiStar, FiShoppingCart, FiHeart, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
+import { useCart } from '../../contexts/CartContext';
+import { FiStar, FiShoppingCart, FiHeart, FiTruck, FiShield, FiRefreshCw, FiZap } from 'react-icons/fi';
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
-  
+  const [addedToCart, setAddedToCart] = useState(false);
+
   useEffect(() => {
     fetchProduct();
   }, [id]);
-  
+
   const fetchProduct = async () => {
-    setLoading(true);
-    const result = await productService.getProductById(id);
-    if (result.success) {
-      setProduct(result.data);
+    try {
+      const response = await fetch(`http://localhost:5000/products/${id}`);
+      const data = await response.json();
+      setProduct(data);
+    } catch (err) {
+      console.error('Error:', err);
     }
     setLoading(false);
   };
-  
+
   const handleAddToCart = () => {
-    // Will implement later
-    alert('Added to cart!');
+    addToCart(product, quantity);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
-  
+
   const handleBuyNow = () => {
+    // Pehle cart mein add karo, phir checkout par bhejo
+    addToCart(product, quantity);
     navigate('/checkout');
   };
-  
+
   const StarRating = ({ rating }) => {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <div style={{ display: 'flex', gap: '2px' }}>
+      <div className="flex items-center space-x-1">
+        <div className="flex">
           {[1, 2, 3, 4, 5].map((star) => (
             <FiStar
               key={star}
               size={16}
-              fill={star <= rating ? '#ffc107' : 'none'}
-              color={star <= rating ? '#ffc107' : '#ddd'}
+              className={star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
             />
           ))}
         </div>
+        <span className="text-sm text-gray-500">({rating || 0} reviews)</span>
       </div>
     );
   };
-  
+
   if (loading) {
     return (
       <>
         <Navbar />
-        <div style={styles.loader}>Loading product details...</div>
-        <Footer />
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
       </>
     );
   }
-  
+
   if (!product) {
     return (
       <>
         <Navbar />
-        <div style={styles.loader}>Product not found</div>
-        <Footer />
+        <div className="text-center py-12">Product not found</div>
       </>
     );
   }
-  
+
   return (
     <>
       <Navbar />
-      <div style={styles.container}>
-        <div style={styles.productContainer}>
-          {/* Product Images */}
-          <div style={styles.imageSection}>
-            <div style={styles.mainImage}>
-              <img src={product.images?.[activeImage] || 'https://via.placeholder.com/400'} alt={product.name} />
-            </div>
-            <div style={styles.thumbnailList}>
-              {product.images?.map((img, index) => (
-                <div
-                  key={index}
-                  style={{
-                    ...styles.thumbnail,
-                    ...(activeImage === index ? styles.activeThumbnail : {})
-                  }}
-                  onClick={() => setActiveImage(index)}
-                >
-                  <img src={img} alt={`${product.name} ${index + 1}`} />
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Product Info */}
-          <div style={styles.infoSection}>
-            <h1 style={styles.productName}>{product.name}</h1>
-            <p style={styles.brand}>Brand: {product.brand}</p>
-            <p style={styles.category}>Category: {product.category}</p>
-            
-            <div style={styles.rating}>
-              <StarRating rating={product.rating} />
-              <span style={styles.reviewCount}>({product.totalReviews || 0} reviews)</span>
-            </div>
-            
-            <div style={styles.priceSection}>
-              <span style={styles.currentPrice}>${product.finalPrice}</span>
-              {product.discount > 0 && (
-                <>
-                  <span style={styles.originalPrice}>${product.price}</span>
-                  <span style={styles.discount}>{product.discount}% OFF</span>
-                </>
-              )}
-            </div>
-            
-            <p style={styles.description}>{product.description}</p>
-            
-            <div style={styles.stockInfo}>
-              {product.stockQuantity > 0 ? (
-                <span style={styles.inStock}>In Stock ({product.stockQuantity} available)</span>
-              ) : (
-                <span style={styles.outOfStock}>Out of Stock</span>
-              )}
-            </div>
-            
-            {/* Quantity Selector */}
-            {product.stockQuantity > 0 && (
-              <div style={styles.quantitySection}>
-                <label>Quantity:</label>
-                <div style={styles.quantityControls}>
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    style={styles.qtyBtn}
-                  >
-                    -
-                  </button>
-                  <span style={styles.qtyValue}>{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}
-                    style={styles.qtyBtn}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            )}
-            
-            {/* Action Buttons */}
-            <div style={styles.actionButtons}>
-              <button
-                onClick={handleAddToCart}
-                style={styles.cartBtn}
-                disabled={product.stockQuantity === 0}
-              >
-                <FiShoppingCart size={18} />
-                Add to Cart
-              </button>
-              <button
-                onClick={handleBuyNow}
-                style={styles.buyBtn}
-                disabled={product.stockQuantity === 0}
-              >
-                Buy Now
-              </button>
-              <button style={styles.wishlistBtn}>
-                <FiHeart size={20} />
-              </button>
-            </div>
-            
-            {/* Delivery Info */}
-            <div style={styles.deliveryInfo}>
-              <div style={styles.deliveryItem}>
-                <FiTruck size={20} color="#666" />
-                <div>
-                  <strong>Free Delivery</strong>
-                  <p>On orders above $50</p>
-                </div>
-              </div>
-              <div style={styles.deliveryItem}>
-                <FiShield size={20} color="#666" />
-                <div>
-                  <strong>Secure Payment</strong>
-                  <p>100% secure transactions</p>
-                </div>
-              </div>
-              <div style={styles.deliveryItem}>
-                <FiRefreshCw size={20} color="#666" />
-                <div>
-                  <strong>Easy Returns</strong>
-                  <p>7 days return policy</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Seller Info */}
-        <div style={styles.sellerSection}>
-          <h3>Seller Information</h3>
-          <div style={styles.sellerInfo}>
+      <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+            {/* Product Images */}
             <div>
-              <strong>{product.sellerName || 'Verified Seller'}</strong>
-              <p>Member since 2024</p>
+              <div className="relative h-96 bg-gray-100 rounded-lg overflow-hidden">
+                <img
+                  src={product.images?.[activeImage] || 'https://picsum.photos/400/400?random=' + product.id}
+                  alt={product.name}
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    e.target.src = `https://picsum.photos/400/400?random=${product.id}`;
+                  }}
+                />
+                {product.discount > 0 && (
+                  <span className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    {product.discount}% OFF
+                  </span>
+                )}
+              </div>
+              {product.images && product.images.length > 1 && (
+                <div className="flex gap-2 mt-4">
+                  {product.images.map((img, index) => (
+                    <div
+                      key={index}
+                      onClick={() => setActiveImage(index)}
+                      className={`w-20 h-20 rounded-lg overflow-hidden cursor-pointer border-2 ${
+                        activeImage === index ? 'border-primary' : 'border-gray-200'
+                      }`}
+                    >
+                      <img src={img} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <button style={styles.contactBtn}>Contact Seller</button>
+
+            {/* Product Info */}
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
+              <p className="text-gray-500 mb-2">Brand: {product.brand || 'Generic'}</p>
+              <p className="text-gray-500 mb-4">Category: {product.category}</p>
+              
+              <div className="mb-4">
+                <StarRating rating={product.rating} />
+              </div>
+              
+              <div className="mb-4">
+                <span className="text-3xl font-bold text-primary">${product.finalPrice}</span>
+                {product.discount > 0 && (
+                  <>
+                    <span className="text-lg text-gray-400 line-through ml-2">${product.price}</span>
+                    <span className="ml-2 text-green-600 font-semibold">Save ${(product.price - product.finalPrice).toFixed(2)}</span>
+                  </>
+                )}
+              </div>
+              
+              <div className="mb-4">
+                {product.stockQuantity > 0 ? (
+                  <span className="text-green-600 font-semibold">In Stock ({product.stockQuantity} available)</span>
+                ) : (
+                  <span className="text-red-600 font-semibold">Out of Stock</span>
+                )}
+              </div>
+              
+              <p className="text-gray-600 mb-6 leading-relaxed">{product.description}</p>
+              
+              {/* Quantity Selector */}
+              {product.stockQuantity > 0 && (
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="font-medium">Quantity:</span>
+                  <div className="flex items-center border border-gray-300 rounded-lg">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="px-3 py-2 border-r border-gray-300 hover:bg-gray-100"
+                    >
+                      -
+                    </button>
+                    <span className="px-6 py-2">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}
+                      className="px-3 py-2 border-l border-gray-300 hover:bg-gray-100"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={product.stockQuantity === 0}
+                  className="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <FiShoppingCart size={20} />
+                  {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  disabled={product.stockQuantity === 0}
+                  className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <FiZap size={20} />
+                  Buy Now
+                </button>
+                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                  <FiHeart size={20} className="text-gray-600" />
+                </button>
+              </div>
+              
+              {/* Delivery Info */}
+              <div className="border-t border-gray-200 pt-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <FiTruck size={20} className="text-primary" />
+                  <div>
+                    <p className="font-medium">Free Delivery</p>
+                    <p className="text-sm text-gray-500">On orders above $50</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <FiShield size={20} className="text-primary" />
+                  <div>
+                    <p className="font-medium">Secure Payment</p>
+                    <p className="text-sm text-gray-500">100% secure transactions</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <FiRefreshCw size={20} className="text-primary" />
+                  <div>
+                    <p className="font-medium">Easy Returns</p>
+                    <p className="text-sm text-gray-500">7 days return policy</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '30px 20px',
-    minHeight: 'calc(100vh - 200px)'
-  },
-  productContainer: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '40px',
-    backgroundColor: 'white',
-    padding: '30px',
-    borderRadius: '10px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-  },
-  imageSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px'
-  },
-  mainImage: {
-    width: '100%',
-    height: '400px',
-    border: '1px solid #eee',
-    borderRadius: '8px',
-    overflow: 'hidden'
-  },
-  thumbnailList: {
-    display: 'flex',
-    gap: '10px'
-  },
-  thumbnail: {
-    width: '80px',
-    height: '80px',
-    border: '1px solid #eee',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    overflow: 'hidden'
-  },
-  activeThumbnail: {
-    borderColor: '#ff6b35'
-  },
-  infoSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px'
-  },
-  productName: {
-    fontSize: '28px',
-    color: '#333'
-  },
-  brand: {
-    color: '#666'
-  },
-  category: {
-    color: '#666'
-  },
-  rating: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  reviewCount: {
-    color: '#666',
-    fontSize: '14px'
-  },
-  priceSection: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px'
-  },
-  currentPrice: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-    color: '#ff6b35'
-  },
-  originalPrice: {
-    fontSize: '18px',
-    color: '#999',
-    textDecoration: 'line-through'
-  },
-  discount: {
-    backgroundColor: '#ff6b35',
-    color: 'white',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    fontSize: '12px'
-  },
-  description: {
-    lineHeight: '1.6',
-    color: '#555'
-  },
-  stockInfo: {
-    marginTop: '10px'
-  },
-  inStock: {
-    color: '#28a745'
-  },
-  outOfStock: {
-    color: '#dc3545'
-  },
-  quantitySection: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px',
-    marginTop: '10px'
-  },
-  quantityControls: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  qtyBtn: {
-    width: '30px',
-    height: '30px',
-    border: '1px solid #ddd',
-    backgroundColor: 'white',
-    cursor: 'pointer',
-    borderRadius: '5px'
-  },
-  qtyValue: {
-    width: '40px',
-    textAlign: 'center',
-    fontSize: '16px'
-  },
-  actionButtons: {
-    display: 'flex',
-    gap: '15px',
-    marginTop: '20px'
-  },
-  cartBtn: {
-    flex: 1,
-    backgroundColor: '#ff6b35',
-    color: 'white',
-    padding: '12px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px'
-  },
-  buyBtn: {
-    flex: 1,
-    backgroundColor: '#28a745',
-    color: 'white',
-    padding: '12px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px'
-  },
-  wishlistBtn: {
-    width: '45px',
-    backgroundColor: 'white',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  deliveryInfo: {
-    marginTop: '20px',
-    paddingTop: '20px',
-    borderTop: '1px solid #eee'
-  },
-  deliveryItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px',
-    marginBottom: '15px'
-  },
-  sellerSection: {
-    marginTop: '30px',
-    backgroundColor: 'white',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-  },
-  sellerInfo: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '15px'
-  },
-  contactBtn: {
-    padding: '8px 20px',
-    border: '1px solid #ff6b35',
-    backgroundColor: 'white',
-    color: '#ff6b35',
-    borderRadius: '5px',
-    cursor: 'pointer'
-  },
-  loader: {
-    textAlign: 'center',
-    padding: '100px',
-    fontSize: '18px'
-  }
 };
 
 export default ProductDetailsPage;

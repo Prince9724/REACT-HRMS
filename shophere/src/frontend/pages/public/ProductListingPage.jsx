@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
 import { useCart } from '../../contexts/CartContext';
 import { FiSearch, FiStar, FiFilter, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 const ProductListingPage = () => {
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -17,10 +19,17 @@ const ProductListingPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   
-  // Add to cart function
   const { addToCart } = useCart();
+  const productsPerPage = 30; // 30 products per page
 
-  const productsPerPage = 8;
+  // Get category from URL query params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get('category');
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     fetchData();
@@ -41,6 +50,10 @@ const ProductListingPage = () => {
       const catRes = await fetch('http://localhost:5000/categories');
       const catData = await catRes.json();
       setCategories(catData);
+      
+      // Set max price range based on products
+      const maxPrice = Math.max(...productData.map(p => p.finalPrice), 5000);
+      setPriceRange({ min: 0, max: maxPrice });
     } catch (err) {
       console.error('Error:', err);
     }
@@ -116,10 +129,7 @@ const ProductListingPage = () => {
       <>
         <Navbar />
         <div className="flex justify-center items-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading products...</p>
-          </div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
         </div>
         <Footer />
       </>
@@ -131,7 +141,9 @@ const ProductListingPage = () => {
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">All Products</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            {selectedCategory ? `${selectedCategory} Products` : 'All Products'}
+          </h1>
           <p className="text-gray-600">Discover amazing products from trusted sellers</p>
         </div>
 
@@ -176,41 +188,56 @@ const ProductListingPage = () => {
           </select>
         </div>
 
-        {showFilters && (
-          <div className="bg-white p-5 rounded-lg shadow-md mb-6 border border-gray-200">
-            <h3 className="font-semibold text-gray-800 mb-4">Price Range: ${priceRange.min} - ${priceRange.max}</h3>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <label className="text-sm text-gray-600 block mb-1">Min Price ($)</label>
-                <input
-                  type="number"
-                  value={priceRange.min}
-                  onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Min"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-sm text-gray-600 block mb-1">Max Price ($)</label>
-                <input
-                  type="number"
-                  value={priceRange.max}
-                  onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Max"
-                />
-              </div>
-              <div className="flex items-end">
-                <button
-                  onClick={() => setPriceRange({ min: 0, max: 5000 })}
-                  className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 transition"
-                >
-                  Reset Price
-                </button>
-              </div>
+        {/* Price Range Filter - Always Visible */}
+        <div className="bg-white p-5 rounded-lg shadow-md mb-6 border border-gray-200">
+          <h3 className="font-semibold text-gray-800 mb-4">Price Range: ${priceRange.min} - ${priceRange.max}</h3>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <label className="text-sm text-gray-600 block mb-1">Min Price ($)</label>
+              <input
+                type="range"
+                min={0}
+                max={5000}
+                value={priceRange.min}
+                onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
+                className="w-full"
+              />
+              <input
+                type="number"
+                value={priceRange.min}
+                onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-lg"
+                placeholder="Min"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-sm text-gray-600 block mb-1">Max Price ($)</label>
+              <input
+                type="range"
+                min={0}
+                max={5000}
+                value={priceRange.max}
+                onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
+                className="w-full"
+              />
+              <input
+                type="number"
+                value={priceRange.max}
+                onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-lg"
+                placeholder="Max"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={() => setPriceRange({ min: 0, max: 5000 })}
+                className="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+              >
+                Reset Price
+              </button>
             </div>
           </div>
-        )}
+        </div>
 
         {currentProducts.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg">
@@ -218,12 +245,9 @@ const ProductListingPage = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {currentProducts.map(product => (
-                <div
-                  key={product.id}
-                  className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
+                <div key={product.id} className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                   <Link to={`/product/${product.id}`}>
                     <div className="relative h-48 overflow-hidden bg-gray-100">
                       <img
@@ -244,11 +268,6 @@ const ProductListingPage = () => {
                           Only {product.stockQuantity} left
                         </span>
                       )}
-                      {product.stockQuantity === 0 && (
-                        <span className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white font-bold">
-                          Out of Stock
-                        </span>
-                      )}
                     </div>
                     <div className="p-4">
                       <h3 className="font-semibold text-gray-800 group-hover:text-primary transition line-clamp-1">
@@ -267,7 +286,6 @@ const ProductListingPage = () => {
                       <p className="text-xs text-gray-400 mt-1">{product.category}</p>
                     </div>
                   </Link>
-                  {/* ✅ Button yahan ANDAR hai - Link ke baahar */}
                   <div className="px-4 pb-4">
                     <button
                       onClick={() => addToCart(product)}
@@ -282,7 +300,7 @@ const ProductListingPage = () => {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-10">
+              <div className="flex justify-center items-center gap-2 mt-10 flex-wrap">
                 <button
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
@@ -290,37 +308,25 @@ const ProductListingPage = () => {
                 >
                   <FiChevronLeft size={18} />
                 </button>
-
-                <div className="flex gap-1">
-                  {[...Array(totalPages).keys()].map(number => {
-                    const pageNum = number + 1;
-                    if (
-                      pageNum === 1 ||
-                      pageNum === totalPages ||
-                      (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
-                    ) {
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => goToPage(pageNum)}
-                          className={`w-10 h-10 rounded-lg transition ${currentPage === pageNum
-                              ? 'bg-primary text-white'
-                              : 'border border-gray-300 hover:bg-gray-50'
-                            }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    } else if (
-                      (pageNum === currentPage - 2 && currentPage > 3) ||
-                      (pageNum === currentPage + 2 && currentPage < totalPages - 2)
-                    ) {
-                      return <span key={pageNum} className="w-4 text-center">...</span>;
-                    }
-                    return null;
-                  })}
-                </div>
-
+                
+                {[...Array(totalPages).keys()].slice(0, 10).map(number => {
+                  const pageNum = number + 1;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => goToPage(pageNum)}
+                      className={`w-10 h-10 rounded-lg transition ${currentPage === pageNum
+                          ? 'bg-primary text-white'
+                          : 'border border-gray-300 hover:bg-gray-50'
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+                
+                {totalPages > 10 && <span className="px-2">...</span>}
+                
                 <button
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}

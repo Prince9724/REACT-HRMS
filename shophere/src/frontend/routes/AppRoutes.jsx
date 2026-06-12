@@ -14,10 +14,12 @@ import CartPage from '../pages/customer/CartPage';
 import WishlistPage from '../pages/customer/WishlistPage';
 import CheckoutPage from '../pages/customer/CheckoutPage';
 import MyOrdersPage from '../pages/customer/MyOrdersPage';
+import CustomerProfile from '../pages/customer/CustomerProfile';
 
 // Seller Pages
 import SellerDashboard from '../pages/seller/SellerDashboard';
 import AddProductPage from '../pages/seller/AddProductPage';
+import EditProductPage from '../pages/seller/EditProductPage';
 import MyProductsPage from '../pages/seller/MyProductsPage';
 import SellerOrdersPage from '../pages/seller/SellerOrdersPage';
 
@@ -25,9 +27,9 @@ import SellerOrdersPage from '../pages/seller/SellerOrdersPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import ProductApprovalPage from '../pages/admin/ProductApprovalPage';
 import UserManagementPage from '../pages/admin/UserManagementPage';
+import SellerManagementPage from '../pages/admin/SellerManagementPage';
+import CategoryManagementPage from '../pages/admin/CategoryManagementPage';
 
-
-import EditProductPage from '../pages/seller/EditProductPage';
 function AppRoutes() {
   return (
     <Routes>
@@ -44,15 +46,16 @@ function AppRoutes() {
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/my-orders" element={<MyOrdersPage />} />
+        <Route path="/profile" element={<CustomerProfile />} />
       </Route>
       
       {/* Seller Routes */}
       <Route element={<PrivateRoute allowedRoles={['seller']} />}>
         <Route path="/seller" element={<SellerDashboard />} />
         <Route path="/seller/add-product" element={<AddProductPage />} />
+        <Route path="/seller/edit-product/:id" element={<EditProductPage />} />
         <Route path="/seller/products" element={<MyProductsPage />} />
         <Route path="/seller/orders" element={<SellerOrdersPage />} />
-        <Route path="/seller/edit-product/:id" element={<EditProductPage />} />
       </Route>
       
       {/* Admin Routes */}
@@ -60,6 +63,8 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/pending-products" element={<ProductApprovalPage />} />
         <Route path="/admin/users" element={<UserManagementPage />} />
+        <Route path="/admin/sellers" element={<SellerManagementPage />} />
+        <Route path="/admin/categories" element={<CategoryManagementPage />} />
       </Route>
     </Routes>
   );
