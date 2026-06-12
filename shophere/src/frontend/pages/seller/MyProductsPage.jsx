@@ -39,13 +39,13 @@ const MyProductsPage = () => {
   const getStatusBadge = (status) => {
     switch(status) {
       case 'approved':
-        return { text: 'Approved', color: '#28a745' };
+        return <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Approved</span>;
       case 'pending':
-        return { text: 'Pending Approval', color: '#ffc107' };
+        return <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Pending Approval</span>;
       case 'rejected':
-        return { text: 'Rejected', color: '#dc3545' };
+        return <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Rejected</span>;
       default:
-        return { text: status, color: '#6c757d' };
+        return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">{status}</span>;
     }
   };
 
@@ -53,7 +53,9 @@ const MyProductsPage = () => {
     return (
       <>
         <Navbar />
-        <div style={styles.loader}>Loading your products...</div>
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
         <Footer />
       </>
     );
@@ -62,168 +64,95 @@ const MyProductsPage = () => {
   return (
     <>
       <Navbar />
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1>My Products</h1>
-          <Link to="/seller/add-product" style={styles.addBtn}>
+      <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">My Products</h1>
+            <p className="text-gray-600 mt-1">Manage your product inventory</p>
+          </div>
+          <Link
+            to="/seller/add-product"
+            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition"
+          >
             Add New Product
           </Link>
         </div>
 
-        {message && <div style={styles.success}>{message}</div>}
+        {message && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            {message}
+          </div>
+        )}
 
         {products.length === 0 ? (
-          <div style={styles.noProducts}>
-            <p>You haven't added any products yet.</p>
-            <Link to="/seller/add-product" style={styles.addProductBtn}>
+          <div className="text-center py-12 bg-white rounded-lg shadow">
+            <p className="text-gray-500 mb-4">You haven't added any products yet.</p>
+            <Link to="/seller/add-product" className="bg-primary text-white px-6 py-2 rounded-lg inline-block">
               Add Your First Product
             </Link>
           </div>
         ) : (
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Product Name</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map(product => {
-                  const status = getStatusBadge(product.status);
-                  return (
-                    <tr key={product.id}>
-                      <td style={styles.imageCell}>
-                        <img src={product.images?.[0] || 'https://via.placeholder.com/50'} alt={product.name} style={styles.thumbnail} />
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {products.map(product => (
+                    <tr key={product.id} className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4">
+                        <img
+                          src={product.images?.[0] || 'https://via.placeholder.com/50'}
+                          alt={product.name}
+                          className="w-12 h-12 object-cover rounded-lg"
+                        />
                       </td>
-                      <td>{product.name}</td>
-                      <td>${product.finalPrice}</td>
-                      <td>{product.stockQuantity}</td>
-                      <td>
-                        <span style={{ ...styles.statusBadge, backgroundColor: status.color }}>
-                          {status.text}
-                        </span>
-                      </td>
-                      <td>
-                        <div style={styles.actions}>
-                          <Link to={`/product/${product.id}`} style={styles.actionBtn}>
-                            <FiEye />
+                      <td className="px-6 py-4 font-medium text-gray-800">{product.name}</td>
+                      <td className="px-6 py-4">${product.finalPrice}</td>
+                      <td className="px-6 py-4">{product.stockQuantity}</td>
+                      <td className="px-6 py-4">{getStatusBadge(product.status)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <Link
+                            to={`/product/${product.id}`}
+                            className="text-blue-600 hover:text-blue-800 p-1"
+                          >
+                            <FiEye size={18} />
                           </Link>
-                          <button onClick={() => handleDelete(product.id)} style={styles.deleteBtn}>
-                            <FiTrash2 />
+                          {/* Edit button - Sabko dikhega, pending me bhi */}
+                          <Link
+                            to={`/seller/edit-product/${product.id}`}
+                            className="text-green-600 hover:text-green-800 p-1"
+                          >
+                            <FiEdit size={18} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(product.id)}
+                            className="text-red-600 hover:text-red-800 p-1"
+                          >
+                            <FiTrash2 size={18} />
                           </button>
                         </div>
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
       <Footer />
     </>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '30px 20px',
-    minHeight: 'calc(100vh - 200px)'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '30px'
-  },
-  addBtn: {
-    backgroundColor: '#ff6b35',
-    color: 'white',
-    padding: '10px 20px',
-    textDecoration: 'none',
-    borderRadius: '5px'
-  },
-  tableContainer: {
-    overflowX: 'auto',
-    backgroundColor: 'white',
-    borderRadius: '10px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse'
-  },
-  imageCell: {
-    width: '80px'
-  },
-  thumbnail: {
-    width: '50px',
-    height: '50px',
-    objectFit: 'cover',
-    borderRadius: '5px'
-  },
-  statusBadge: {
-    padding: '4px 8px',
-    borderRadius: '4px',
-    color: 'white',
-    fontSize: '12px'
-  },
-  actions: {
-    display: 'flex',
-    gap: '10px'
-  },
-  actionBtn: {
-    backgroundColor: '#17a2b8',
-    color: 'white',
-    padding: '5px 10px',
-    borderRadius: '4px',
-    textDecoration: 'none',
-    cursor: 'pointer'
-  },
-  deleteBtn: {
-    backgroundColor: '#dc3545',
-    color: 'white',
-    padding: '5px 10px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  },
-  noProducts: {
-    textAlign: 'center',
-    padding: '50px',
-    backgroundColor: 'white',
-    borderRadius: '10px'
-  },
-  addProductBtn: {
-    display: 'inline-block',
-    backgroundColor: '#ff6b35',
-    color: 'white',
-    padding: '12px 24px',
-    textDecoration: 'none',
-    borderRadius: '5px',
-    marginTop: '15px'
-  },
-  loader: {
-    textAlign: 'center',
-    padding: '100px',
-    fontSize: '18px'
-  },
-  success: {
-    backgroundColor: '#e8f5e9',
-    color: '#2e7d32',
-    padding: '10px',
-    borderRadius: '5px',
-    marginBottom: '20px',
-    textAlign: 'center'
-  }
 };
 
 export default MyProductsPage;

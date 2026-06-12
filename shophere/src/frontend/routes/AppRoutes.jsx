@@ -26,6 +26,8 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import ProductApprovalPage from '../pages/admin/ProductApprovalPage';
 import UserManagementPage from '../pages/admin/UserManagementPage';
 
+
+import EditProductPage from '../pages/seller/EditProductPage';
 function AppRoutes() {
   return (
     <Routes>
@@ -50,6 +52,7 @@ function AppRoutes() {
         <Route path="/seller/add-product" element={<AddProductPage />} />
         <Route path="/seller/products" element={<MyProductsPage />} />
         <Route path="/seller/orders" element={<SellerOrdersPage />} />
+        <Route path="/seller/edit-product/:id" element={<EditProductPage />} />
       </Route>
       
       {/* Admin Routes */}

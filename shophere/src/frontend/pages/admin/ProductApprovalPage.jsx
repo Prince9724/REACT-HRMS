@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
+import { useAuth } from '../../contexts/AuthContext';
 import { productService } from '../../services/productService';
-import { FiCheck, FiX, FiEye } from 'react-icons/fi';
+import { FiCheck, FiX, FiEye, FiClock } from 'react-icons/fi';
 
 const ProductApprovalPage = () => {
+  const { user } = useAuth();
   const [pendingProducts, setPendingProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     fetchPendingProducts();
@@ -25,7 +28,7 @@ const ProductApprovalPage = () => {
   const handleApprove = async (productId) => {
     const result = await productService.approveProduct(productId);
     if (result.success) {
-      setMessage('Product approved successfully!');
+      setMessage('Product approved successfully! It is now visible to customers.');
       fetchPendingProducts();
       setTimeout(() => setMessage(''), 3000);
     }
@@ -44,7 +47,9 @@ const ProductApprovalPage = () => {
     return (
       <>
         <Navbar />
-        <div style={styles.loader}>Loading pending products...</div>
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
         <Footer />
       </>
     );
@@ -53,143 +58,106 @@ const ProductApprovalPage = () => {
   return (
     <>
       <Navbar />
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1>Product Approval Queue</h1>
-          <p>Review and approve products submitted by sellers</p>
+      <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Product Approval Queue</h1>
+          <p className="text-gray-600 mt-2">Review and approve products submitted by sellers</p>
         </div>
 
-        {message && <div style={styles.success}>{message}</div>}
+        {message && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            {message}
+          </div>
+        )}
 
         {pendingProducts.length === 0 ? (
-          <div style={styles.noProducts}>
-            <p>No pending products for approval</p>
+          <div className="text-center py-12 bg-white rounded-lg shadow">
+            <FiClock className="mx-auto text-gray-400 text-5xl mb-4" />
+            <p className="text-gray-500">No pending products for approval</p>
           </div>
         ) : (
-          <div style={styles.productsList}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {pendingProducts.map(product => (
-              <div key={product.id} style={styles.productCard}>
-                <div style={styles.productImage}>
-                  <img src={product.images?.[0] || 'https://via.placeholder.com/100'} alt={product.name} />
+              <div key={product.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition">
+                <div className="relative h-48">
+                  <img
+                    src={product.images?.[0] || 'https://via.placeholder.com/400'}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">
+                    Pending
+                  </span>
                 </div>
-                <div style={styles.productInfo}>
-                  <h3>{product.name}</h3>
-                  <p>Seller: {product.sellerName}</p>
-                  <p>Category: {product.category}</p>
-                  <p>Price: ${product.finalPrice}</p>
-                  <p>Stock: {product.stockQuantity}</p>
-                </div>
-                <div style={styles.productActions}>
-                  <button onClick={() => handleApprove(product.id)} style={styles.approveBtn}>
-                    <FiCheck /> Approve
-                  </button>
-                  <button onClick={() => handleReject(product.id)} style={styles.rejectBtn}>
-                    <FiX /> Reject
-                  </button>
-                  <button style={styles.viewBtn}>
-                    <FiEye /> View
-                  </button>
+                <div className="p-4">
+                  <h3 className="font-bold text-lg text-gray-800 mb-1">{product.name}</h3>
+                  <p className="text-sm text-gray-600">Seller: {product.sellerName}</p>
+                  <p className="text-sm text-gray-600">Category: {product.category}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xl font-bold text-primary">${product.finalPrice}</span>
+                    {product.discount > 0 && (
+                      <span className="text-sm text-gray-400 line-through">${product.price}</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">Stock: {product.stockQuantity} units</p>
+                  <p className="text-sm text-gray-500 mt-2 line-clamp-2">{product.description}</p>
+                  <div className="flex gap-3 mt-4">
+                    <button
+                      onClick={() => handleApprove(product.id)}
+                      className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition flex items-center justify-center gap-2"
+                    >
+                      <FiCheck /> Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(product.id)}
+                      className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition flex items-center justify-center gap-2"
+                    >
+                      <FiX /> Reject
+                    </button>
+                    <button
+                      onClick={() => setSelectedProduct(product)}
+                      className="bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 transition"
+                    >
+                      <FiEye />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+      
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold">Product Details</h2>
+              <button onClick={() => setSelectedProduct(null)} className="text-gray-500 hover:text-gray-700">
+                <FiX size={24} />
+              </button>
+            </div>
+            <div className="p-6">
+              <img
+                src={selectedProduct.images?.[0] || 'https://via.placeholder.com/400'}
+                alt={selectedProduct.name}
+                className="w-full h-64 object-cover rounded-lg mb-4"
+              />
+              <h3 className="font-bold text-2xl mb-2">{selectedProduct.name}</h3>
+              <p className="text-gray-600 mb-2">Brand: {selectedProduct.brand}</p>
+              <p className="text-gray-600 mb-2">Category: {selectedProduct.category}</p>
+              <p className="text-gray-600 mb-2">Seller: {selectedProduct.sellerName}</p>
+              <p className="text-2xl font-bold text-primary mb-2">${selectedProduct.finalPrice}</p>
+              <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
+              <p className="text-gray-600">Stock: {selectedProduct.stockQuantity} units</p>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '30px 20px',
-    minHeight: 'calc(100vh - 200px)'
-  },
-  header: {
-    marginBottom: '30px',
-    textAlign: 'center'
-  },
-  productsList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px'
-  },
-  productCard: {
-    backgroundColor: 'white',
-    borderRadius: '10px',
-    padding: '20px',
-    display: 'flex',
-    gap: '20px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    alignItems: 'center'
-  },
-  productImage: {
-    width: '100px',
-    height: '100px',
-    borderRadius: '8px',
-    overflow: 'hidden'
-  },
-  productInfo: {
-    flex: 1
-  },
-  productActions: {
-    display: 'flex',
-    gap: '10px'
-  },
-  approveBtn: {
-    backgroundColor: '#28a745',
-    color: 'white',
-    padding: '8px 16px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px'
-  },
-  rejectBtn: {
-    backgroundColor: '#dc3545',
-    color: 'white',
-    padding: '8px 16px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px'
-  },
-  viewBtn: {
-    backgroundColor: '#6c757d',
-    color: 'white',
-    padding: '8px 16px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px'
-  },
-  noProducts: {
-    textAlign: 'center',
-    padding: '50px',
-    backgroundColor: 'white',
-    borderRadius: '10px'
-  },
-  loader: {
-    textAlign: 'center',
-    padding: '100px',
-    fontSize: '18px'
-  },
-  success: {
-    backgroundColor: '#e8f5e9',
-    color: '#2e7d32',
-    padding: '10px',
-    borderRadius: '5px',
-    marginBottom: '20px',
-    textAlign: 'center'
-  }
 };
 
 export default ProductApprovalPage;

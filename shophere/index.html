@@ -3,10 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ShopSphere</title>
+    <title>ShopSphere - Multi Vendor Marketplace</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind Config Override -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#ff6b35',
+              secondary: '#2c3e50',
+              accent: '#28a745',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .line-clamp-1 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+      }
+      .line-clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <!-- Path sahi kiya - src/main.jsx (src ke andar) -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -16,9 +16,21 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
+    // Har tab apna user load karega
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
     setLoading(false);
+    
+    // Storage event - jab koi dusra tab logout kare to effect ho
+    const handleStorageChange = (event) => {
+      if (event.key === 'auth_token' || event.key === 'user') {
+        const updatedUser = authService.getCurrentUser();
+        setUser(updatedUser);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   
   const login = async (email, password) => {

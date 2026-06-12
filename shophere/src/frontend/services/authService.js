@@ -3,11 +3,10 @@ import api from './api';
 const AUTH_TOKEN_KEY = 'auth_token';
 const USER_KEY = 'user';
 
+// SessionStorage based auth (har tab ke liye alag session)
 export const authService = {
-  // Register new user
   register: async (userData) => {
     try {
-      // URL: /users (NOT /api/users)
       const existing = await api.get(`/users?email=${userData.email}`);
       if (existing.data.length > 0) {
         return { success: false, error: 'User already exists with this email' };
@@ -22,15 +21,12 @@ export const authService = {
       const { password, ...user } = response.data;
       return { success: true, user };
     } catch (error) {
-      console.error('Register error:', error);
       return { success: false, error: error.message };
     }
   },
   
-  // Login user
   login: async (email, password) => {
     try {
-      // URL: /users (NOT /api/users)
       const response = await api.get(`/users?email=${email}&password=${password}`);
       const users = response.data;
       
@@ -44,38 +40,40 @@ export const authService = {
         return { success: false, error: 'Account is blocked. Contact admin.' };
       }
       
-      const token = `token-${user.id}-${Date.now()}`;
-      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      // Unique token per tab/session
+      const token = `token-${user.id}-${Date.now()}-${Math.random()}`;
+      
+      // SessionStorage use karein (NOT localStorage)
+      sessionStorage.setItem(AUTH_TOKEN_KEY, token);
       
       const { password: _, ...userWithoutPassword } = user;
-      localStorage.setItem(USER_KEY, JSON.stringify(userWithoutPassword));
+      sessionStorage.setItem(USER_KEY, JSON.stringify(userWithoutPassword));
       
       return { success: true, user: userWithoutPassword };
     } catch (error) {
-      console.error('Login error:', error);
       return { success: false, error: error.message };
     }
   },
   
-  // Logout
   logout: () => {
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(USER_KEY);
   },
   
-  // Get current user
   getCurrentUser: () => {
-    const userStr = localStorage.getItem(USER_KEY);
+    const userStr = sessionStorage.getItem(USER_KEY);
     if (!userStr) return null;
-    return JSON.parse(userStr);
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
   },
   
-  // Check if logged in
   isAuthenticated: () => {
-    return localStorage.getItem(AUTH_TOKEN_KEY) !== null;
+    return sessionStorage.getItem(AUTH_TOKEN_KEY) !== null;
   },
   
-  // Check role
   hasRole: (role) => {
     const user = authService.getCurrentUser();
     if (!user) return false;

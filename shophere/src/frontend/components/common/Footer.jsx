@@ -1,96 +1,51 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { FiFacebook, FiTwitter, FiInstagram, FiGithub } from 'react-icons/fi'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FiFacebook, FiTwitter, FiInstagram, FiGithub } from 'react-icons/fi';
 
 const Footer = () => {
   return (
-    <footer style={styles.footer}>
-      <div style={styles.container}>
-        <div style={styles.grid}>
+    <footer className="bg-secondary text-white mt-auto">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 style={styles.logo}>ShopSphere</h3>
-            <p style={styles.description}>
-              Your trusted marketplace for quality products from verified sellers.
-            </p>
-            <div style={styles.socialLinks}>
-              <FiFacebook size={20} />
-              <FiTwitter size={20} />
-              <FiInstagram size={20} />
-              <FiGithub size={20} />
+            <h3 className="text-xl font-bold text-primary mb-3">ShopSphere</h3>
+            <p className="text-gray-300 text-sm">Your trusted marketplace for quality products from verified sellers.</p>
+            <div className="flex space-x-4 mt-4">
+              <FiFacebook className="cursor-pointer hover:text-primary" size={20} />
+              <FiTwitter className="cursor-pointer hover:text-primary" size={20} />
+              <FiInstagram className="cursor-pointer hover:text-primary" size={20} />
+              <FiGithub className="cursor-pointer hover:text-primary" size={20} />
             </div>
           </div>
           <div>
-            <h4>Quick Links</h4>
-            <ul style={styles.linkList}>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/products">Products</Link></li>
-              <li><Link to="/about">About Us</Link></li>
+            <h4 className="font-semibold mb-3">Quick Links</h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li><Link to="/" className="hover:text-primary">Home</Link></li>
+              <li><Link to="/products" className="hover:text-primary">Products</Link></li>
+              <li><Link to="/about" className="hover:text-primary">About Us</Link></li>
             </ul>
           </div>
           <div>
-            <h4>Customer Service</h4>
-            <ul style={styles.linkList}>
-              <li><Link to="/faq">FAQ</Link></li>
-              <li><Link to="/returns">Returns Policy</Link></li>
-              <li><Link to="/shipping">Shipping Info</Link></li>
+            <h4 className="font-semibold mb-3">Customer Service</h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li><Link to="/faq" className="hover:text-primary">FAQ</Link></li>
+              <li><Link to="/returns" className="hover:text-primary">Returns Policy</Link></li>
+              <li><Link to="/shipping" className="hover:text-primary">Shipping Info</Link></li>
             </ul>
           </div>
           <div>
-            <h4>Contact Info</h4>
-            <p>Email: support@shopsphere.com</p>
-            <p>Phone: +1 234 567 890</p>
-            <p>Address: 123 Market Street, NY</p>
+            <h4 className="font-semibold mb-3">Contact Info</h4>
+            <p className="text-sm text-gray-300">Email: support@shopsphere.com</p>
+            <p className="text-sm text-gray-300">Phone: +1 234 567 890</p>
+            <p className="text-sm text-gray-300">Address: 123 Market Street, NY</p>
           </div>
         </div>
-        <div style={styles.bottom}>
+        <div className="text-center pt-6 mt-6 border-t border-gray-700 text-sm text-gray-400">
           <p>&copy; 2024 ShopSphere. All rights reserved.</p>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-const styles = {
-  footer: {
-    backgroundColor: '#2c3e50',
-    color: 'white',
-    padding: '50px 0 20px',
-    marginTop: 'auto'
-  },
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '0 20px'
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '40px',
-    marginBottom: '40px'
-  },
-  logo: {
-    fontSize: '24px',
-    marginBottom: '15px',
-    color: '#ff6b35'
-  },
-  description: {
-    lineHeight: '1.6',
-    marginBottom: '20px'
-  },
-  socialLinks: {
-    display: 'flex',
-    gap: '15px',
-    cursor: 'pointer'
-  },
-  linkList: {
-    listStyle: 'none',
-    padding: 0
-  },
-  bottom: {
-    textAlign: 'center',
-    paddingTop: '20px',
-    borderTop: '1px solid rgba(255,255,255,0.1)'
-  }
-}
-
-export default Footer
+export default Footer;

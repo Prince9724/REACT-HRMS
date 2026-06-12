@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { FiShoppingCart, FiHeart, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiHome } from 'react-icons/fi';
+import { useAuth } from '../../contexts/AuthContext';  // ← ../../ (2 level up)
+import { FiShoppingCart, FiHeart, FiUser, FiLogOut, FiLogIn, FiUserPlus, FiHome, FiPackage } from 'react-icons/fi';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -13,146 +13,64 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={styles.navbar}>
-      <div style={styles.container}>
-        <Link to="/" style={styles.logo}>
-          ShopSphere
-        </Link>
-
-        <div style={styles.navLinks}>
-          <Link to="/" style={styles.navLink}>
-            <FiHome size={16} />
-            Home
+    <nav className="bg-white shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <Link to="/" className="text-2xl font-bold text-primary">
+            ShopSphere
           </Link>
-          <Link to="/products" style={styles.navLink}>
-            Products
-          </Link>
-        </div>
 
-        <div style={styles.rightSection}>
-          {isAuthenticated() ? (
-            <>
-              <Link to="/wishlist" style={styles.iconLink}>
-                <FiHeart size={20} />
-              </Link>
-              
-              <Link to="/cart" style={styles.iconLink}>
-                <FiShoppingCart size={20} />
-              </Link>
-              
-              <div style={styles.userMenu}>
-                <FiUser size={18} />
-                <span>{user?.fullName?.split(' ')[0]}</span>
-                <button onClick={handleLogout} style={styles.logoutBtn}>
-                  <FiLogOut size={16} />
-                </button>
+          <div className="hidden md:flex space-x-8">
+            <Link to="/" className="flex items-center space-x-1 text-gray-700 hover:text-primary transition">
+              <FiHome size={18} />
+              <span>Home</span>
+            </Link>
+            <Link to="/products" className="flex items-center space-x-1 text-gray-700 hover:text-primary transition">
+              <FiPackage size={18} />
+              <span>Products</span>
+            </Link>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            {isAuthenticated() ? (
+              <>
+                <Link to="/wishlist" className="text-gray-700 hover:text-primary transition">
+                  <FiHeart size={20} />
+                </Link>
+                <Link to="/cart" className="text-gray-700 hover:text-primary transition relative">
+                  <FiShoppingCart size={20} />
+                  <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    0
+                  </span>
+                </Link>
+                <div className="flex items-center space-x-3 bg-gray-100 rounded-full px-4 py-2">
+                  <FiUser size={18} className="text-gray-600" />
+                  <span className="text-sm font-medium">{user?.fullName?.split(' ')[0]}</span>
+                  <span className="text-xs bg-primary text-white px-2 py-1 rounded-full">
+                    {user?.role}
+                  </span>
+                  <button onClick={handleLogout} className="text-red-500 hover:text-red-700">
+                    <FiLogOut size={18} />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex space-x-3">
+                <Link to="/login" className="flex items-center space-x-1 border border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition">
+                  <FiLogIn size={16} />
+                  <span>Login</span>
+                </Link>
+                <Link to="/register" className="flex items-center space-x-1 bg-primary text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">
+                  <FiUserPlus size={16} />
+                  <span>Register</span>
+                </Link>
               </div>
-            </>
-          ) : (
-            <div style={styles.authButtons}>
-              <Link to="/login" style={styles.loginBtn}>
-                <FiLogIn size={16} />
-                Login
-              </Link>
-              <Link to="/register" style={styles.registerBtn}>
-                <FiUserPlus size={16} />
-                Register
-              </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </nav>
   );
-};
-
-const styles = {
-  navbar: {
-    backgroundColor: '#ffffff',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-    padding: '15px 0',
-    position: 'sticky',
-    top: 0,
-    zIndex: 1000
-  },
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '0 20px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#ff6b35',
-    textDecoration: 'none'
-  },
-  navLinks: {
-    display: 'flex',
-    gap: '30px'
-  },
-  navLink: {
-    textDecoration: 'none',
-    color: '#333',
-    fontSize: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px'
-  },
-  rightSection: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px'
-  },
-  iconLink: {
-    color: '#333',
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  userMenu: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    backgroundColor: '#f0f0f0',
-    padding: '8px 15px',
-    borderRadius: '20px'
-  },
-  logoutBtn: {
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    color: '#ff4444'
-  },
-  authButtons: {
-    display: 'flex',
-    gap: '10px'
-  },
-  loginBtn: {
-    backgroundColor: 'transparent',
-    color: '#ff6b35',
-    padding: '8px 16px',
-    borderRadius: '5px',
-    textDecoration: 'none',
-    border: '1px solid #ff6b35',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  registerBtn: {
-    backgroundColor: '#ff6b35',
-    color: 'white',
-    padding: '8px 16px',
-    borderRadius: '5px',
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  }
 };
 
 export default Navbar;
