@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
 import { useAuth } from '../../contexts/AuthContext';
-import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import { FiUpload, FiX, FiImage } from 'react-icons/fi';
 
@@ -25,7 +24,6 @@ const AddProductPage = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [imageError, setImageError] = useState({});
 
   useEffect(() => {
     fetchCategories();
@@ -45,21 +43,26 @@ const AddProductPage = () => {
     });
   };
 
-  const addImage = () => {
-    if (imageUrl && imageUrl.trim() !== '') {
-      // Validate URL
-      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-        setFormData({
-          ...formData,
-          images: [...formData.images, imageUrl.trim()]
-        });
-        setImageUrl('');
-      } else {
-        setError('Please enter a valid image URL starting with http:// or https://');
-        setTimeout(() => setError(''), 3000);
-      }
+ const addImage = () => {
+  if (imageUrl && imageUrl.trim() !== '') {
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      const currentImages = [...formData.images];
+      console.log('🔵 Current images before add:', currentImages);
+      
+      const newImages = [...currentImages, imageUrl.trim()];
+      console.log('🟢 New images array:', newImages);
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        images: newImages 
+      }));
+      setImageUrl('');
+    } else {
+      setError('Please enter a valid image URL starting with http:// or https://');
+      setTimeout(() => setError(''), 3000);
     }
-  };
+  }
+};
 
   const removeImage = (index) => {
     const newImages = [...formData.images];
@@ -67,47 +70,76 @@ const AddProductPage = () => {
     setFormData({ ...formData, images: newImages });
   };
 
-  const handleImageError = (index) => {
-    setImageError(prev => ({ ...prev, [index]: true }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    
-    if (!formData.name || !formData.category || !formData.price || !formData.stockQuantity) {
-      setError('Please fill all required fields');
-      setLoading(false);
-      return;
-    }
-    
-    const finalPrice = formData.price - (formData.price * formData.discount / 100);
-    
-    const productData = {
-      ...formData,
-      price: Number(formData.price),
-      discount: Number(formData.discount),
-      finalPrice: finalPrice,
-      stockQuantity: Number(formData.stockQuantity),
-      sellerId: user?.id,
-      sellerName: user?.fullName,
-      slug: formData.name.toLowerCase().replace(/ /g, '-')
-    };
-    
-    const result = await productService.addProduct(productData);
-    
-    if (result.success) {
-      setSuccess('Product added successfully! It will be visible after admin approval.');
-      setTimeout(() => {
-        navigate('/seller/products');
-      }, 2000);
-    } else {
-      setError(result.error);
-    }
-    
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
+  
+  if (!formData.name || !formData.category || !formData.price || !formData.stockQuantity) {
+    setError('Please fill all required fields');
     setLoading(false);
+    return;
+  }
+  
+  // ✅ IMPORTANT: Log current images before submit
+  console.log('🔴 Current formData.images BEFORE submit:', formData.images);
+  console.log('🔴 Type of images:', typeof formData.images);
+  console.log('🔴 Is array?', Array.isArray(formData.images));
+  
+  const finalPrice = formData.price - (formData.price * formData.discount / 100);
+  
+  // ✅ Ensure images is an array and has valid URLs
+  let imagesToSubmit = [];
+  if (formData.images && Array.isArray(formData.images)) {
+    imagesToSubmit = formData.images.filter(img => img && img.trim() !== '');
+  }
+  
+  console.log('✅ Images to submit:', imagesToSubmit);
+  
+  const productData = {
+    name: formData.name,
+    category: formData.category,
+    brand: formData.brand,
+    description: formData.description,
+    price: Number(formData.price),
+    discount: Number(formData.discount),
+    stockQuantity: Number(formData.stockQuantity),
+    images: imagesToSubmit,  // ✅ Use the filtered array
+    finalPrice: Number(finalPrice.toFixed(2)),
+    sellerId: user?.id,
+    sellerName: user?.fullName,
+    slug: formData.name.toLowerCase().replace(/ /g, '-'),
+    status: 'pending',
+    rating: 0,
+    totalReviews: 0,
+    createdAt: new Date().toISOString()
   };
+  
+  console.log('📤 Final product data:', JSON.stringify(productData, null, 2));
+  
+  try {
+    const response = await fetch('http://localhost:5000/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    
+    const responseData = await response.json();
+    console.log('📥 Server response:', responseData);
+    
+    if (response.ok) {
+      setSuccess('Product added successfully!');
+      setTimeout(() => navigate('/seller/products'), 2000);
+    } else {
+      setError('Failed to add product');
+    }
+  } catch (err) {
+    console.error('❌ Error:', err);
+    setError(err.message);
+  }
+  
+  setLoading(false);
+};
 
   return (
     <>
@@ -243,7 +275,9 @@ const AddProductPage = () => {
               </button>
             </div>
             
-            {/* Image Preview - Jo URL paste karoge wahi dikhega */}
+            {/* Debug: Show images count */}
+            <p className="text-sm text-blue-600 mb-2">Images added: {formData.images.length}</p>
+            
             {formData.images.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-3">
                 {formData.images.map((img, index) => (
@@ -254,7 +288,6 @@ const AddProductPage = () => {
                       className="w-full h-32 object-cover"
                       onError={(e) => {
                         e.target.src = 'https://picsum.photos/150/150?random=' + index;
-                        e.target.alt = 'Image failed to load';
                       }}
                     />
                     <button
@@ -264,9 +297,6 @@ const AddProductPage = () => {
                     >
                       <FiX size={14} />
                     </button>
-                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
-                      {img.length > 30 ? img.substring(0, 30) + '...' : img}
-                    </div>
                   </div>
                 ))}
               </div>
@@ -275,7 +305,7 @@ const AddProductPage = () => {
             {formData.images.length === 0 && (
               <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
                 <FiImage size={40} className="mx-auto text-gray-400 mb-2" />
-                <p className="text-gray-500">No images added. Enter image URLs above.</p>
+                <p className="text-gray-500">No images added. Add image URLs above.</p>
               </div>
             )}
           </div>

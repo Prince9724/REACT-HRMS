@@ -12,7 +12,6 @@ const ProductDetailsPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
@@ -23,6 +22,7 @@ const ProductDetailsPage = () => {
     try {
       const response = await fetch(`http://localhost:5000/products/${id}`);
       const data = await response.json();
+      console.log('Product fetched:', data);
       setProduct(data);
     } catch (err) {
       console.error('Error:', err);
@@ -37,9 +37,27 @@ const ProductDetailsPage = () => {
   };
 
   const handleBuyNow = () => {
-    // Pehle cart mein add karo, phir checkout par bhejo
     addToCart(product, quantity);
-    navigate('/checkout');
+    navigate('/dummy-checkout'); // Dummy page for now
+  };
+
+  // Function to get working image URL
+  const getProductImage = () => {
+    if (product.images && product.images[0]) {
+      // Check if URL is valid
+      const url = product.images[0];
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+      }
+    }
+    // Fallback images based on category
+    const fallbackImages = {
+      'Electronics': 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400',
+      'Fashion': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
+      'Books': 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400',
+      'Sports': 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=400',
+    };
+    return fallbackImages[product?.category] || `https://picsum.photos/400/400?random=${id}`;
   };
 
   const StarRating = ({ rating }) => {
@@ -89,12 +107,9 @@ const ProductDetailsPage = () => {
             <div>
               <div className="relative h-96 bg-gray-100 rounded-lg overflow-hidden">
                 <img
-                  src={product.images?.[activeImage] || 'https://picsum.photos/400/400?random=' + product.id}
+                  src={getProductImage()}
                   alt={product.name}
                   className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.target.src = `https://picsum.photos/400/400?random=${product.id}`;
-                  }}
                 />
                 {product.discount > 0 && (
                   <span className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
@@ -102,21 +117,6 @@ const ProductDetailsPage = () => {
                   </span>
                 )}
               </div>
-              {product.images && product.images.length > 1 && (
-                <div className="flex gap-2 mt-4">
-                  {product.images.map((img, index) => (
-                    <div
-                      key={index}
-                      onClick={() => setActiveImage(index)}
-                      className={`w-20 h-20 rounded-lg overflow-hidden cursor-pointer border-2 ${
-                        activeImage === index ? 'border-primary' : 'border-gray-200'
-                      }`}
-                    >
-                      <img src={img} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Product Info */}
@@ -222,8 +222,8 @@ const ProductDetailsPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
-
 export default ProductDetailsPage;

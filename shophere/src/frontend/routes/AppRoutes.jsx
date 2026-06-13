@@ -29,6 +29,7 @@ import ProductApprovalPage from '../pages/admin/ProductApprovalPage';
 import UserManagementPage from '../pages/admin/UserManagementPage';
 import SellerManagementPage from '../pages/admin/SellerManagementPage';
 import CategoryManagementPage from '../pages/admin/CategoryManagementPage';
+import DummyCheckoutPage from '../pages/public/DummyCheckoutPage';
 
 function AppRoutes() {
   return (
@@ -39,7 +40,8 @@ function AppRoutes() {
       <Route path="/product/:id" element={<ProductDetailsPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      
+      <Route path="/dummy-checkout" element={<DummyCheckoutPage />} />
+
       {/* Customer Routes */}
       <Route element={<PrivateRoute allowedRoles={['customer']} />}>
         <Route path="/cart" element={<CartPage />} />
