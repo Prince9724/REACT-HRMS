@@ -291,7 +291,9 @@
       "discount": 7,
       "stockQuantity": 5,
       "images": [
-        "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500"
+        "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500",
+        "https://m.media-amazon.com/images/I/71aup0IO2ZL._AC_UF1000,1000_QL80_.jpg",
+        "https://m.media-amazon.com/images/I/61NWrWE65hL._AC_UF1000,1000_QL80_.jpg"
       ],
       "finalPrice": 61380,
       "sellerId": 6,
