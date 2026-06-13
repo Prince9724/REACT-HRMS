@@ -3,26 +3,38 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
 import { useCart } from '../../contexts/CartContext';
-import { FiStar, FiShoppingCart, FiHeart, FiTruck, FiShield, FiRefreshCw, FiZap } from 'react-icons/fi';
+import { useWishlist } from '../../contexts/WishlistContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { FiStar, FiShoppingCart, FiHeart, FiTruck, FiShield, FiRefreshCw, FiZap, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist, getWishlistItemId } = useWishlist();
+  const { user } = useAuth();
+  
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   useEffect(() => {
     fetchProduct();
   }, [id]);
 
+  useEffect(() => {
+    if (product) {
+      setIsWishlisted(isInWishlist(product.id));
+    }
+  }, [product, isInWishlist]);
+
   const fetchProduct = async () => {
     try {
       const response = await fetch(`http://localhost:5000/products/${id}`);
       const data = await response.json();
-      console.log('Product fetched:', data);
       setProduct(data);
     } catch (err) {
       console.error('Error:', err);
@@ -38,29 +50,54 @@ const ProductDetailsPage = () => {
 
   const handleBuyNow = () => {
     addToCart(product, quantity);
-    navigate('/dummy-checkout'); // Dummy page for now
+    navigate('/checkout');
   };
 
-  // Function to get working image URL
-  const getProductImage = () => {
-    if (product.images && product.images[0]) {
-      // Check if URL is valid
-      const url = product.images[0];
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        return url;
+  const handleWishlistToggle = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
+    if (isWishlisted) {
+      const wishlistId = getWishlistItemId(product.id);
+      await removeFromWishlist(wishlistId);
+      setIsWishlisted(false);
+    } else {
+      await addToWishlist(product);
+      setIsWishlisted(true);
+    }
+  };
+
+  // Get all images from product
+  const getAllImages = () => {
+    const images = [];
+    if (product.images && Array.isArray(product.images)) {
+      for (let img of product.images) {
+        if (img && img.trim() !== '') {
+          images.push(img);
+        }
       }
     }
-    // Fallback images based on category
-    const fallbackImages = {
-      'Electronics': 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400',
-      'Fashion': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
-      'Books': 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400',
-      'Sports': 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=400',
-    };
-    return fallbackImages[product?.category] || `https://picsum.photos/400/400?random=${id}`;
+    // If no images, add placeholder
+    if (images.length === 0) {
+      images.push(`https://picsum.photos/500/500?random=${product?.id}`);
+    }
+    return images;
+  };
+
+  const nextImage = () => {
+    const images = getAllImages();
+    setActiveImage((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    const images = getAllImages();
+    setActiveImage((prev) => (prev - 1 + images.length) % images.length);
   };
 
   const StarRating = ({ rating }) => {
+    const numRating = Number(rating) || 0;
     return (
       <div className="flex items-center space-x-1">
         <div className="flex">
@@ -68,11 +105,11 @@ const ProductDetailsPage = () => {
             <FiStar
               key={star}
               size={16}
-              className={star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
+              className={star <= numRating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
             />
           ))}
         </div>
-        <span className="text-sm text-gray-500">({rating || 0} reviews)</span>
+        <span className="text-sm text-gray-500">({numRating} reviews)</span>
       </div>
     );
   };
@@ -97,26 +134,94 @@ const ProductDetailsPage = () => {
     );
   }
 
+  const images = getAllImages();
+  const hasMultipleImages = images.length > 1;
+
   return (
     <>
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-            {/* Product Images */}
+            {/* Product Images Gallery */}
             <div>
+              {/* Main Image with Navigation */}
               <div className="relative h-96 bg-gray-100 rounded-lg overflow-hidden">
                 <img
-                  src={getProductImage()}
+                  src={images[activeImage]}
                   alt={product.name}
                   className="w-full h-full object-contain"
+                  onError={(e) => {
+                    e.target.src = `https://picsum.photos/500/500?random=${product.id}`;
+                  }}
                 />
+                
+                {/* Image Navigation Arrows */}
+                {hasMultipleImages && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition"
+                    >
+                      <FiChevronLeft size={20} />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition"
+                    >
+                      <FiChevronRight size={20} />
+                    </button>
+                  </>
+                )}
+                
                 {product.discount > 0 && (
                   <span className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                     {product.discount}% OFF
                   </span>
                 )}
+                
+                {/* Wishlist Heart Button */}
+                <button
+                  onClick={handleWishlistToggle}
+                  className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md hover:scale-110 transition"
+                >
+                  <FiHeart 
+                    size={20} 
+                    className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-500'} 
+                  />
+                </button>
               </div>
+              
+              {/* Thumbnail Images */}
+              {hasMultipleImages && (
+                <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                  {images.map((img, index) => (
+                    <div
+                      key={index}
+                      onClick={() => setActiveImage(index)}
+                      className={`w-20 h-20 rounded-lg overflow-hidden cursor-pointer border-2 flex-shrink-0 ${
+                        activeImage === index ? 'border-primary' : 'border-gray-200'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`${product.name} view ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = `https://picsum.photos/100/100?random=${product.id}${index}`;
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Image Count Indicator */}
+              {hasMultipleImages && (
+                <div className="text-center mt-2 text-sm text-gray-500">
+                  {activeImage + 1} / {images.length} images
+                </div>
+              )}
             </div>
 
             {/* Product Info */}
@@ -189,9 +294,6 @@ const ProductDetailsPage = () => {
                   <FiZap size={20} />
                   Buy Now
                 </button>
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                  <FiHeart size={20} className="text-gray-600" />
-                </button>
               </div>
               
               {/* Delivery Info */}
@@ -226,4 +328,5 @@ const ProductDetailsPage = () => {
     </>
   );
 };
+
 export default ProductDetailsPage;

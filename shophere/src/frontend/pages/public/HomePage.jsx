@@ -131,16 +131,39 @@ const HomePage = () => {
             <div className="max-w-7xl mx-auto px-4">
               <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">Shop by Category</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {categories.map(cat => (
-                  <Link
-                    key={cat.id}
-                    to={`/products?category=${encodeURIComponent(cat.name)}`}
-                    className="group text-center p-4 bg-gray-50 rounded-lg hover:bg-primary transition hover:shadow-lg"
-                  >
-                    <div className="text-3xl mb-2 group-hover:text-white">📂</div>
-                    <p className="text-gray-700 group-hover:text-white">{cat.name}</p>
-                  </Link>
-                ))}
+                {categories.map(cat => {
+                  // Category-wise images mapping
+                  const categoryImages = {
+                    'Electronics': 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=150',
+                    'Fashion': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=150',
+                    'Home & Living': 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=150',
+                    'Books': 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=150',
+                    'Sports': 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=150',
+                  };
+
+                  const defaultImage = 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=150';
+                  const categoryImage = categoryImages[cat.name] || defaultImage;
+
+                  return (
+                    <Link
+                      key={cat.id}
+                      to={`/products?category=${encodeURIComponent(cat.name)}`}
+                      className="group text-center p-4 bg-gray-50 rounded-lg hover:bg-primary transition hover:shadow-lg overflow-hidden"
+                    >
+                      <div className="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden bg-gray-200">
+                        <img
+                          src={categoryImage}
+                          alt={cat.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = 'https://picsum.photos/80/80?random=' + cat.id;
+                          }}
+                        />
+                      </div>
+                      <p className="text-gray-700 group-hover:text-white font-medium">{cat.name}</p>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -241,8 +264,8 @@ const HomePage = () => {
                       key={pageNum}
                       onClick={() => goToPage(pageNum)}
                       className={`w-10 h-10 rounded-lg transition ${currentPage === pageNum
-                          ? 'bg-primary text-white'
-                          : 'border border-gray-300 hover:bg-gray-50'
+                        ? 'bg-primary text-white'
+                        : 'border border-gray-300 hover:bg-gray-50'
                         }`}
                     >
                       {pageNum}

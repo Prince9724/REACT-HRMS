@@ -8,8 +8,9 @@ import ProductListingPage from '../pages/public/ProductListingPage';
 import ProductDetailsPage from '../pages/public/ProductDetailsPage';
 import LoginPage from '../pages/public/LoginPage';
 import RegisterPage from '../pages/public/RegisterPage';
+import DummyCheckoutPage from '../pages/public/DummyCheckoutPage';
 
-// Customer Pages
+// Customer Pages (and also for Seller/Admin)
 import CartPage from '../pages/customer/CartPage';
 import WishlistPage from '../pages/customer/WishlistPage';
 import CheckoutPage from '../pages/customer/CheckoutPage';
@@ -29,7 +30,6 @@ import ProductApprovalPage from '../pages/admin/ProductApprovalPage';
 import UserManagementPage from '../pages/admin/UserManagementPage';
 import SellerManagementPage from '../pages/admin/SellerManagementPage';
 import CategoryManagementPage from '../pages/admin/CategoryManagementPage';
-import DummyCheckoutPage from '../pages/public/DummyCheckoutPage';
 
 function AppRoutes() {
   return (
@@ -41,9 +41,9 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/dummy-checkout" element={<DummyCheckoutPage />} />
-
-      {/* Customer Routes */}
-      <Route element={<PrivateRoute allowedRoles={['customer']} />}>
+      
+      {/* Cart & Wishlist - Sabhi logged in users (Admin, Seller, Customer) ke liye */}
+      <Route element={<PrivateRoute />}>
         <Route path="/cart" element={<CartPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
