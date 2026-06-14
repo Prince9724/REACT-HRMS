@@ -963,7 +963,16 @@
     },
     {
       "userId": 3,
-      "items": [],
+      "items": [
+        {
+          "id": 14,
+          "name": "kurti",
+          "price": 11.64,
+          "image": "https://png.pngtree.com/png-clipart/20250127/original/pngtree-a-festive-kurti-in-magenta-with-mirror-work-png-image_20333541.png",
+          "quantity": 6,
+          "stock": 16
+        }
+      ],
       "createdAt": "2026-06-13T02:41:42.414Z",
       "id": 2
     },
