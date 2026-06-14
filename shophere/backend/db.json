@@ -69,6 +69,16 @@
       "isActive": true,
       "createdAt": "2026-06-12T12:57:26.645Z",
       "id": 7
+    },
+    {
+      "fullName": "seller1",
+      "email": "seller1@gmail.com",
+      "password": "123456",
+      "mobile": "1234578908",
+      "role": "seller",
+      "isActive": true,
+      "createdAt": "2026-06-13T05:46:44.998Z",
+      "id": 8
     }
   ],
   "products": [
@@ -377,6 +387,510 @@
       ],
       "status": "approved",
       "id": 15
+    },
+    {
+      "name": "buetifull kitchen piece",
+      "category": "Home & Living",
+      "brand": "kitchen",
+      "description": "A little edit of beautiful kitchen pieces, aesthetic decor, and home finds that make everyday spaces feel more elevated.\nThe kind of things that make you want to stay home, host dinner, and enjoy your space.",
+      "price": 1330,
+      "discount": 8,
+      "stockQuantity": 13,
+      "images": [
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4f3fnoYNs9_PKcqmlr8IYOhKu86YPJMgB2g&s"
+      ],
+      "finalPrice": 1223.6,
+      "sellerId": 8,
+      "sellerName": "seller1",
+      "slug": "buetifull-kitchen-piece",
+      "status": "approved",
+      "rating": 0,
+      "totalReviews": 0,
+      "createdAt": "2026-06-13T05:50:33.590Z",
+      "id": 16
+    },
+    {
+      "name": "Samsung Galaxy M14 5G",
+      "category": "Electronics",
+      "brand": "Samsung",
+      "description": "Powerful 5G smartphone with a long-lasting battery and vibrant display. Ideal for everyday use, gaming, and multimedia consumption.",
+      "price": 14999,
+      "discount": 15,
+      "stockQuantity": 42,
+      "images": [
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
+        "https://images.unsplash.com/photo-1598327105666-5b89351aff97",
+        "https://images.unsplash.com/photo-1605236453806-6ff36851218e"
+      ],
+      "finalPrice": 12749,
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "slug": "samsung-galaxy-m14-5g",
+      "status": "approved",
+      "rating": 4.4,
+      "totalReviews": 356,
+      "createdAt": "2026-03-12T10:15:00.000Z",
+      "id": 17
+    },
+    {
+      "name": "Noise ColorFit Pro Smartwatch",
+      "category": "Electronics",
+      "brand": "Noise",
+      "description": "Feature-rich smartwatch with fitness tracking, heart rate monitoring, and long battery life. Perfect companion for an active lifestyle.",
+      "price": 3499,
+      "discount": 20,
+      "stockQuantity": 65,
+      "images": [
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
+        "https://images.unsplash.com/photo-1546868871-7041f2a55e12",
+        "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9"
+      ],
+      "finalPrice": 2799,
+      "sellerId": 5,
+      "sellerName": "prince",
+      "slug": "noise-colorfit-pro-smartwatch",
+      "status": "approved",
+      "rating": 4.2,
+      "totalReviews": 184,
+      "createdAt": "2026-02-20T08:30:00.000Z",
+      "id": 18
+    },
+    {
+      "name": "Men's Slim Fit Denim Jeans",
+      "category": "Fashion",
+      "brand": "Levis",
+      "description": "Premium slim-fit jeans crafted from durable denim fabric. Comfortable for daily wear and suitable for casual occasions.",
+      "price": 2499,
+      "discount": 25,
+      "stockQuantity": 58,
+      "images": [
+        "https://images.unsplash.com/photo-1542272604-787c3835535d",
+        "https://images.unsplash.com/photo-1473966968600-fa801b869a1a",
+        "https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
+      ],
+      "finalPrice": 1874,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "mens-slim-fit-denim-jeans",
+      "status": "approved",
+      "rating": 4.3,
+      "totalReviews": 221,
+      "createdAt": "2026-01-15T12:00:00.000Z",
+      "id": 19
+    },
+    {
+      "name": "Women's Floral Summer Dress",
+      "category": "Fashion",
+      "brand": "Zara",
+      "description": "Elegant floral dress designed for comfort and style. Lightweight fabric makes it perfect for summer outings.",
+      "price": 3299,
+      "discount": 18,
+      "stockQuantity": 37,
+      "images": [
+        "https://images.unsplash.com/photo-1496747611176-843222e1e57c",
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b",
+        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b"
+      ],
+      "finalPrice": 2705,
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "slug": "womens-floral-summer-dress",
+      "status": "approved",
+      "rating": 4.6,
+      "totalReviews": 145,
+      "createdAt": "2026-04-08T14:45:00.000Z",
+      "id": 20
+    },
+    {
+      "name": "Wooden Coffee Table",
+      "category": "Home & Living",
+      "brand": "Urban Ladder",
+      "description": "Modern wooden coffee table with a sturdy design and elegant finish. Complements contemporary living room interiors.",
+      "price": 7999,
+      "discount": 22,
+      "stockQuantity": 15,
+      "images": [
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+        "https://images.unsplash.com/photo-1484101403633-562f891dc89a",
+        "https://images.unsplash.com/photo-1517705008128-361805f42e86"
+      ],
+      "finalPrice": 6239,
+      "sellerId": 5,
+      "sellerName": "prince",
+      "slug": "wooden-coffee-table",
+      "status": "approved",
+      "rating": 4.5,
+      "totalReviews": 93,
+      "createdAt": "2026-02-05T11:20:00.000Z",
+      "id": 21
+    },
+    {
+      "name": "Lakme Absolute Matte Lipstick",
+      "category": "Beauty",
+      "brand": "Lakme",
+      "description": "Rich matte lipstick with long-lasting color and smooth texture. Provides comfortable wear throughout the day.",
+      "price": 699,
+      "discount": 12,
+      "stockQuantity": 89,
+      "images": [
+        "https://images.unsplash.com/photo-1586495777744-4413f21062fa",
+        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9",
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348"
+      ],
+      "finalPrice": 615,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "lakme-absolute-matte-lipstick",
+      "status": "approved",
+      "rating": 4.4,
+      "totalReviews": 278,
+      "createdAt": "2026-05-10T09:10:00.000Z",
+      "id": 22
+    },
+    {
+      "name": "Apple AirPods 3rd Generation",
+      "category": "Electronics",
+      "brand": "Apple",
+      "description": "Wireless earbuds with immersive spatial audio and crystal-clear sound quality. Designed for all-day comfort and seamless device connectivity.",
+      "price": 18999,
+      "discount": 10,
+      "stockQuantity": 24,
+      "images": [
+        "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1",
+        "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5",
+        "https://images.unsplash.com/photo-1590658268037-6bf12165a8df"
+      ],
+      "finalPrice": 17099,
+      "sellerId": 5,
+      "sellerName": "prince",
+      "slug": "apple-airpods-3rd-generation",
+      "status": "approved",
+      "rating": 4.8,
+      "totalReviews": 892,
+      "createdAt": "2026-04-11T09:15:00.000Z",
+      "id": 23
+    },
+    {
+      "name": "Boat Rockerz 450 Headphones",
+      "category": "Electronics",
+      "brand": "Boat",
+      "description": "Stylish wireless headphones with deep bass and long battery backup. Perfect for music lovers and daily commuters.",
+      "price": 2499,
+      "discount": 30,
+      "stockQuantity": 61,
+      "images": [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944",
+        "https://images.unsplash.com/photo-1546435770-a3e426bf472b"
+      ],
+      "finalPrice": 1749,
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "slug": "boat-rockerz-450-headphones",
+      "status": "approved",
+      "rating": 4.3,
+      "totalReviews": 437,
+      "createdAt": "2026-02-14T11:45:00.000Z",
+      "id": 24
+    },
+    {
+      "name": "Nike Revolution Running Shoes",
+      "category": "Fashion",
+      "brand": "Nike",
+      "description": "Lightweight running shoes engineered for comfort and performance. Suitable for workouts, jogging, and everyday wear.",
+      "price": 4999,
+      "discount": 20,
+      "stockQuantity": 39,
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2",
+        "https://images.unsplash.com/photo-1549298916-b41d501d3772"
+      ],
+      "finalPrice": 3999,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "nike-revolution-running-shoes",
+      "status": "approved",
+      "rating": 4.6,
+      "totalReviews": 512,
+      "createdAt": "2026-03-08T13:10:00.000Z",
+      "id": 25
+    },
+    {
+      "name": "Puma Men's Polo T-Shirt",
+      "category": "Fashion",
+      "brand": "Puma",
+      "description": "Classic polo t-shirt made with breathable cotton fabric. Offers comfort and a smart casual look for daily wear.",
+      "price": 1799,
+      "discount": 15,
+      "stockQuantity": 72,
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+        "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c",
+        "https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
+      ],
+      "finalPrice": 1529,
+      "sellerId": 5,
+      "sellerName": "prince",
+      "slug": "puma-mens-polo-tshirt",
+      "status": "approved",
+      "rating": 4.2,
+      "totalReviews": 198,
+      "createdAt": "2026-05-02T15:20:00.000Z",
+      "id": 26
+    },
+    {
+      "name": "Philips Air Fryer",
+      "category": "Home & Living",
+      "brand": "Philips",
+      "description": "Healthy cooking appliance that uses rapid air technology. Prepare crispy snacks with less oil and minimal effort.",
+      "price": 8999,
+      "discount": 18,
+      "stockQuantity": 18,
+      "images": [
+        "https://images.unsplash.com/photo-1585515656973-2b7c7f4d1d64",
+        "https://images.unsplash.com/photo-1556911220-e15b29be8c8f",
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136"
+      ],
+      "finalPrice": 7379,
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "slug": "philips-air-fryer",
+      "status": "approved",
+      "rating": 4.7,
+      "totalReviews": 321,
+      "createdAt": "2026-01-25T08:50:00.000Z",
+      "id": 27
+    },
+    {
+      "name": "Cotton Bedsheet King Size",
+      "category": "Home & Living",
+      "brand": "Spaces",
+      "description": "Soft cotton bedsheet with elegant prints and premium stitching. Enhances bedroom aesthetics while ensuring comfort.",
+      "price": 1299,
+      "discount": 25,
+      "stockQuantity": 54,
+      "images": [
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+        "https://images.unsplash.com/photo-1505693536294-0db7b6f96d91"
+      ],
+      "finalPrice": 974,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "cotton-bedsheet-king-size",
+      "status": "approved",
+      "rating": 4.3,
+      "totalReviews": 166,
+      "createdAt": "2026-04-29T12:15:00.000Z",
+      "id": 28
+    },
+    {
+      "name": "Mamaearth Vitamin C Face Wash",
+      "category": "Beauty",
+      "brand": "Mamaearth",
+      "description": "Gentle face wash enriched with Vitamin C to brighten skin and remove impurities. Suitable for daily skincare routines.",
+      "price": 349,
+      "discount": 12,
+      "stockQuantity": 84,
+      "images": [
+        "https://images.unsplash.com/photo-1556228578-8c89e6adf883",
+        "https://images.unsplash.com/photo-1620916566398-39f1143ab7be",
+        "https://images.unsplash.com/photo-1571781926291-c477ebfd024b"
+      ],
+      "finalPrice": 307,
+      "sellerId": 5,
+      "sellerName": "prince",
+      "slug": "mamaearth-vitamin-c-face-wash",
+      "status": "approved",
+      "rating": 4.5,
+      "totalReviews": 459,
+      "createdAt": "2026-05-08T09:00:00.000Z",
+      "id": 29
+    },
+    {
+      "name": "Maybelline Fit Me Foundation",
+      "category": "Beauty",
+      "brand": "Maybelline",
+      "description": "Lightweight foundation offering natural coverage and a smooth matte finish. Suitable for everyday makeup looks.",
+      "price": 599,
+      "discount": 10,
+      "stockQuantity": 77,
+      "images": [
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348",
+        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9",
+        "https://images.unsplash.com/photo-1586495777744-4413f21062fa"
+      ],
+      "finalPrice": 539,
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "slug": "maybelline-fit-me-foundation",
+      "status": "approved",
+      "rating": 4.6,
+      "totalReviews": 714,
+      "createdAt": "2026-03-19T17:00:00.000Z",
+      "id": 30
+    },
+    {
+      "name": "Cosco Football Size 5",
+      "category": "Sports",
+      "brand": "Cosco",
+      "description": "Durable football designed for recreational and training purposes. Offers excellent grip and long-lasting performance.",
+      "price": 899,
+      "discount": 15,
+      "stockQuantity": 43,
+      "images": [
+        "https://images.unsplash.com/photo-1575361204480-aadea25e6e68",
+        "https://images.unsplash.com/photo-1517466787929-bc90951d0974",
+        "https://images.unsplash.com/photo-1553778263-73a83bab9b0c"
+      ],
+      "finalPrice": 764,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "cosco-football-size-5",
+      "status": "approved",
+      "rating": 4.4,
+      "totalReviews": 132,
+      "createdAt": "2026-02-01T10:40:00.000Z",
+      "id": 31
+    },
+    {
+      "name": "Yoga Mat Premium 6mm",
+      "category": "Sports",
+      "brand": "Boldfit",
+      "description": "Anti-slip yoga mat with superior cushioning and durability. Ideal for yoga, stretching, and home workouts.",
+      "price": 1199,
+      "discount": 20,
+      "stockQuantity": 68,
+      "images": [
+        "https://images.unsplash.com/photo-1518611012118-696072aa579a",
+        "https://images.unsplash.com/photo-1506126613408-eca07ce68773",
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b"
+      ],
+      "finalPrice": 959,
+      "sellerId": 5,
+      "sellerName": "prince",
+      "slug": "yoga-mat-premium-6mm",
+      "status": "approved",
+      "rating": 4.5,
+      "totalReviews": 203,
+      "createdAt": "2026-04-18T06:50:00.000Z",
+      "id": 32
+    },
+    {
+      "name": "The Psychology of Money",
+      "category": "Books",
+      "brand": "Jaico Publishing",
+      "description": "Popular personal finance book explaining how emotions and behavior influence financial decisions and wealth creation.",
+      "price": 399,
+      "discount": 18,
+      "stockQuantity": 91,
+      "images": [
+        "https://images.unsplash.com/photo-1544947950-fa07a98d237f",
+        "https://images.unsplash.com/photo-1512820790803-83ca734da794",
+        "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
+      ],
+      "finalPrice": 327,
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "slug": "the-psychology-of-money",
+      "status": "approved",
+      "rating": 4.9,
+      "totalReviews": 1104,
+      "createdAt": "2026-05-05T18:15:00.000Z",
+      "id": 33
+    },
+    {
+      "name": "LEGO Classic Creative Bricks Set",
+      "category": "Toys",
+      "brand": "LEGO",
+      "description": "Creative building blocks set that encourages imagination and problem-solving skills. Suitable for kids of various ages.",
+      "price": 2499,
+      "discount": 15,
+      "stockQuantity": 29,
+      "images": [
+        "https://images.unsplash.com/photo-1587654780291-39c9404d746b",
+        "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088",
+        "https://images.unsplash.com/photo-1558060370-d644479cb6f7"
+      ],
+      "finalPrice": 2124,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "lego-classic-creative-bricks-set",
+      "status": "approved",
+      "rating": 4.8,
+      "totalReviews": 286,
+      "createdAt": "2026-03-27T11:30:00.000Z",
+      "id": 34
+    },
+    {
+      "name": "Cadbury Celebrations Gift Pack",
+      "category": "Grocery",
+      "brand": "Cadbury",
+      "description": "Assorted chocolate gift pack featuring popular Cadbury favorites. Perfect for gifting and festive occasions.",
+      "price": 499,
+      "discount": 10,
+      "stockQuantity": 63,
+      "images": [
+        "https://images.unsplash.com/photo-1549007994-cb92caebd54b",
+        "https://images.unsplash.com/photo-1511381939415-e44015466834",
+        "https://images.unsplash.com/photo-1606312619070-d48b4c652a52"
+      ],
+      "finalPrice": 449,
+      "sellerId": 5,
+      "sellerName": "prince",
+      "slug": "cadbury-celebrations-gift-pack",
+      "status": "approved",
+      "rating": 4.7,
+      "totalReviews": 377,
+      "createdAt": "2026-01-10T09:25:00.000Z",
+      "id": 35
+    },
+    {
+      "name": "Tata Tea Premium 1kg",
+      "category": "Grocery",
+      "brand": "Tata Tea",
+      "description": "Premium blend tea leaves delivering rich aroma and refreshing taste. Perfect for starting your day with energy.",
+      "price": 699,
+      "discount": 8,
+      "stockQuantity": 88,
+      "images": [
+        "https://images.unsplash.com/photo-1544787219-7f47ccb76574",
+        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+        "https://images.unsplash.com/photo-1515823064-d6e0c04616a7"
+      ],
+      "finalPrice": 643,
+      "sellerId": 2,
+      "sellerName": "Rajesh Sharma",
+      "slug": "tata-tea-premium-1kg",
+      "status": "approved",
+      "rating": 4.5,
+      "totalReviews": 421,
+      "createdAt": "2026-02-23T08:10:00.000Z",
+      "id": 36
+    },
+    {
+      "name": "HP DeskJet Ink Advantage Printer",
+      "category": "Electronics",
+      "brand": "HP",
+      "description": "Compact all-in-one printer offering reliable printing, scanning, and copying for home and office needs.",
+      "price": 6999,
+      "discount": 22,
+      "stockQuantity": 17,
+      "images": [
+        "https://images.unsplash.com/photo-1612810806563-4cb8265db55f",
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+        "https://images.unsplash.com/photo-1515879218367-8466d910aaa4"
+      ],
+      "finalPrice": 5459,
+      "sellerId": 6,
+      "sellerName": "seller",
+      "slug": "hp-deskjet-ink-advantage-printer",
+      "status": "approved",
+      "rating": 4.3,
+      "totalReviews": 189,
+      "createdAt": "2026-04-06T14:40:00.000Z",
+      "id": 37
     }
   ],
   "categories": [
@@ -416,7 +930,21 @@
       "isActive": true
     }
   ],
-  "wishlist": [],
+  "wishlist": [
+    {
+      "userId": 1,
+      "productId": 16,
+      "productName": "buetifull kitchen piece",
+      "productPrice": 1223.6,
+      "productImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4f3fnoYNs9_PKcqmlr8IYOhKu86YPJMgB2g&s",
+      "productCategory": "Home & Living",
+      "productBrand": "kitchen",
+      "productDiscount": 8,
+      "productOriginalPrice": 1330,
+      "createdAt": "2026-06-13T12:29:49.328Z",
+      "id": 1
+    }
+  ],
   "cart": [
     {
       "userId": 5,
@@ -435,21 +963,72 @@
     },
     {
       "userId": 3,
-      "items": [
-        {
-          "id": 12,
-          "name": "camera",
-          "price": 1000,
-          "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500",
-          "quantity": 1,
-          "stock": 10
-        }
-      ],
+      "items": [],
       "createdAt": "2026-06-13T02:41:42.414Z",
       "id": 2
+    },
+    {
+      "userId": 8,
+      "items": [
+        {
+          "id": 35,
+          "name": "Cadbury Celebrations Gift Pack",
+          "price": 449,
+          "image": "https://images.unsplash.com/photo-1549007994-cb92caebd54b",
+          "quantity": 2,
+          "stock": 63
+        }
+      ],
+      "createdAt": "2026-06-13T08:07:54.430Z",
+      "id": 3
+    },
+    {
+      "userId": 1,
+      "items": [
+        {
+          "id": 16,
+          "name": "buetifull kitchen piece",
+          "price": 1223.6,
+          "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4f3fnoYNs9_PKcqmlr8IYOhKu86YPJMgB2g&s",
+          "quantity": 1,
+          "stock": 13
+        }
+      ],
+      "createdAt": "2026-06-13T12:30:05.164Z",
+      "id": 4
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "id": 1781354164056,
+      "orderId": "ORD1781354164056",
+      "userId": 3,
+      "customerName": "Priya Patel",
+      "customerEmail": "customer@shopsphere.com",
+      "customerMobile": "9876543212",
+      "shippingAddress": {
+        "address": "dindoli Surat gujarat",
+        "city": "surat",
+        "state": "jj",
+        "pincode": "123456"
+      },
+      "items": [
+        {
+          "productId": 3,
+          "name": "Men's Cotton T-Shirt",
+          "price": 23,
+          "quantity": 6,
+          "total": 138
+        }
+      ],
+      "subtotal": 138,
+      "shippingCharge": 0,
+      "total": 138,
+      "paymentMethod": "Cash on Delivery",
+      "status": "pending",
+      "createdAt": "2026-06-13T12:36:04.056Z"
+    }
+  ],
   "reviews": [
     {
       "id": 1,

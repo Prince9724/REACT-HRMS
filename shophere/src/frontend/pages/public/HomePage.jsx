@@ -136,7 +136,7 @@ const HomePage = () => {
                   const categoryImages = {
                     'Electronics': 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=150',
                     'Fashion': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=150',
-                    'Home & Living': 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=150',
+                    'Home & Living': 'https://images.unsplash.com/photo-1615873968403-89e068629265?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aG9tZSUyMGRlY29yfGVufDB8fDB8fHww',
                     'Books': 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=150',
                     'Sports': 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=150',
                   };
