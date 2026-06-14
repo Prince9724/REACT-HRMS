@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import api from '../services/api';
 
 const CartContext = createContext();
 
@@ -15,39 +14,15 @@ export const useCart = () => {
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);  // Unique products count
   const [cartTotal, setCartTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Load cart from JSON Server on user login
   useEffect(() => {
-    if (user?.id) {
-      fetchCartFromServer();
-    } else {
-      // Guest cart from localStorage
-      loadGuestCart();
-    }
+    loadCart();
   }, [user?.id]);
 
-  const fetchCartFromServer = async () => {
-    try {
-      const response = await api.get(`/cart?userId=${user.id}`);
-      if (response.data.length > 0) {
-        const serverCart = response.data[0];
-        setCartItems(serverCart.items || []);
-        updateCartSummary(serverCart.items || []);
-      } else {
-        // No cart on server, check guest cart
-        loadGuestCart();
-      }
-    } catch (error) {
-      console.error('Error fetching cart:', error);
-      loadGuestCart();
-    }
-    setLoading(false);
-  };
-
-  const loadGuestCart = () => {
+  const loadCart = () => {
     const savedCart = localStorage.getItem('shopsphere_cart');
     if (savedCart) {
       try {
@@ -55,91 +30,77 @@ export const CartProvider = ({ children }) => {
         setCartItems(items);
         updateCartSummary(items);
       } catch (e) {
-        console.error('Error loading guest cart:', e);
+        console.error('Error loading cart:', e);
       }
     }
-  };
-
-  const saveCartToServer = async (items) => {
-    if (!user?.id) {
-      // Guest user - save to localStorage
-      localStorage.setItem('shopsphere_cart', JSON.stringify(items));
-      return;
-    }
-
-    try {
-      const existing = await api.get(`/cart?userId=${user.id}`);
-      if (existing.data.length > 0) {
-        // Update existing cart
-        await api.patch(`/cart/${existing.data[0].id}`, { items });
-      } else {
-        // Create new cart
-        await api.post('/cart', {
-          userId: user.id,
-          items: items,
-          createdAt: new Date().toISOString()
-        });
-      }
-    } catch (error) {
-      console.error('Error saving cart to server:', error);
-    }
+    setLoading(false);
   };
 
   const updateCartSummary = (items) => {
-    const count = items.reduce((total, item) => total + (item.quantity || 1), 0);
+    // ✅ FIX: cartCount = number of unique products (NOT total quantity)
+    const uniqueProductCount = items.length;  // Sirf unique products ki count
     const total = items.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
-    setCartCount(count);
+    
+    setCartCount(uniqueProductCount);
     setCartTotal(total);
-  };
-
-  const addToCart = async (product, quantity = 1) => {
-    const newItems = [...cartItems];
-    const existingIndex = newItems.findIndex(item => item.id === product.id);
     
-    if (existingIndex !== -1) {
-      newItems[existingIndex].quantity += quantity;
-    } else {
-      newItems.push({
-        id: product.id,
-        name: product.name,
-        price: product.finalPrice || product.price,
-        image: product.images?.[0] || '',
-        quantity: quantity,
-        stock: product.stockQuantity
-      });
-    }
-    
-    setCartItems(newItems);
-    updateCartSummary(newItems);
-    await saveCartToServer(newItems);
+    // Save to localStorage
+    localStorage.setItem('shopsphere_cart', JSON.stringify(items));
   };
 
-  const removeFromCart = async (productId) => {
-    const newItems = cartItems.filter(item => item.id !== productId);
-    setCartItems(newItems);
-    updateCartSummary(newItems);
-    await saveCartToServer(newItems);
+  const addToCart = (product, quantity = 1) => {
+    setCartItems(prevItems => {
+      const existingIndex = prevItems.findIndex(item => item.id === product.id);
+      
+      if (existingIndex !== -1) {
+        // Product already exists - only update quantity, NOT cart count
+        const updatedItems = [...prevItems];
+        updatedItems[existingIndex].quantity += quantity;
+        updateCartSummary(updatedItems);
+        return updatedItems;
+      } else {
+        // New product - cart count will increase
+        const newItem = {
+          id: product.id,
+          name: product.name,
+          price: product.finalPrice || product.price,
+          image: product.images?.[0] || '',
+          quantity: quantity,
+          stock: product.stockQuantity
+        };
+        const newItems = [...prevItems, newItem];
+        updateCartSummary(newItems);
+        return newItems;
+      }
+    });
   };
 
-  const updateQuantity = async (productId, newQuantity) => {
+  const removeFromCart = (productId) => {
+    setCartItems(prevItems => {
+      const newItems = prevItems.filter(item => item.id !== productId);
+      updateCartSummary(newItems);
+      return newItems;
+    });
+  };
+
+  const updateQuantity = (productId, newQuantity) => {
     if (newQuantity < 1) {
-      await removeFromCart(productId);
+      removeFromCart(productId);
       return;
     }
     
-    const newItems = cartItems.map(item =>
-      item.id === productId ? { ...item, quantity: newQuantity } : item
-    );
-    
-    setCartItems(newItems);
-    updateCartSummary(newItems);
-    await saveCartToServer(newItems);
+    setCartItems(prevItems => {
+      const newItems = prevItems.map(item =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      );
+      updateCartSummary(newItems);
+      return newItems;
+    });
   };
 
-  const clearCart = async () => {
+  const clearCart = () => {
     setCartItems([]);
     updateCartSummary([]);
-    await saveCartToServer([]);
   };
 
   const value = {

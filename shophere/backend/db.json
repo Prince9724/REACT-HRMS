@@ -79,6 +79,16 @@
       "isActive": true,
       "createdAt": "2026-06-13T05:46:44.998Z",
       "id": 8
+    },
+    {
+      "fullName": "user1",
+      "email": "user1@gmail.com",
+      "password": "123456",
+      "mobile": "1234567890",
+      "role": "customer",
+      "isActive": true,
+      "createdAt": "2026-06-14T15:08:41.612Z",
+      "id": 9
     }
   ],
   "products": [
@@ -1036,6 +1046,42 @@
       "paymentMethod": "Cash on Delivery",
       "status": "pending",
       "createdAt": "2026-06-13T12:36:04.056Z"
+    },
+    {
+      "id": 1781450416470,
+      "orderId": "ORD1781450416470",
+      "userId": 3,
+      "customerName": "Priya Patel",
+      "customerEmail": "customer@shopsphere.com",
+      "customerMobile": "9876543212",
+      "shippingAddress": {
+        "address": "dindoli Surat gujarat",
+        "city": "surat",
+        "state": "gj",
+        "pincode": "394210"
+      },
+      "items": [
+        {
+          "productId": 37,
+          "name": "HP DeskJet Ink Advantage Printer",
+          "price": 5459,
+          "quantity": 1,
+          "total": 5459
+        },
+        {
+          "productId": 14,
+          "name": "kurti",
+          "price": 11.64,
+          "quantity": 1,
+          "total": 11.64
+        }
+      ],
+      "subtotal": 5470.64,
+      "shippingCharge": 0,
+      "total": 5470.64,
+      "paymentMethod": "Cash on Delivery",
+      "status": "pending",
+      "createdAt": "2026-06-14T15:20:16.470Z"
     }
   ],
   "reviews": [
