@@ -22,7 +22,7 @@
     },
     {
       "id": 3,
-      "fullName": "Priya Patel",
+      "fullName": "Patel",
       "email": "customer@shopsphere.com",
       "password": "customer123",
       "mobile": "9876543212",
@@ -43,7 +43,7 @@
     {
       "fullName": "prince",
       "email": "prince@gmail.com",
-      "password": "12345",
+      "password": "123456",
       "mobile": "1234567890",
       "role": "seller",
       "isActive": true,
@@ -942,17 +942,30 @@
   ],
   "wishlist": [
     {
-      "userId": 1,
-      "productId": 16,
-      "productName": "buetifull kitchen piece",
-      "productPrice": 1223.6,
-      "productImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4f3fnoYNs9_PKcqmlr8IYOhKu86YPJMgB2g&s",
-      "productCategory": "Home & Living",
-      "productBrand": "kitchen",
-      "productDiscount": 8,
-      "productOriginalPrice": 1330,
-      "createdAt": "2026-06-13T12:29:49.328Z",
+      "userId": 3,
+      "productId": 13,
+      "productName": "books",
+      "productPrice": 11.88,
+      "productImage": "https://images.unsplash.com/photo-1589998059171-988d887df646?w=500",
+      "productCategory": "Books",
+      "productBrand": "book",
+      "productDiscount": 1,
+      "productOriginalPrice": 12,
+      "createdAt": "2026-06-14T15:59:16.114Z",
       "id": 1
+    },
+    {
+      "userId": 3,
+      "productId": 12,
+      "productName": "camera",
+      "productPrice": 1000,
+      "productImage": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500",
+      "productCategory": "Electronics",
+      "productBrand": "sonic",
+      "productDiscount": 0,
+      "productOriginalPrice": 1000,
+      "createdAt": "2026-06-14T15:59:17.718Z",
+      "id": 2
     }
   ],
   "cart": [
@@ -1019,69 +1032,33 @@
   ],
   "orders": [
     {
-      "id": 1781354164056,
-      "orderId": "ORD1781354164056",
+      "id": 1781452777130,
+      "orderId": "ORD1781452777130",
       "userId": 3,
-      "customerName": "Priya Patel",
-      "customerEmail": "customer@shopsphere.com",
-      "customerMobile": "9876543212",
-      "shippingAddress": {
-        "address": "dindoli Surat gujarat",
-        "city": "surat",
-        "state": "jj",
-        "pincode": "123456"
-      },
-      "items": [
-        {
-          "productId": 3,
-          "name": "Men's Cotton T-Shirt",
-          "price": 23,
-          "quantity": 6,
-          "total": 138
-        }
-      ],
-      "subtotal": 138,
-      "shippingCharge": 0,
-      "total": 138,
-      "paymentMethod": "Cash on Delivery",
-      "status": "pending",
-      "createdAt": "2026-06-13T12:36:04.056Z"
-    },
-    {
-      "id": 1781450416470,
-      "orderId": "ORD1781450416470",
-      "userId": 3,
-      "customerName": "Priya Patel",
+      "customerName": "Patel",
       "customerEmail": "customer@shopsphere.com",
       "customerMobile": "9876543212",
       "shippingAddress": {
         "address": "dindoli Surat gujarat",
         "city": "surat",
         "state": "gj",
-        "pincode": "394210"
+        "pincode": "123456"
       },
       "items": [
         {
-          "productId": 37,
-          "name": "HP DeskJet Ink Advantage Printer",
-          "price": 5459,
-          "quantity": 1,
-          "total": 5459
-        },
-        {
-          "productId": 14,
-          "name": "kurti",
-          "price": 11.64,
-          "quantity": 1,
-          "total": 11.64
+          "productId": 12,
+          "name": "camera",
+          "price": 1000,
+          "quantity": 2,
+          "total": 2000
         }
       ],
-      "subtotal": 5470.64,
+      "subtotal": 2000,
       "shippingCharge": 0,
-      "total": 5470.64,
+      "total": 2000,
       "paymentMethod": "Cash on Delivery",
-      "status": "pending",
-      "createdAt": "2026-06-14T15:20:16.470Z"
+      "status": "accepted",
+      "createdAt": "2026-06-14T15:59:37.130Z"
     }
   ],
   "reviews": [
