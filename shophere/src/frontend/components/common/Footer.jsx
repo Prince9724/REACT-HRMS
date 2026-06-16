@@ -11,7 +11,7 @@ const Footer = () => {
             <h3 className="text-xl font-bold text-primary mb-3">ShopSphere</h3>
             <p className="text-gray-300 text-sm">Your trusted marketplace for quality products from verified sellers.</p>
             <div className="flex space-x-4 mt-4">
-              <FiFacebook className="cursor-pointer hover:text-primary" size={20} />
+              <a href=""><FiFacebook className="cursor-pointer hover:text-primary" size={20} /></a>
               <FiTwitter className="cursor-pointer hover:text-primary" size={20} />
               <FiInstagram className="cursor-pointer hover:text-primary" size={20} />
               <FiGithub className="cursor-pointer hover:text-primary" size={20} />
@@ -49,3 +49,5 @@ const Footer = () => {
 };
 
 export default Footer;
+
+///1917 * 885 

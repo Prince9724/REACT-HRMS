@@ -11,6 +11,7 @@ function Skills() {
         { name: "JavaScript", level: 88, icon: "📜" },
         { name: "HTML/CSS", level: 90, icon: "🎨" },
         { name: "Tailwind CSS", level: 85, icon: "💨" }
+        ,{name: "Nodejs"}
       ]
     },
     {

@@ -1059,6 +1059,35 @@
       "paymentMethod": "Cash on Delivery",
       "status": "accepted",
       "createdAt": "2026-06-14T15:59:37.130Z"
+    },
+    {
+      "id": 1781505281003,
+      "orderId": "ORD1781505281003",
+      "userId": 1,
+      "customerName": "Admin User",
+      "customerEmail": "admin@shopsphere.com",
+      "customerMobile": "9876543210",
+      "shippingAddress": {
+        "address": "dindoli Surat gujarat",
+        "city": "surat",
+        "state": "gj",
+        "pincode": "123456"
+      },
+      "items": [
+        {
+          "productId": 14,
+          "name": "kurti",
+          "price": 11.64,
+          "quantity": 2,
+          "total": 23.28
+        }
+      ],
+      "subtotal": 23.28,
+      "shippingCharge": 0,
+      "total": 23.28,
+      "paymentMethod": "Cash on Delivery",
+      "status": "packed",
+      "createdAt": "2026-06-15T06:34:41.004Z"
     }
   ],
   "reviews": [

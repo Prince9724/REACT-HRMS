@@ -4,6 +4,7 @@ import { CartProvider } from './frontend/contexts/CartContext';
 import { WishlistProvider } from './frontend/contexts/WishlistContext';
 import { NotificationProvider } from './frontend/contexts/NotificationContext';
 import AppRoutes from './frontend/routes/AppRoutes';
+import ChatBot from './frontend/components/common/ChatBot';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <WishlistProvider>
           <NotificationProvider>
             <AppRoutes />
+            <ChatBot />
           </NotificationProvider>
         </WishlistProvider>
       </CartProvider>
