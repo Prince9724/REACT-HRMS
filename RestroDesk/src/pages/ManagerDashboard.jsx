@@ -88,20 +88,44 @@ const DashboardHome = () => {
   const previousPeriodSales = totalSales * 0.6;
   const salesIncrease = ((totalSales - previousPeriodSales) / previousPeriodSales) * 100;
 
+  // ✅ FIXED: Chart data based on filter (Today vs History)
   useEffect(() => {
-    const last7Days = [...Array(7)].map((_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      return d.toISOString().split('T')[0];
-    });
+    let datesToShow = [];
 
-    const salesData = last7Days.map(date => ({
+    if (filter === 'today') {
+      // Last 7 days for Today view
+      datesToShow = [...Array(7)].map((_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return d.toISOString().split('T')[0];
+      });
+    } else {
+      // History mode: Show 7 days around selected date (3 before, 3 after)
+      if (selectedDate) {
+        const baseDate = new Date(selectedDate);
+        for (let i = -3; i <= 3; i++) {
+          const d = new Date(baseDate);
+          d.setDate(d.getDate() + i);
+          datesToShow.push(d.toISOString().split('T')[0]);
+        }
+      } else {
+        // Fallback: last 7 days
+        datesToShow = [...Array(7)].map((_, i) => {
+          const d = new Date();
+          d.setDate(d.getDate() - (6 - i));
+          return d.toISOString().split('T')[0];
+        });
+      }
+    }
+
+    const salesData = datesToShow.map(date => ({
       date: date.slice(5),
       sales: Math.floor(allOrders.filter(o => o.createdAt.startsWith(date)).reduce((sum, o) => sum + o.totalAmount, 0)),
       orders: allOrders.filter(o => o.createdAt.startsWith(date)).length
     }));
+
     setDailySales(salesData);
-  }, [allOrders]);
+  }, [allOrders, filter, selectedDate]);  // ✅ Dependencies added
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -321,6 +345,7 @@ const DashboardHome = () => {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Sales Chart - Shows data based on filter */}
         <div className="bg-white rounded-2xl shadow-lg p-5">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -328,7 +353,9 @@ const DashboardHome = () => {
             </h3>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-xs text-gray-500">Revenue (₹)</span>
+              <span className="text-xs text-gray-500">
+                {filter === 'today' ? 'Revenue (₹)' : `Around ${selectedDate}`}
+              </span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={300}>
@@ -344,6 +371,11 @@ const DashboardHome = () => {
               <Bar dataKey="sales" fill="#3b82f6" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+          {filter === 'history' && (
+            <div className="mt-2 text-center text-xs text-gray-500">
+              Showing 7 days around <span className="font-semibold text-blue-600">{selectedDate}</span>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-5">

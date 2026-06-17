@@ -268,7 +268,9 @@ function getHumanLikeResponse(message) {
   if (msg.includes("mera order kab aayega ")) {
     return "aap apne oder kiye huye product pr view detail ko click kr ke apne product ki jaanakari le skte. aur kay help kr skta hu mai apki";
   }
-  
+   if (msg.includes("tumhara naam kya hai"||"what is your name " )) {
+    return "mai ek ai assistance hu shopehere ke baare me aap mujhse kuch bhi puch skte hai";
+  }
   // Default friendly
   return "Main sun raha hoon! 👂 Aap kuch bhi puch sakte ho - shopping ho, advice ho, ya bas baat-cheet. Main yahan hoon aapke liye! Toh batao, kya soch rahe ho aaj? 😊";
 }
