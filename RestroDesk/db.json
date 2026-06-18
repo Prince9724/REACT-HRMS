@@ -128,16 +128,6 @@
       "description": "premuim coffee",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZb632q3t-D6iN3TiW863qXQv_ObPEy_1gfQ&s",
       "id": 9
-    },
-    {
-      "name": "panjabi ",
-      "category": "Main",
-      "price": 350,
-      "taxRate": 5,
-      "available": true,
-      "description": "panjabi ",
-      "image": "",
-      "id": 10
     }
   ],
   "tables": [
@@ -1327,6 +1317,46 @@
       "paymentMethod": "Cash",
       "createdBy": 2,
       "createdAt": "2026-06-10T10:19:21.890Z"
+    },
+    {
+      "id": "d5d3430a-75c2-41ad-bcbf-05653c7a4f23",
+      "customerName": "name",
+      "customerMobile": "1234567890",
+      "tableNumber": 1,
+      "numberOfPeople": 1,
+      "notes": "",
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Samosa",
+          "quantity": 1,
+          "price": 20,
+          "taxRate": 0
+        },
+        {
+          "menuItemId": 4,
+          "name": "Pizza",
+          "quantity": 1,
+          "price": 199,
+          "taxRate": 5
+        },
+        {
+          "menuItemId": 3,
+          "name": "Cold coffee ",
+          "quantity": 1,
+          "price": 50,
+          "taxRate": 0
+        }
+      ],
+      "subtotal": 269,
+      "gst": 13.45,
+      "serviceCharge": 13.450000000000001,
+      "discount": 0,
+      "totalAmount": 295.9,
+      "status": "Completed",
+      "paymentMethod": "Cash",
+      "createdBy": 2,
+      "createdAt": "2026-06-17T10:03:29.326Z"
     }
   ],
   "leaveRequests": [
