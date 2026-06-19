@@ -271,6 +271,10 @@ function getHumanLikeResponse(message) {
    if (msg.includes("tumhara naam kya hai"||"what is your name " )) {
     return "mai ek ai assistance hu shopehere ke baare me aap mujhse kuch bhi puch skte hai";
   }
+   if (msg.includes('student') || msg.includes('professional')) {
+    return "product page me jaao aur search baar me search kro";
+  }
+  
   // Default friendly
   return "Main sun raha hoon! 👂 Aap kuch bhi puch sakte ho - shopping ho, advice ho, ya bas baat-cheet. Main yahan hoon aapke liye! Toh batao, kya soch rahe ho aaj? 😊";
 }
