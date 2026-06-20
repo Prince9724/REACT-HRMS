@@ -29,23 +29,6 @@ const ChatBot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const getContext = () => {
-    const path = location.pathname;
-    let context = {
-      userRole: user?.role || 'guest',
-      userName: user?.fullName?.split(' ')[0] || 'Guest',
-      page: 'home'
-    };
-    
-    if (path.includes('/products')) context.page = 'products';
-    if (path.includes('/product/')) context.page = 'product_details';
-    if (path.includes('/cart')) context.page = 'cart';
-    if (path.includes('/checkout')) context.page = 'checkout';
-    if (path.includes('/my-orders')) context.page = 'orders';
-    
-    return context;
-  };
-
   const generateId = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
   };
@@ -64,13 +47,19 @@ const ChatBot = () => {
       time: new Date()
     }]);
     
-    // Start bot typing
     setIsBotTyping(true);
     
-    const context = getContext();
+    // ✅ FIX: User object ko context mein bhejo
+    const context = {
+      user: user,  // ← IMPORTANT: Full user object
+      userName: user?.fullName?.split(' ')[0] || 'Guest',
+      userRole: user?.role || 'guest',
+      page: location.pathname
+    };
+    
+    console.log("📤 Sending context:", context);
     
     try {
-      // ✅ FIXED: Using sendMessage (NOT sendMessageStream)
       const response = await geminiService.sendMessage(userQuestion, context);
       
       setMessages(prev => [...prev, {
@@ -188,12 +177,12 @@ const ChatBot = () => {
             <div className="flex flex-wrap gap-2">
               <button 
                 onClick={() => {
-                  setInputText("Track my order");
+                  setInputText("my order");
                   setTimeout(() => handleSendMessage(), 50);
                 }}
                 className="text-xs bg-gray-100 hover:bg-primary hover:text-white px-3 py-1.5 rounded-full transition"
               >
-                Track order
+                📦 Track order
               </button>
               <button 
                 onClick={() => {
@@ -202,25 +191,25 @@ const ChatBot = () => {
                 }}
                 className="text-xs bg-gray-100 hover:bg-primary hover:text-white px-3 py-1.5 rounded-full transition"
               >
-                Recommendations
+                🛍️ Recommendations
               </button>
               <button 
                 onClick={() => {
-                  setInputText("Return policy kya hai?");
+                  setInputText("Return policy");
                   setTimeout(() => handleSendMessage(), 50);
                 }}
                 className="text-xs bg-gray-100 hover:bg-primary hover:text-white px-3 py-1.5 rounded-full transition"
               >
-                Return policy
+                ↩️ Return policy
               </button>
               <button 
                 onClick={() => {
-                  setInputText("Delivery time kitna hai?");
+                  setInputText("Shipping info");
                   setTimeout(() => handleSendMessage(), 50);
                 }}
                 className="text-xs bg-gray-100 hover:bg-primary hover:text-white px-3 py-1.5 rounded-full transition"
               >
-                Shipping info
+                🚚 Shipping info
               </button>
             </div>
           </div>

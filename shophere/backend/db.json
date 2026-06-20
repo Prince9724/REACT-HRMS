@@ -953,19 +953,6 @@
       "productOriginalPrice": 12,
       "createdAt": "2026-06-14T15:59:16.114Z",
       "id": 1
-    },
-    {
-      "userId": 3,
-      "productId": 12,
-      "productName": "camera",
-      "productPrice": 1000,
-      "productImage": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500",
-      "productCategory": "Electronics",
-      "productBrand": "sonic",
-      "productDiscount": 0,
-      "productOriginalPrice": 1000,
-      "createdAt": "2026-06-14T15:59:17.718Z",
-      "id": 2
     }
   ],
   "cart": [
@@ -1032,98 +1019,33 @@
   ],
   "orders": [
     {
-      "id": 1781452777130,
-      "orderId": "ORD1781452777130",
+      "id": 1781938201162,
+      "orderId": "ORD1781938201162",
       "userId": 3,
       "customerName": "Patel",
       "customerEmail": "customer@shopsphere.com",
       "customerMobile": "9876543212",
       "shippingAddress": {
-        "address": "dindoli Surat gujarat",
+        "address": "asdfghjkl",
         "city": "surat",
-        "state": "gj",
-        "pincode": "123456"
+        "state": "gu",
+        "pincode": "234567"
       },
       "items": [
         {
-          "productId": 12,
-          "name": "camera",
-          "price": 1000,
-          "quantity": 2,
-          "total": 2000
+          "productId": 26,
+          "name": "Puma Men's Polo T-Shirt",
+          "price": 1529,
+          "quantity": 3,
+          "total": 4587
         }
       ],
-      "subtotal": 2000,
+      "subtotal": 4587,
       "shippingCharge": 0,
-      "total": 2000,
+      "total": 4587,
       "paymentMethod": "Cash on Delivery",
       "status": "accepted",
-      "createdAt": "2026-06-14T15:59:37.130Z"
-    },
-    {
-      "id": 1781505281003,
-      "orderId": "ORD1781505281003",
-      "userId": 1,
-      "customerName": "Admin User",
-      "customerEmail": "admin@shopsphere.com",
-      "customerMobile": "9876543210",
-      "shippingAddress": {
-        "address": "dindoli Surat gujarat",
-        "city": "surat",
-        "state": "gj",
-        "pincode": "123456"
-      },
-      "items": [
-        {
-          "productId": 14,
-          "name": "kurti",
-          "price": 11.64,
-          "quantity": 2,
-          "total": 23.28
-        }
-      ],
-      "subtotal": 23.28,
-      "shippingCharge": 0,
-      "total": 23.28,
-      "paymentMethod": "Cash on Delivery",
-      "status": "packed",
-      "createdAt": "2026-06-15T06:34:41.004Z"
-    },
-    {
-      "id": 1781764096999,
-      "orderId": "ORD1781764096999",
-      "userId": 3,
-      "customerName": "Patel",
-      "customerEmail": "customer@shopsphere.com",
-      "customerMobile": "9876543212",
-      "shippingAddress": {
-        "address": "dindoli Surat gujarat",
-        "city": "surat",
-        "state": "gj",
-        "pincode": "123456"
-      },
-      "items": [
-        {
-          "productId": 15,
-          "name": "Test Product",
-          "price": 100,
-          "quantity": 1,
-          "total": 100
-        },
-        {
-          "productId": 12,
-          "name": "camera",
-          "price": 1000,
-          "quantity": 1,
-          "total": 1000
-        }
-      ],
-      "subtotal": 1100,
-      "shippingCharge": 0,
-      "total": 1100,
-      "paymentMethod": "Cash on Delivery",
-      "status": "pending",
-      "createdAt": "2026-06-18T06:28:16.999Z"
+      "createdAt": "2026-06-20T06:50:01.162Z"
     }
   ],
   "reviews": [
