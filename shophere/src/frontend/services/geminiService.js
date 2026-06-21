@@ -278,9 +278,8 @@
 //   // Default friendly
 //   return "Main sun raha hoon! 👂 Aap kuch bhi puch sakte ho - shopping ho, advice ho, ya bas baat-cheet. Main yahan hoon aapke liye! Toh batao, kya soch rahe ho aaj? 😊";
 // }
-
 // ============================================
-// SMART DB CHATBOT - No API, uses db.json only
+// COMPLETE OFFLINE CHATBOT - No API, 100% Code
 // ============================================
 
 import api from './api';
@@ -296,7 +295,6 @@ export const geminiService = {
     console.log("📤 Message:", message);
 
     const response = await getSmartResponse(message, userRole, userId);
-
     return { success: true, text: response };
   },
 
@@ -306,19 +304,20 @@ export const geminiService = {
 };
 
 // ============================================
-// 🧠 SMART RESPONSE ENGINE
+// 🧠 SMART RESPONSE ENGINE (100% Code)
 // ============================================
 
 async function getSmartResponse(message, userRole, userId) {
   const msg = message.toLowerCase().trim();
 
-  // ---------- GREETINGS ----------
-  if (msg.match(/^(hi|hello|hey|namaste|नमस्ते|kaise ho|how are you)/)) {
+  // ========== GREETINGS ==========
+  if (msg.match(/^(hi|hello|hey|namaste|नमस्ते|kaise ho|how are you|kya haal hai|suprabhat|good morning|good evening)/)) {
     return getGreetingResponse(userRole);
   }
 
-  // ---------- ORDERS ----------
-  if (msg.includes('order') || msg.includes('track') || msg.includes('ऑर्डर')) {
+  // ========== ORDERS ==========
+  if (msg.includes('order') || msg.includes('track') || msg.includes('ऑर्डर') || 
+      msg.includes('my order') || msg.includes('mera order') || msg.includes('order status')) {
     if (userRole === 'guest') {
       return "🔐 Aap guest mode mein hain. Orders dekhne ke liye login karein!\n\n👉 Login button top-right par hai. 😊";
     }
@@ -333,10 +332,11 @@ async function getSmartResponse(message, userRole, userId) {
     }
   }
 
-  // ---------- CART ----------
-  if (msg.includes('cart') || msg.includes('cart me') || msg.includes('cart mein')) {
+  // ========== CART ==========
+  if (msg.includes('cart') || msg.includes('cart me') || msg.includes('cart mein') || 
+      msg.includes('my cart') || msg.includes('meri cart') || msg.includes('shopping cart')) {
     if (userRole === 'guest') {
-      return "🛒 Cart dekhne ke liye login karein! 😊";
+      return "🛒 Cart dekhne ke liye login karein! Login karne ke baad aap products add kar sakte hain. 😊";
     }
     if (userRole === 'customer') {
       return await getCustomerCart(userId);
@@ -344,10 +344,11 @@ async function getSmartResponse(message, userRole, userId) {
     return "🛒 Cart feature sirf customers ke liye hai.";
   }
 
-  // ---------- WISHLIST ----------
-  if (msg.includes('wishlist') || msg.includes('favourite')) {
+  // ========== WISHLIST ==========
+  if (msg.includes('wishlist') || msg.includes('favourite') || msg.includes('fav') || 
+      msg.includes('my wishlist') || msg.includes('meri wishlist') || msg.includes('save')) {
     if (userRole === 'guest') {
-      return "❤️ Wishlist dekhne ke liye login karein! 😊";
+      return "❤️ Wishlist dekhne ke liye login karein! Login karne ke baad products save kar sakte hain. 😊";
     }
     if (userRole === 'customer') {
       return await getCustomerWishlist(userId);
@@ -355,10 +356,11 @@ async function getSmartResponse(message, userRole, userId) {
     return "❤️ Wishlist feature sirf customers ke liye hai.";
   }
 
-  // ---------- PROFILE ----------
-  if (msg.includes('profile') || msg.includes('my account') || msg.includes('mera account')) {
+  // ========== PROFILE ==========
+  if (msg.includes('profile') || msg.includes('my account') || msg.includes('mera account') || 
+      msg.includes('account') || msg.includes('my profile') || msg.includes('user profile')) {
     if (userRole === 'guest') {
-      return "👤 Profile dekhne ke liye login karein! 😊";
+      return "👤 Profile dekhne ke liye login karein! Register karna hai toh 'Register' button click karein. 😊";
     }
     if (userRole === 'customer') {
       return await getCustomerProfile(userId);
@@ -366,51 +368,149 @@ async function getSmartResponse(message, userRole, userId) {
     return "👤 Profile feature sirf customers ke liye hai.";
   }
 
-  // ---------- SELLER: PRODUCTS ----------
-  if (userRole === 'seller' && (msg.includes('my product') || msg.includes('mera product') || msg.includes('my products'))) {
+  // ========== SELLER: PRODUCTS ==========
+  if (userRole === 'seller' && (msg.includes('my product') || msg.includes('mera product') || 
+      msg.includes('my products') || msg.includes('product list') || msg.includes('meri products'))) {
     return await getSellerProducts(userId);
   }
 
-  // ---------- SELLER: DASHBOARD ----------
-  if (userRole === 'seller' && (msg.includes('dashboard') || msg.includes('stats') || msg.includes('sale'))) {
+  // ========== SELLER: ORDERS ==========
+  if (userRole === 'seller' && (msg.includes('seller order') || msg.includes('meri order') || 
+      msg.includes('product orders') || msg.includes('meri sales'))) {
+    return await getSellerOrders(userId);
+  }
+
+  // ========== SELLER: DASHBOARD ==========
+  if (userRole === 'seller' && (msg.includes('dashboard') || msg.includes('stats') || 
+      msg.includes('sale') || msg.includes('sales') || msg.includes('performance') || 
+      msg.includes('seller stats') || msg.includes('meri sales') || msg.includes('summary'))) {
     return await getSellerStats(userId);
   }
 
-  // ---------- ADMIN ----------
-  if (userRole === 'admin' && (msg.includes('user') || msg.includes('customer') || msg.includes('seller'))) {
+  // ========== ADMIN: USERS ==========
+  if (userRole === 'admin' && (msg.includes('user') || msg.includes('customer') || 
+      msg.includes('seller') || msg.includes('users') || msg.includes('customers') || 
+      msg.includes('sellers') || msg.includes('total users') || msg.includes('kitne user'))) {
     return await getAdminUsers();
   }
-  if (userRole === 'admin' && (msg.includes('product') || msg.includes('items'))) {
+
+  // ========== ADMIN: PRODUCTS ==========
+  if (userRole === 'admin' && (msg.includes('product') || msg.includes('items') || 
+      msg.includes('total products') || msg.includes('kitne product') || 
+      msg.includes('product count') || msg.includes('product list'))) {
     return await getAdminProducts();
   }
-  if (userRole === 'admin' && (msg.includes('revenue') || msg.includes('income') || msg.includes('sale'))) {
+
+  // ========== ADMIN: ORDERS ==========
+  if (userRole === 'admin' && (msg.includes('order') || msg.includes('orders') || 
+      msg.includes('total orders') || msg.includes('kitne order') || 
+      msg.includes('order count') || msg.includes('all orders'))) {
+    return await getAdminOrders();
+  }
+
+  // ========== ADMIN: REVENUE ==========
+  if (userRole === 'admin' && (msg.includes('revenue') || msg.includes('income') || 
+      msg.includes('sale') || msg.includes('total revenue') || msg.includes('kitna paisa') || 
+      msg.includes('earning') || msg.includes('profit') || msg.includes('turnover'))) {
     return await getAdminRevenue();
   }
-  if (userRole === 'admin' && (msg.includes('dashboard') || msg.includes('overview') || msg.includes('summary'))) {
+
+  // ========== ADMIN: DASHBOARD ==========
+  if (userRole === 'admin' && (msg.includes('dashboard') || msg.includes('overview') || 
+      msg.includes('summary') || msg.includes('admin panel') || msg.includes('full report'))) {
     return await getAdminDashboard();
   }
 
-  // ---------- PRODUCT RECOMMENDATIONS ----------
-  if (msg.includes('phone') || msg.includes('mobile') || msg.includes('laptop') || msg.includes('headphone') || msg.includes('watch')) {
-    return getProductRecommendation(msg);
+  // ========== PRODUCT RECOMMENDATIONS ==========
+  if (msg.includes('phone') || msg.includes('mobile') || msg.includes('smartphone')) {
+    return "📱 **Best Phones:**\n\n• iPhone 15 Pro: ₹1,29,900\n• Samsung S24 Ultra: ₹1,19,900\n• OnePlus 12: ₹64,999\n• Google Pixel 8: ₹75,999\n• Nothing Phone 2: ₹44,999\n\n💡 Budget batao - 20k, 30k, 50k, 80k? Main recommend karunga!";
+  }
+  
+  if (msg.includes('laptop') || msg.includes('computer') || msg.includes('notebook')) {
+    return "💻 **Best Laptops:**\n\n• MacBook Air M2: ₹84,900\n• Dell XPS 15: ₹1,49,990\n• HP Pavilion 15: ₹54,990\n• Lenovo ThinkPad: ₹69,990\n• Asus ROG Zephyrus: ₹1,29,990\n\n💡 Type batao - Gaming, Business, Student, Coding?";
+  }
+  
+  if (msg.includes('headphone') || msg.includes('earphone') || msg.includes('earbuds') || msg.includes('earpod')) {
+    return "🎧 **Best Headphones/Earbuds:**\n\n• Sony WH-1000XM5: ₹29,990\n• Bose QC45: ₹24,900\n• Apple AirPods Pro 2: ₹24,900\n• Samsung Galaxy Buds 2: ₹11,999\n• Boat Nirvana: ₹2,999\n\n💡 Budget batao - 3k, 10k, 25k, 50k?";
+  }
+  
+  if (msg.includes('watch') || msg.includes('smartwatch') || msg.includes('smart watch')) {
+    return "⌚ **Best Smartwatches:**\n\n• Apple Watch Ultra 2: ₹89,900\n• Samsung Galaxy Watch 6: ₹39,999\n• OnePlus Watch 2: ₹14,999\n• Noise ColorFit Pro: ₹4,499\n• Fire-Boltt Ninja: ₹2,499\n\n💡 Phone batao - iOS ya Android?";
+  }
+  
+  if (msg.includes('tv') || msg.includes('television') || msg.includes('smart tv')) {
+    return "📺 **Best Smart TVs:**\n\n• Sony Bravia XR 55: ₹1,29,990\n• Samsung QLED 55: ₹89,990\n• LG C3 OLED 55: ₹1,19,990\n• Mi QLED 55: ₹49,999\n• TCL 55: ₹34,999\n\n💡 Budget batao - 30k, 50k, 1L, 1.5L?";
+  }
+  
+  if (msg.includes('camera') || msg.includes('dslr') || msg.includes('mirrorless')) {
+    return "📷 **Best Cameras:**\n\n• Sony Alpha 7 IV: ₹1,79,990\n• Canon EOS R6: ₹1,49,990\n• Nikon Z6 II: ₹1,39,990\n• Fujifilm X-T4: ₹1,09,990\n• Sony ZV-E10: ₹64,990\n\n💡 Type batao - Vlogging, Professional, Beginner?";
+  }
+  
+  if (msg.includes('shoe') || msg.includes('shoes') || msg.includes('footwear') || msg.includes('joota')) {
+    return "👟 **Best Shoes:**\n\n• Nike Air Max: ₹14,995\n• Adidas Ultraboost: ₹17,999\n• Puma RS-X: ₹11,999\n• New Balance 574: ₹9,999\n• Bata Comfort: ₹2,999\n\n💡 Type batao - Sports, Casual, Formal?";
+  }
+  
+  if (msg.includes('cloth') || msg.includes('clothes') || msg.includes('fashion') || msg.includes('dress')) {
+    return "👕 **Fashion:**\n\n• Men's T-Shirts: ₹499 - ₹1,499\n• Women's Dresses: ₹599 - ₹2,499\n• Jeans: ₹799 - ₹2,999\n• Ethnic Wear: ₹999 - ₹4,999\n\n💡 Type batao - Men, Women, Kids?";
   }
 
-  // ---------- HELP ----------
-  if (msg.includes('help') || msg.includes('madad') || msg.includes('support')) {
+  // ========== HELP ==========
+  if (msg.includes('help') || msg.includes('madad') || msg.includes('support') || 
+      msg.includes('how to') || msg.includes('kaise') || msg.includes('guide') || 
+      msg.includes('information') || msg.includes('info') || msg.includes('know') ||
+      msg.includes('kya hai') || msg.includes('kya hoga') || msg.includes('kaise karein')) {
     return getHelpResponse(userRole);
   }
 
-  // ---------- JOKES ----------
-  if (msg.includes('joke') || msg.includes('mazaak') || msg.includes('funny')) {
+  // ========== JOKES ==========
+  if (msg.includes('joke') || msg.includes('mazaak') || msg.includes('funny') || 
+      msg.includes('laugh') || msg.includes('hasna') || msg.includes('comedy') ||
+      msg.includes('humor') || msg.includes('chutkula')) {
     return getJoke();
   }
 
-  // ---------- BYE ----------
-  if (msg.includes('bye') || msg.includes('goodbye') || msg.includes('alvida')) {
+  // ========== THANK YOU ==========
+  if (msg.includes('thank') || msg.includes('thanks') || msg.includes('shukriya') || 
+      msg.includes('dhanyavad') || msg.includes('thank you so much') || msg.includes('thanks a lot')) {
+    return "😊 **Aapka swagat hai!**\n\nKya aapko kisi aur cheez mein help chahiye? Main yahan hoon!\n\n💡 Tips: products, orders, cart, wishlist, profile";
+  }
+
+  // ========== SORRY ==========
+  if (msg.includes('sorry') || msg.includes('maaf') || msg.includes('mistake') || 
+      msg.includes('galat') || msg.includes('error')) {
+    return "😊 **Koi baat nahi!** Hum sab insaan hain. Kya main kisi aur tarah se help kar sakta hoon?\n\n💡 Aap puch sakte ho: products, orders, cart, wishlist";
+  }
+
+  // ========== GOOD NIGHT ==========
+  if (msg.includes('good night') || msg.includes('shubh ratri') || msg.includes('go to sleep')) {
+    return "🌙 **Shubh Ratri!**\n\nAcchi neend aaye, sapne acche aaye. Kal fresh hokar milte hain! 😊\n\n💡 Shopping karna hai toh kal aana!";
+  }
+
+  // ========== GOOD MORNING ==========
+  if (msg.includes('good morning') || msg.includes('suprabhat')) {
+    return "🌅 **Suprabhat!**\n\nAaj ka din fresh aur naya hai! Kya aaj kuch special shopping karni hai?\n\n💡 Products, Orders, Cart - kuch bhi pucho!";
+  }
+
+  // ========== BYE ==========
+  if (msg.includes('bye') || msg.includes('goodbye') || msg.includes('alvida') || 
+      msg.includes('tata') || msg.includes('see you') || msg.includes('later') ||
+      msg.includes('phir milte hain') || msg.includes('chalo')) {
     return getByeResponse(userRole);
   }
 
-  // ---------- DEFAULT ----------
+  // ========== ABOUT SHOPSPHERE ==========
+  if (msg.includes('about') || msg.includes('what is shopsphere') || msg.includes('shopsphere kya hai') || 
+      msg.includes('platform') || msg.includes('marketplace')) {
+    return "🛍️ **About ShopSphere:**\n\nShopSphere ek **Multi-Vendor Marketplace** hai jahan:\n\n• Sellers apne products sell kar sakte hain\n• Customers best products buy kar sakte hain\n• Admin platform manage karta hai\n\n🎯 Inspired by Amazon & Flipkart, built with React!\n\n💡 Kya aapko kisi specific feature ke baare mein jaanna hai?";
+  }
+
+  // ========== WHY SHOPSPHERE ==========
+  if (msg.includes('why shopsphere') || msg.includes('why should') || msg.includes('best platform') || 
+      msg.includes('benefit') || msg.includes('advantage')) {
+    return "🌟 **Why ShopSphere?**\n\n✅ Multiple Sellers - Best prices\n✅ Easy Returns - 7 days return\n✅ Secure Payments - COD & Card\n✅ Fast Delivery - 3-5 days\n✅ 24/7 Support - Always available\n\n💡 Kya aap seller ban-na chahte ho ya customer?";
+  }
+
+  // ========== DEFAULT ==========
   return getDefaultResponse(userRole);
 }
 
@@ -428,58 +528,60 @@ async function fetchFromDB(endpoint) {
   }
 }
 
-// ---------- CUSTOMER: ORDERS (DETAILED) ----------
+// ============================================
+// 👤 CUSTOMER FUNCTIONS
+// ============================================
+
 async function getCustomerOrders(userId) {
   const orders = await fetchFromDB(`/orders?userId=${userId}`);
   if (orders.length === 0) {
-    return "📦 Aapne abhi tak koi order nahi kiya hai. Shopping karke dekhiye! 😊";
+    return "📦 Aapne abhi tak koi order nahi kiya hai.\n\n💡 Shopping karke dekhiye! 😊";
   }
   
   orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   
-  let fullResponse = `📦 **Aapke ${orders.length} Orders**\n\n`;
-  fullResponse += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+  let response = `📦 **Aapke ${orders.length} Orders**\n\n`;
+  response += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   
   orders.forEach((order, index) => {
-    fullResponse += `**Order #${index + 1}**\n`;
-    fullResponse += `📋 ID: ${order.orderId}\n`;
-    fullResponse += `📅 Date: ${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}\n`;
-    fullResponse += `📦 Items: ${order.items.length}\n`;
-    fullResponse += `💰 Total: ₹${order.total}\n`;
-    fullResponse += `💳 Payment: ${order.paymentMethod}\n`;
-    fullResponse += `📊 Status: ${getStatusEmoji(order.status)} ${order.status.toUpperCase()}\n`;
+    response += `**Order #${index + 1}**\n`;
+    response += `📋 ID: ${order.orderId}\n`;
+    response += `📅 Date: ${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}\n`;
+    response += `📦 Items: ${order.items.length}\n`;
+    response += `💰 Total: ₹${order.total}\n`;
+    response += `💳 Payment: ${order.paymentMethod}\n`;
+    response += `📊 Status: ${getStatusEmoji(order.status)} ${order.status.toUpperCase()}\n`;
     
     if (order.items.length > 0) {
-      fullResponse += `\n🛍️ **Products:**\n`;
+      response += `\n🛍️ **Products:**\n`;
       order.items.forEach((item, idx) => {
         const itemTotal = (item.price * item.quantity).toFixed(2);
-        fullResponse += `   ${idx + 1}. ${item.name}\n`;
-        fullResponse += `      Qty: ${item.quantity} × ₹${item.price} = ₹${itemTotal}\n`;
+        response += `   ${idx + 1}. ${item.name}\n`;
+        response += `      Qty: ${item.quantity} × ₹${item.price} = ₹${itemTotal}\n`;
       });
     }
     
     if (order.shippingAddress) {
-      fullResponse += `\n📍 **Shipping:**\n`;
-      fullResponse += `   ${order.shippingAddress.address}\n`;
-      fullResponse += `   ${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.pincode}\n`;
+      response += `\n📍 **Shipping:**\n`;
+      response += `   ${order.shippingAddress.address}\n`;
+      response += `   ${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.pincode}\n`;
     }
     
-    fullResponse += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    response += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
   });
   
-  fullResponse += `💡 **Commands:**\n`;
-  fullResponse += `• "track order" - Tracking status\n`;
-  fullResponse += `• "cancel order" - Cancel order\n`;
-  fullResponse += `• "return order" - Return request\n`;
+  response += `💡 **Commands:**\n`;
+  response += `• "track order" - Tracking status\n`;
+  response += `• "cancel order" - Cancel order\n`;
+  response += `• "return order" - Return request\n`;
   
-  return fullResponse;
+  return response;
 }
 
-// ---------- CUSTOMER: CART ----------
 async function getCustomerCart(userId) {
   const carts = await fetchFromDB(`/cart?userId=${userId}`);
   if (!carts.length || carts[0].items.length === 0) {
-    return "🛒 Aapki cart khali hai. Products add karke dekhiye! 😊";
+    return "🛒 Aapki cart khali hai.\n\n💡 Products add karke dekhiye! 😊";
   }
   const items = carts[0].items;
   const total = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
@@ -489,29 +591,30 @@ async function getCustomerCart(userId) {
   return `🛒 **Aapki Cart**\n\n${itemList}\n\n💰 **Total: ₹${total.toFixed(2)}**\n\n💡 "checkout" likhiye order karne ke liye.`;
 }
 
-// ---------- CUSTOMER: WISHLIST ----------
 async function getCustomerWishlist(userId) {
   const wishlist = await fetchFromDB(`/wishlist?userId=${userId}`);
   if (wishlist.length === 0) {
-    return "❤️ Aapki wishlist khali hai. Kuch products save karein! 😊";
+    return "❤️ Aapki wishlist khali hai.\n\n💡 Kuch products save karein! 😊";
   }
   const items = wishlist.map((w, i) => `${i + 1}. ${w.productName}`).join('\n');
   return `❤️ **Aapki Wishlist**\n\n${items}\n\n💡 "add to cart" likhiye product move karne ke liye.`;
 }
 
-// ---------- CUSTOMER: PROFILE ----------
 async function getCustomerProfile(userId) {
   const users = await fetchFromDB(`/users?id=${userId}`);
-  if (!users.length) return "Profile not found";
+  if (!users.length) return "👤 Profile not found";
   const u = users[0];
   return `👤 **Aapki Profile**\n\n📛 Name: ${u.fullName}\n📧 Email: ${u.email}\n📱 Mobile: ${u.mobile}\n👔 Role: ${u.role}\n\n💡 "edit profile" likhiye update karne ke liye.`;
 }
 
-// ---------- SELLER: PRODUCTS ----------
+// ============================================
+// 🏪 SELLER FUNCTIONS
+// ============================================
+
 async function getSellerProducts(userId) {
   const products = await fetchFromDB(`/products?sellerId=${userId}`);
   if (products.length === 0) {
-    return "📦 Aapne abhi tak koi product add nahi kiya hai. 'add product' likhiye!";
+    return "📦 Aapne abhi tak koi product add nahi kiya hai.\n\n💡 'add product' likhiye!";
   }
   const approved = products.filter(p => p.status === 'approved').length;
   const pending = products.filter(p => p.status === 'pending').length;
@@ -522,7 +625,6 @@ async function getSellerProducts(userId) {
   return `📦 **Aapke ${products.length} Products**\n\n${productList}\n\n📊 **Summary:**\n✅ Approved: ${approved}\n⏳ Pending: ${pending}\n❌ Rejected: ${rejected}`;
 }
 
-// ---------- SELLER: ORDERS ----------
 async function getSellerOrders(userId) {
   const products = await fetchFromDB(`/products?sellerId=${userId}`);
   const productIds = products.map(p => p.id);
@@ -547,7 +649,6 @@ async function getSellerOrders(userId) {
   return `📦 **Aapke ${sellerOrders.length} Orders**\n\n${orderList}\n\n📊 **Summary:**\n⏳ Pending: ${pending}\n🚚 Shipped: ${shipped}\n✅ Delivered: ${delivered}`;
 }
 
-// ---------- SELLER: STATS ----------
 async function getSellerStats(userId) {
   const products = await fetchFromDB(`/products?sellerId=${userId}`);
   const productIds = products.map(p => p.id);
@@ -559,11 +660,16 @@ async function getSellerStats(userId) {
 
   const totalSales = sellerOrders.reduce((sum, o) => sum + o.total, 0);
   const pendingOrders = sellerOrders.filter(o => o.status === 'pending').length;
+  const totalProducts = products.length;
+  const totalOrders = sellerOrders.length;
 
-  return `📊 **Seller Dashboard**\n\n📦 Total Products: ${products.length}\n📦 Total Orders: ${sellerOrders.length}\n💰 Total Sales: ₹${totalSales}\n⏳ Pending Orders: ${pendingOrders}`;
+  return `📊 **Seller Dashboard**\n\n📦 Total Products: ${totalProducts}\n📦 Total Orders: ${totalOrders}\n💰 Total Sales: ₹${totalSales}\n⏳ Pending Orders: ${pendingOrders}`;
 }
 
-// ---------- ADMIN ----------
+// ============================================
+// 👑 ADMIN FUNCTIONS
+// ============================================
+
 async function getAdminUsers() {
   const users = await fetchFromDB('/users');
   const customers = users.filter(u => u.role === 'customer').length;
@@ -602,7 +708,9 @@ async function getAdminDashboard() {
   return `📊 **Admin Dashboard**\n\n👥 Users: ${users.length}\n📦 Products: ${products.length}\n📦 Orders: ${orders.length}\n💰 Revenue: ₹${revenue}`;
 }
 
-// ---------- HELPER FUNCTIONS ----------
+// ============================================
+// 🛠️ HELPER FUNCTIONS
+// ============================================
 
 function getStatusEmoji(status) {
   const emojis = {
@@ -618,64 +726,56 @@ function getStatusEmoji(status) {
 
 function getGreetingResponse(role) {
   const greetings = {
-    admin: "Namaste Admin! 👑 Aaj platform kaisa chal raha hai? Stats dekhna hai?",
-    seller: "Namaste Seller! 🏪 Aaj naya product add karna hai ya orders check karne hain?",
-    customer: "Namaste! 👋 Orders check karna hai ya shopping karni hai?",
-    guest: "Namaste! 👋 ShopSphere mein aapka swagat hai! Login karke apni shopping ka maza lo!"
+    admin: "Namaste Admin! 👑 Aaj platform kaisa chal raha hai?\n\n💡 Commands: users, products, orders, revenue, dashboard",
+    seller: "Namaste Seller! 🏪 Aaj naya product add karna hai ya orders check karne hain?\n\n💡 Commands: my products, orders, dashboard",
+    customer: "Namaste! 👋 Orders check karna hai ya shopping karni hai?\n\n💡 Commands: my order, cart, wishlist, profile",
+    guest: "Namaste! 👋 ShopSphere mein aapka swagat hai!\n\n💡 Login karke apni shopping ka maza lo! 🛍️"
   };
   return greetings[role] || greetings.guest;
 }
 
 function getHelpResponse(role) {
   const helpMap = {
-    customer: "🆘 **Customer Help**\n• orders → Check orders\n• cart → View cart\n• wishlist → View wishlist\n• profile → View profile\n• track order → Track delivery\n• phone/laptop → Product recommendations",
-    seller: "🆘 **Seller Help**\n• my products → View products\n• orders → View orders\n• dashboard → Sales stats\n• add product → Add new product",
-    admin: "🆘 **Admin Help**\n• users → Total users\n• products → Total products\n• orders → Total orders\n• revenue → Total revenue\n• dashboard → Full overview"
+    customer: `🆘 **Customer Help**\n\n📦 orders / my order → Check orders\n🛒 cart → View cart\n❤️ wishlist → View wishlist\n👤 profile → View profile\n🚚 track order → Track delivery\n\n📱 phone → Phone recommendations\n💻 laptop → Laptop recommendations\n🎧 headphones → Headphone recommendations`,
+    
+    seller: `🆘 **Seller Help**\n\n📦 my products → View products\n📦 orders → View orders\n📊 dashboard → Sales stats\n➕ add product → Add new product\n✏️ edit product → Edit product\n🗑️ delete product → Delete product`,
+    
+    admin: `🆘 **Admin Help**\n\n👥 users / customers / sellers → User stats\n📦 products → Product stats\n📦 orders → Order stats\n💰 revenue → Total revenue\n📊 dashboard → Full overview`
   };
-  return helpMap[role] || "🆘 Help: orders, cart, wishlist, profile, products, dashboard";
-}
-
-function getProductRecommendation(msg) {
-  if (msg.includes('phone') || msg.includes('mobile')) {
-    return "📱 **Best Phones:**\n• iPhone 15: ₹80,000\n• Samsung S24: ₹75,000\n• OnePlus 12: ₹65,000\n• Nothing Phone 2: ₹40,000\n\nBudget batao aur recommend karun!";
-  }
-  if (msg.includes('laptop')) {
-    return "💻 **Best Laptops:**\n• MacBook Air M2: ₹85,000\n• Dell XPS: ₹1,20,000\n• HP Pavilion: ₹55,000\n• Lenovo ThinkPad: ₹70,000\n\nType batao - Gaming, Business, Student?";
-  }
-  if (msg.includes('headphone')) {
-    return "🎧 **Best Headphones:**\n• Sony WH-1000XM5: ₹30,000\n• Bose QC45: ₹25,000\n• Apple AirPods Pro: ₹24,000\n• Boat Nirvana: ₹3,000\n\nBudget batao!";
-  }
-  if (msg.includes('watch')) {
-    return "⌚ **Best Smartwatches:**\n• Apple Watch Ultra: ₹90,000\n• Samsung Watch 6: ₹40,000\n• OnePlus Watch: ₹15,000\n• Noise ColorFit: ₹4,000";
-  }
-  return "🛍️ Kya dhundh rahe ho? Phone, Laptop, Headphones, Smartwatch? Batao!";
+  return helpMap[role] || `🆘 **Help**\n\n💡 Aap puch sakte ho:\n• Orders, Cart, Wishlist, Profile\n• Product recommendations (Phone/Laptop/Headphones)\n• Jokes, Greetings, Bye\n\n💬 Kya puchna hai aapko?`;
 }
 
 function getJoke() {
   const jokes = [
-    "Santa: Sir, mujhe 10 saal ki naukri chahiye!\nUncle: Abhi 4 saal ki hai?\nSanta: 6 saal baad kaam aayegi! 😂",
-    "Doctor: Exercise karo!\nMain: Roz fridge se kitchen tak daudta hoon! 🏃‍♂️",
-    "Google se pucha: Mera best friend kaun hai?\nGoogle: Tera phone hai! 📱"
+    "😂 **Santa Joke:**\nSanta: Sir, mujhe 10 saal ki naukri chahiye!\nUncle: Abhi 4 saal ki hai?\nSanta: 6 saal baad kaam aayegi! 😂",
+    
+    "😄 **Tech Joke:**\nMaine Google se pucha: Mera best friend kaun hai?\nGoogle: Tera phone hai, roz 10 ghante uske saath bitata hai! 📱",
+    
+    "🏃‍♂️ **Fitness Joke:**\nDoctor: Exercise karo!\nMain: Roz fridge se kitchen tak daudta hoon! 😂",
+    
+    "🤔 **Math Joke:**\nTeacher: 2+2 kya hota hai?\nStudent: 4\nTeacher: Aur 2×2?\nStudent: 4\nTeacher: Toh 2+2 = 2×2?\nStudent: Haan, sab 4 hi hai! 😂",
+    
+    "🎭 **Santa Returns:**\nSanta: Sir, mujhe naukri chahiye!\nManager: Qualification?\nSanta: 10th fail!\nManager: Toh kya aayega?\nSanta: Kaam! 😂"
   ];
   return jokes[Math.floor(Math.random() * jokes.length)];
 }
 
 function getByeResponse(role) {
   const responses = {
-    admin: "Mast raho Admin! 👑 Phir milte hain!",
-    seller: "Mast raho Seller! 🏪 Phir milte hain!",
-    customer: "Mast raho! 👋 Phir milte hain!",
-    guest: "Mast raho! 👋 Login karke wapas aana!"
+    admin: "👑 Mast raho Admin! Platform sambhalte raho.\n\n💡 Phir milte hain! 😊",
+    seller: "🏪 Mast raho Seller! Products bechte raho.\n\n💡 Phir milte hain! 😊",
+    customer: "🛍️ Mast raho! Shopping karte raho.\n\n💡 Phir milte hain! 😊",
+    guest: "👋 Mast raho! Login karke wapas aana.\n\n💡 Phir milte hain! 😊"
   };
   return responses[role] || responses.guest;
 }
 
 function getDefaultResponse(role) {
   const defaults = {
-    admin: "Main hoon admin assistant! 👑 Users, Products, Orders, Revenue - kya dekhna hai?",
-    seller: "Main hoon seller assistant! 🏪 Products, Orders, Stats - kya dekhna hai?",
-    customer: "Main hoon assistant! 👋 Orders, Cart, Wishlist, Profile - kya dekhna hai?",
-    guest: "Main hoon ShopSphere AI! 🛍️ Login karke shopping karo! Kya help chahiye?"
+    admin: "👑 Main hoon admin assistant!\n\n💡 Kya dekhna chahenge - users, products, orders, revenue, dashboard?",
+    seller: "🏪 Main hoon seller assistant!\n\n💡 Kya dekhna chahenge - my products, orders, dashboard?",
+    customer: "👋 Main hoon customer assistant!\n\n💡 Kya dekhna chahenge - my order, cart, wishlist, profile?",
+    guest: "🛍️ Main hoon ShopSphere AI!\n\n💡 Kya help chahiye aapko? Product recommendations, Orders, Cart, Wishlist?"
   };
   return defaults[role] || defaults.guest;
 }
