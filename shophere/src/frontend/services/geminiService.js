@@ -516,6 +516,10 @@ async function getSmartResponse(message, userRole, userId) {
   if (msg.includes('koun se user ') || msg.includes('kis type ke user')|| 
       msg.includes('koun koun se ') ){
     return '1. customer , 2. seller kya aapko koi aur jaankaari chahiye';
+  } 
+   if (msg.includes('seller account kaise bnate hai')||
+      msg.includes('selleraccount create') ){
+    return 'register krte time seller ya customur ka option hai aap vha pr seller accoun create kr skte hai. ';
   }   
   // ========== DEFAULT ==========
   return getDefaultResponse(userRole);
