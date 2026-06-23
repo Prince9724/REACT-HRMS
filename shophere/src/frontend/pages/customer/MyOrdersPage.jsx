@@ -46,11 +46,15 @@ const MyOrdersPage = () => {
     );
   };
 
+  // ✅ FIXED: Image URL function
   const getImageUrl = (item) => {
+    // Agar item mein image hai toh use karo
     if (item.image && item.image.startsWith('http')) {
       return item.image;
     }
-    return `https://picsum.photos/80/80?random=${item.productId}`;
+    
+    // Product ID based consistent image (fallback)
+    return `https://picsum.photos/80/80?random=${item.productId || 1}`;
   };
 
   const formatPrice = (price) => {
@@ -127,7 +131,7 @@ const MyOrdersPage = () => {
                           alt={item.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.target.src = `https://picsum.photos/80/80?random=${item.productId}`;
+                            e.target.src = `https://picsum.photos/80/80?random=${item.productId || 1}`;
                           }}
                         />
                       </div>
@@ -176,7 +180,7 @@ const MyOrdersPage = () => {
                     <FiEye size={14} /> {selectedOrder === order ? 'Hide Details' : 'View Order Details'}
                   </button>
                   
-                  {/* Order Status Tracker - Amazon/Flipkart style */}
+                  {/* Order Status Tracker */}
                   {selectedOrder === order && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                       <h3 className="font-semibold text-gray-800 mb-4">Order Status</h3>

@@ -12,7 +12,7 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
     email: user?.email || '',
@@ -46,17 +46,17 @@ const CheckoutPage = () => {
     if (!formData.state) newErrors.state = 'State is required';
     if (!formData.pincode) newErrors.pincode = 'Pincode is required';
     else if (!/^\d{6}$/.test(formData.pincode)) newErrors.pincode = 'Enter valid 6-digit pincode';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handlePlaceOrder = async () => {
     if (!validateForm()) return;
-    
+
     setLoading(true);
-    
-    // Create order object
+
+    // ✅ Create order object with image
     const order = {
       id: Date.now(),
       orderId: `ORD${Date.now()}`,
@@ -75,7 +75,8 @@ const CheckoutPage = () => {
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        total: item.price * item.quantity
+        total: item.price * item.quantity,
+        image: item.image || ''  // ✅ IMAGE ADD KARI
       })),
       subtotal: cartTotal,
       shippingCharge: 0,
@@ -92,7 +93,7 @@ const CheckoutPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(order)
       });
-      
+
       if (response.ok) {
         clearCart();
         setOrderPlaced(true);
@@ -106,7 +107,6 @@ const CheckoutPage = () => {
       setLoading(false);
     }
   };
-
   if (cartItems.length === 0 && !orderPlaced) {
     navigate('/cart');
     return null;
@@ -136,7 +136,7 @@ const CheckoutPage = () => {
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Checkout</h1>
-        
+
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Shipping Form */}
           <div className="flex-1">
@@ -144,7 +144,7 @@ const CheckoutPage = () => {
               <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <FiMapPin className="text-primary" /> Shipping Information
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
@@ -161,7 +161,7 @@ const CheckoutPage = () => {
                   </div>
                   {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                   <input
@@ -173,7 +173,7 @@ const CheckoutPage = () => {
                     placeholder="Enter email"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number *</label>
                   <div className="relative">
@@ -189,7 +189,7 @@ const CheckoutPage = () => {
                   </div>
                   {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
                 </div>
-                
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
                   <div className="relative">
@@ -205,7 +205,7 @@ const CheckoutPage = () => {
                   </div>
                   {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
                   <input
@@ -218,7 +218,7 @@ const CheckoutPage = () => {
                   />
                   {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
                   <input
@@ -231,7 +231,7 @@ const CheckoutPage = () => {
                   />
                   {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
                   <input
@@ -247,12 +247,12 @@ const CheckoutPage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white rounded-xl shadow-md p-6 mt-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <FiCreditCard className="text-primary" /> Payment Method
               </h2>
-              
+
               <div className="space-y-3">
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
                   <input
@@ -266,7 +266,7 @@ const CheckoutPage = () => {
                   <span className="font-medium">Cash on Delivery</span>
                   <span className="text-sm text-gray-500">Pay when you receive the order</span>
                 </label>
-                
+
                 <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 opacity-50">
                   <input
                     type="radio"
@@ -281,12 +281,12 @@ const CheckoutPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Order Summary */}
           <div className="lg:w-96">
             <div className="bg-white rounded-xl shadow-md p-6 sticky top-24">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
-              
+
               <div className="space-y-3 max-h-64 overflow-y-auto mb-4">
                 {cartItems.map(item => (
                   <div key={item.id} className="flex justify-between text-sm">
@@ -295,7 +295,7 @@ const CheckoutPage = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="border-t border-gray-200 pt-3 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal</span>
@@ -310,7 +310,7 @@ const CheckoutPage = () => {
                   <span className="font-bold text-xl text-primary">${cartTotal.toFixed(2)}</span>
                 </div>
               </div>
-              
+
               <button
                 onClick={handlePlaceOrder}
                 disabled={loading}

@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
 import { useAuth } from '../../contexts/AuthContext';
-import { productService } from '../../services/productService';
-import { categoryService } from '../../services/categoryService';
 import { FiUsers, FiShoppingBag, FiPackage, FiDollarSign, FiClock, FiCheckCircle } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -12,6 +10,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalSellers: 0,
+    totalCustomers: 0,
     totalProducts: 0,
     pendingProducts: 0,
     totalOrders: 0,
@@ -24,28 +23,91 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchStats = async () => {
-    // Fetch real data from APIs
-    const productsResult = await productService.getApprovedProducts();
-    const pendingResult = await productService.getPendingProducts();
+    setLoading(true);
     
-    setStats({
-      totalUsers: 5,
-      totalSellers: 1,
-      totalProducts: productsResult.success ? productsResult.data.length : 0,
-      pendingProducts: pendingResult.success ? pendingResult.data.length : 0,
-      totalOrders: 0,
-      totalRevenue: 0
-    });
+    try {
+      // ✅ 1. USERS - Real data fetch karo
+      const usersRes = await fetch('http://localhost:5000/users');
+      const users = await usersRes.json();
+      
+      const totalUsers = users.length;
+      const totalSellers = users.filter(u => u.role === 'seller').length;
+      const totalCustomers = users.filter(u => u.role === 'customer').length;
+      
+      // ✅ 2. PRODUCTS - Real data fetch karo
+      const productsRes = await fetch('http://localhost:5000/products');
+      const products = await productsRes.json();
+      
+      const totalProducts = products.length;
+      const pendingProducts = products.filter(p => p.status === 'pending').length;
+      
+      // ✅ 3. ORDERS - Real data fetch karo
+      const ordersRes = await fetch('http://localhost:5000/orders');
+      const orders = await ordersRes.json();
+      
+      const totalOrders = orders.length;
+      const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+      
+      setStats({
+        totalUsers,
+        totalSellers,
+        totalCustomers,
+        totalProducts,
+        pendingProducts,
+        totalOrders,
+        totalRevenue
+      });
+      
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+    
     setLoading(false);
   };
 
   const statCards = [
-    { icon: FiUsers, label: 'Total Users', value: stats.totalUsers, color: 'bg-blue-500', link: '/admin/users' },
-    { icon: FiShoppingBag, label: 'Total Sellers', value: stats.totalSellers, color: 'bg-green-500', link: '/admin/sellers' },
-    { icon: FiPackage, label: 'Total Products', value: stats.totalProducts, color: 'bg-purple-500', link: '/admin/products' },
-    { icon: FiClock, label: 'Pending Products', value: stats.pendingProducts, color: 'bg-yellow-500', link: '/admin/pending-products' },
-    { icon: FiDollarSign, label: 'Total Revenue', value: `$${stats.totalRevenue}`, color: 'bg-primary', link: '#' },
-    { icon: FiCheckCircle, label: 'Total Orders', value: stats.totalOrders, color: 'bg-teal-500', link: '/admin/orders' },
+    { 
+      icon: FiUsers, 
+      label: 'Total Users', 
+      value: stats.totalUsers, 
+      color: 'bg-blue-500', 
+      link: '/admin/users' 
+    },
+    { 
+      icon: FiShoppingBag, 
+      label: 'Total Sellers', 
+      value: stats.totalSellers, 
+      color: 'bg-green-500', 
+      link: '/admin/sellers' 
+    },
+    { 
+      icon: FiPackage, 
+      label: 'Total Products', 
+      value: stats.totalProducts, 
+      color: 'bg-purple-500', 
+      link: '/admin/products' 
+    },
+    { 
+      icon: FiClock, 
+      label: 'Pending Products', 
+      value: stats.pendingProducts, 
+      color: 'bg-yellow-500', 
+      link: '/admin/pending-products' 
+    },
+    { 
+      icon: FiDollarSign, 
+      label: 'Total Revenue', 
+      value: `₹${stats.totalRevenue}`, 
+      color: 'bg-primary', 
+      link: '#' 
+    },
+    { 
+      icon: FiCheckCircle, 
+      label: 'Total Orders', 
+      value: stats.totalOrders, 
+      color: 'bg-teal-500', 
+      link: '/admin/orders' 
+    },
   ];
 
   if (loading) {
@@ -104,14 +166,14 @@ const AdminDashboard = () => {
               <FiClock className="text-yellow-500" size={24} />
             </Link>
             <Link
-              to="/admin/categories"
+              to="/admin/users"
               className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between hover:bg-blue-100 transition"
             >
               <div>
-                <p className="font-semibold">Manage Categories</p>
-                <p className="text-sm text-gray-600">Add, edit or remove product categories</p>
+                <p className="font-semibold">Manage Users</p>
+                <p className="text-sm text-gray-600">View and manage all users</p>
               </div>
-              <FiPackage className="text-blue-500" size={24} />
+              <FiUsers className="text-blue-500" size={24} />
             </Link>
           </div>
         </div>

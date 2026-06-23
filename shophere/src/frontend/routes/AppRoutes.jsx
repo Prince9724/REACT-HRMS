@@ -31,6 +31,8 @@ import UserManagementPage from '../pages/admin/UserManagementPage';
 import SellerManagementPage from '../pages/admin/SellerManagementPage';
 import CategoryManagementPage from '../pages/admin/CategoryManagementPage';
 
+import ProductManagementPage from '../pages/admin/ProductManagementPage';
+import OrderManagementPage from '../pages/admin/OrderManagementPage';
 function AppRoutes() {
   return (
     <Routes>
@@ -67,6 +69,8 @@ function AppRoutes() {
         <Route path="/admin/users" element={<UserManagementPage />} />
         <Route path="/admin/sellers" element={<SellerManagementPage />} />
         <Route path="/admin/categories" element={<CategoryManagementPage />} />
+         <Route path="/admin/products" element={<ProductManagementPage />} /> 
+  <Route path="/admin/orders" element={<OrderManagementPage />} />
       </Route>
     </Routes>
   );

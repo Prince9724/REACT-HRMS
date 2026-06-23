@@ -1046,6 +1046,36 @@
       "paymentMethod": "Cash on Delivery",
       "status": "accepted",
       "createdAt": "2026-06-20T06:50:01.162Z"
+    },
+    {
+      "id": 1782142715294,
+      "orderId": "ORD1782142715294",
+      "userId": 5,
+      "customerName": "prince",
+      "customerEmail": "prince@gmail.com",
+      "customerMobile": "1234567890",
+      "shippingAddress": {
+        "address": "prashoy prime dindol surat",
+        "city": "surat",
+        "state": "gujrat",
+        "pincode": "123456"
+      },
+      "items": [
+        {
+          "productId": 26,
+          "name": "Puma Men's Polo T-Shirt",
+          "price": 1529,
+          "quantity": 1,
+          "total": 1529,
+          "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+        }
+      ],
+      "subtotal": 1529,
+      "shippingCharge": 0,
+      "total": 1529,
+      "paymentMethod": "Cash on Delivery",
+      "status": "accepted",
+      "createdAt": "2026-06-22T15:38:35.294Z"
     }
   ],
   "reviews": [

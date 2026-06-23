@@ -509,7 +509,14 @@ async function getSmartResponse(message, userRole, userId) {
       msg.includes('benefit') || msg.includes('advantage')) {
     return "🌟 **Why ShopSphere?**\n\n✅ Multiple Sellers - Best prices\n✅ Easy Returns - 7 days return\n✅ Secure Payments - COD & Card\n✅ Fast Delivery - 3-5 days\n✅ 24/7 Support - Always available\n\n💡 Kya aap seller ban-na chahte ho ya customer?";
   }
-
+   if (msg.includes(' platform') || msg.includes('is platform ke baare me kya jaante h')|| 
+      msg.includes('tum koun ho') ){
+    return "mai shopsphere ka ai assistance hu Ye platform e eccomerce platfom hai yha pr do type ke user register kr skte hai ";
+  }
+  if (msg.includes('koun se user ') || msg.includes('kis type ke user')|| 
+      msg.includes('koun koun se ') ){
+    return '1. customer , 2. seller kya aapko koi aur jaankaari chahiye';
+  }   
   // ========== DEFAULT ==========
   return getDefaultResponse(userRole);
 }
