@@ -282,7 +282,11 @@
 // COMPLETE OFFLINE CHATBOT - No API, 100% Code
 // ============================================
 
-import api from './api';
+import { dbService } from './dbService';
+
+// ============================================
+// COMPLETE CHATBOT - DB Powered (No API)
+// ============================================
 
 export const geminiService = {
   async sendMessage(message, context = {}) {
@@ -304,7 +308,7 @@ export const geminiService = {
 };
 
 // ============================================
-// 🧠 SMART RESPONSE ENGINE (100% Code)
+// 🧠 SMART RESPONSE ENGINE
 // ============================================
 
 async function getSmartResponse(message, userRole, userId) {
@@ -509,18 +513,7 @@ async function getSmartResponse(message, userRole, userId) {
       msg.includes('benefit') || msg.includes('advantage')) {
     return "🌟 **Why ShopSphere?**\n\n✅ Multiple Sellers - Best prices\n✅ Easy Returns - 7 days return\n✅ Secure Payments - COD & Card\n✅ Fast Delivery - 3-5 days\n✅ 24/7 Support - Always available\n\n💡 Kya aap seller ban-na chahte ho ya customer?";
   }
-   if (msg.includes(' platform') || msg.includes('is platform ke baare me kya jaante h')|| 
-      msg.includes('tum koun ho') ){
-    return "mai shopsphere ka ai assistance hu Ye platform e eccomerce platfom hai yha pr do type ke user register kr skte hai ";
-  }
-  if (msg.includes('koun se user ') || msg.includes('kis type ke user')|| 
-      msg.includes('koun koun se ') ){
-    return '1. customer , 2. seller kya aapko koi aur jaankaari chahiye';
-  } 
-   if (msg.includes('seller account kaise bnate hai')||
-      msg.includes('selleraccount create') ){
-    return 'register krte time seller ya customur ka option hai aap vha pr seller accoun create kr skte hai. ';
-  }   
+
   // ========== DEFAULT ==========
   return getDefaultResponse(userRole);
 }
@@ -529,22 +522,9 @@ async function getSmartResponse(message, userRole, userId) {
 // 📦 DB FETCH FUNCTIONS
 // ============================================
 
-async function fetchFromDB(endpoint) {
-  try {
-    const response = await api.get(endpoint);
-    return response.data;
-  } catch (error) {
-    console.error("DB Error:", error);
-    return [];
-  }
-}
-
-// ============================================
-// 👤 CUSTOMER FUNCTIONS
-// ============================================
-
+// ---------- CUSTOMER ----------
 async function getCustomerOrders(userId) {
-  const orders = await fetchFromDB(`/orders?userId=${userId}`);
+  const orders = await dbService.getOrders(userId);
   if (orders.length === 0) {
     return "📦 Aapne abhi tak koi order nahi kiya hai.\n\n💡 Shopping karke dekhiye! 😊";
   }
@@ -590,7 +570,7 @@ async function getCustomerOrders(userId) {
 }
 
 async function getCustomerCart(userId) {
-  const carts = await fetchFromDB(`/cart?userId=${userId}`);
+  const carts = await dbService.getCart(userId);
   if (!carts.length || carts[0].items.length === 0) {
     return "🛒 Aapki cart khali hai.\n\n💡 Products add karke dekhiye! 😊";
   }
@@ -603,7 +583,7 @@ async function getCustomerCart(userId) {
 }
 
 async function getCustomerWishlist(userId) {
-  const wishlist = await fetchFromDB(`/wishlist?userId=${userId}`);
+  const wishlist = await dbService.getWishlist(userId);
   if (wishlist.length === 0) {
     return "❤️ Aapki wishlist khali hai.\n\n💡 Kuch products save karein! 😊";
   }
@@ -612,18 +592,15 @@ async function getCustomerWishlist(userId) {
 }
 
 async function getCustomerProfile(userId) {
-  const users = await fetchFromDB(`/users?id=${userId}`);
-  if (!users.length) return "👤 Profile not found";
-  const u = users[0];
-  return `👤 **Aapki Profile**\n\n📛 Name: ${u.fullName}\n📧 Email: ${u.email}\n📱 Mobile: ${u.mobile}\n👔 Role: ${u.role}\n\n💡 "edit profile" likhiye update karne ke liye.`;
+  const users = await dbService.getUsers();
+  const user = users.find(u => u.id === userId);
+  if (!user) return "👤 Profile not found";
+  return `👤 **Aapki Profile**\n\n📛 Name: ${user.fullName}\n📧 Email: ${user.email}\n📱 Mobile: ${user.mobile}\n👔 Role: ${user.role}\n\n💡 "edit profile" likhiye update karne ke liye.`;
 }
 
-// ============================================
-// 🏪 SELLER FUNCTIONS
-// ============================================
-
+// ---------- SELLER ----------
 async function getSellerProducts(userId) {
-  const products = await fetchFromDB(`/products?sellerId=${userId}`);
+  const products = await dbService.getProducts(`?sellerId=${userId}`);
   if (products.length === 0) {
     return "📦 Aapne abhi tak koi product add nahi kiya hai.\n\n💡 'add product' likhiye!";
   }
@@ -637,9 +614,9 @@ async function getSellerProducts(userId) {
 }
 
 async function getSellerOrders(userId) {
-  const products = await fetchFromDB(`/products?sellerId=${userId}`);
+  const products = await dbService.getProducts(`?sellerId=${userId}`);
   const productIds = products.map(p => p.id);
-  const allOrders = await fetchFromDB('/orders');
+  const allOrders = await dbService.getAllOrders();
   
   const sellerOrders = allOrders.filter(order =>
     order.items.some(item => productIds.includes(item.productId))
@@ -661,9 +638,9 @@ async function getSellerOrders(userId) {
 }
 
 async function getSellerStats(userId) {
-  const products = await fetchFromDB(`/products?sellerId=${userId}`);
+  const products = await dbService.getProducts(`?sellerId=${userId}`);
   const productIds = products.map(p => p.id);
-  const allOrders = await fetchFromDB('/orders');
+  const allOrders = await dbService.getAllOrders();
   
   const sellerOrders = allOrders.filter(order =>
     order.items.some(item => productIds.includes(item.productId))
@@ -677,12 +654,9 @@ async function getSellerStats(userId) {
   return `📊 **Seller Dashboard**\n\n📦 Total Products: ${totalProducts}\n📦 Total Orders: ${totalOrders}\n💰 Total Sales: ₹${totalSales}\n⏳ Pending Orders: ${pendingOrders}`;
 }
 
-// ============================================
-// 👑 ADMIN FUNCTIONS
-// ============================================
-
+// ---------- ADMIN ----------
 async function getAdminUsers() {
-  const users = await fetchFromDB('/users');
+  const users = await dbService.getUsers();
   const customers = users.filter(u => u.role === 'customer').length;
   const sellers = users.filter(u => u.role === 'seller').length;
   const admins = users.filter(u => u.role === 'admin').length;
@@ -690,7 +664,7 @@ async function getAdminUsers() {
 }
 
 async function getAdminProducts() {
-  const products = await fetchFromDB('/products');
+  const products = await dbService.getProducts();
   const approved = products.filter(p => p.status === 'approved').length;
   const pending = products.filter(p => p.status === 'pending').length;
   const rejected = products.filter(p => p.status === 'rejected').length;
@@ -698,7 +672,7 @@ async function getAdminProducts() {
 }
 
 async function getAdminOrders() {
-  const orders = await fetchFromDB('/orders');
+  const orders = await dbService.getAllOrders();
   const pending = orders.filter(o => o.status === 'pending').length;
   const shipped = orders.filter(o => o.status === 'shipped').length;
   const delivered = orders.filter(o => o.status === 'delivered').length;
@@ -706,15 +680,15 @@ async function getAdminOrders() {
 }
 
 async function getAdminRevenue() {
-  const orders = await fetchFromDB('/orders');
+  const orders = await dbService.getAllOrders();
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
   return `💰 **Total Revenue:** ₹${totalRevenue}`;
 }
 
 async function getAdminDashboard() {
-  const users = await fetchFromDB('/users');
-  const products = await fetchFromDB('/products');
-  const orders = await fetchFromDB('/orders');
+  const users = await dbService.getUsers();
+  const products = await dbService.getProducts();
+  const orders = await dbService.getAllOrders();
   const revenue = orders.reduce((sum, o) => sum + o.total, 0);
   return `📊 **Admin Dashboard**\n\n👥 Users: ${users.length}\n📦 Products: ${products.length}\n📦 Orders: ${orders.length}\n💰 Revenue: ₹${revenue}`;
 }
@@ -759,13 +733,9 @@ function getHelpResponse(role) {
 function getJoke() {
   const jokes = [
     "😂 **Santa Joke:**\nSanta: Sir, mujhe 10 saal ki naukri chahiye!\nUncle: Abhi 4 saal ki hai?\nSanta: 6 saal baad kaam aayegi! 😂",
-    
     "😄 **Tech Joke:**\nMaine Google se pucha: Mera best friend kaun hai?\nGoogle: Tera phone hai, roz 10 ghante uske saath bitata hai! 📱",
-    
     "🏃‍♂️ **Fitness Joke:**\nDoctor: Exercise karo!\nMain: Roz fridge se kitchen tak daudta hoon! 😂",
-    
     "🤔 **Math Joke:**\nTeacher: 2+2 kya hota hai?\nStudent: 4\nTeacher: Aur 2×2?\nStudent: 4\nTeacher: Toh 2+2 = 2×2?\nStudent: Haan, sab 4 hi hai! 😂",
-    
     "🎭 **Santa Returns:**\nSanta: Sir, mujhe naukri chahiye!\nManager: Qualification?\nSanta: 10th fail!\nManager: Toh kya aayega?\nSanta: Kaam! 😂"
   ];
   return jokes[Math.floor(Math.random() * jokes.length)];

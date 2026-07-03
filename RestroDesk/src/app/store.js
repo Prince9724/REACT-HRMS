@@ -7,22 +7,23 @@ import reportReducer from '../features/reports/reportSlice';
 import tablesReducer from '../features/tables/tablesSlice';
 import leaveReducer from '../features/leave/leaveSlice';
 
-// Load state from localStorage
+// ✅ Safe localStorage load
 const loadState = () => {
   try {
     const serializedState = localStorage.getItem('reduxState');
     if (serializedState === null) return undefined;
-    return JSON.parse(serializedState);
+    const parsed = JSON.parse(serializedState);
+    console.log('📂 State loaded from localStorage');
+    return parsed;
   } catch (err) {
     console.error('Error loading state:', err);
     return undefined;
   }
 };
 
-// Save state to localStorage
+// ✅ Safe localStorage save
 const saveState = (state) => {
   try {
-    // Only save necessary slices (exclude error states)
     const stateToSave = {
       auth: { user: state.auth.user, isLoading: false, error: null },
       menu: { items: state.menu.items, isLoading: false, error: null },
@@ -32,8 +33,7 @@ const saveState = (state) => {
       tables: { list: state.tables.list, isLoading: false, error: null },
       leave: state.leave,
     };
-    const serializedState = JSON.stringify(stateToSave);
-    localStorage.setItem('reduxState', serializedState);
+    localStorage.setItem('reduxState', JSON.stringify(stateToSave));
   } catch (err) {
     console.error('Error saving state:', err);
   }
@@ -54,24 +54,24 @@ export const store = configureStore({
   preloadedState: persistedState,
 });
 
-// ✅ IMPORTANT: Manually dispatch user after store creation
+// ✅ Force rehydrate user from localStorage on app load
 const initializeAuth = () => {
   const state = store.getState();
   if (state.auth?.user) {
-    // User already in store, do nothing
-    console.log('User already loaded:', state.auth.user);
+    console.log('👤 User already loaded:', state.auth.user.name);
+  } else if (persistedState?.auth?.user) {
+    store.dispatch(setUser(persistedState.auth.user));
+    console.log('👤 User loaded from persistence:', persistedState.auth.user.name);
   } else {
-    // Try to load from persisted state
-    if (persistedState?.auth?.user) {
-      store.dispatch(setUser(persistedState.auth.user));
-      console.log('User loaded from persistence:', persistedState.auth.user);
-    }
+    console.log('👤 No user found');
   }
 };
 
 initializeAuth();
 
-// Subscribe to save state on changes
+// ✅ Save state on every change
 store.subscribe(() => {
   saveState(store.getState());
 });
+
+console.log('🚀 Store initialized');
