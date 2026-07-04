@@ -280,6 +280,7 @@ const EditProductPage = () => {
           </button>
         </form>
       </div>
+      
       <Footer />
     </>
   );

@@ -89,6 +89,16 @@
       "isActive": true,
       "createdAt": "2026-06-14T15:08:41.612Z",
       "id": 9
+    },
+    {
+      "fullName": "hismashu",
+      "email": "himanshu@gmail.com",
+      "password": "123",
+      "mobile": "1234567890",
+      "role": "seller",
+      "isActive": true,
+      "createdAt": "2026-07-04T07:51:56.841Z",
+      "id": 10
     }
   ],
   "products": [
@@ -901,6 +911,25 @@
       "totalReviews": 189,
       "createdAt": "2026-04-06T14:40:00.000Z",
       "id": 37
+    },
+    {
+      "name": "headphone",
+      "category": "Electronics",
+      "brand": "boat",
+      "description": "boat comapny headphone",
+      "price": 1900,
+      "discount": 10,
+      "stockQuantity": 8,
+      "images": [],
+      "finalPrice": 1710,
+      "sellerId": 10,
+      "sellerName": "hismashu",
+      "slug": "headphone",
+      "status": "approved",
+      "rating": 0,
+      "totalReviews": 0,
+      "createdAt": "2026-07-04T07:53:22.858Z",
+      "id": 38
     }
   ],
   "categories": [
