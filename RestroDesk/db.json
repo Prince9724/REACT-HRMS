@@ -1,1374 +1,1374 @@
-{
-  "users": [
-    {
-      "id": 1,
-      "name": "Manager One",
-      "email": "manager@resto.com",
-      "password": "123",
-      "role": "manager",
-      "contact": "9876543210",
-      "salary": 50000,
-      "joiningDate": "2026-06-01",
-      "joiningTime": "09:00:00 AM"
-    },
-    {
-      "id": 2,
-      "name": "Waiter A",
-      "email": "waiter@resto.com",
-      "password": "123",
-      "role": "employee",
-      "contact": "9876543222",
-      "salary": 15000,
-      "joiningDate": "2026-06-01",
-      "joiningTime": "09:30:00 AM",
-      "isOnLeave": false
-    },
-    {
-      "id": 3,
-      "name": "dipu",
-      "email": "dipu@gmail.com",
-      "password": "123",
-      "role": "employee",
-      "contact": "1234567890",
-      "salary": 10000,
-      "joiningDate": "2026-06-01",
-      "joiningTime": "10:00:00 AM",
-      "isOnLeave": false
-    },
-    {
-      "name": "employe",
-      "email": "emp@gmail.com",
-      "password": "123",
-      "role": "employee",
-      "contact": "1234567890",
-      "salary": "15000",
-      "isOnLeave": false,
-      "joiningDate": "2026-06-03",
-      "joiningTime": "7:24:47 pm",
-      "id": 4
-    }
-  ],
-  "menu": [
-    {
-      "id": 1,
-      "name": "Paneer Butter Masala",
-      "category": "Main",
-      "price": 250,
-      "taxRate": 5,
-      "available": true,
-      "description": "Creamy tomato gravy with paneer",
-      "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=200&h=150&fit=crop"
-    },
-    {
-      "id": 2,
-      "name": "Samosa",
-      "category": "Starter",
-      "price": 20,
-      "taxRate": 0,
-      "available": true,
-      "description": "Crispy samosa",
-      "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200&h=150&fit=crop"
-    },
-    {
-      "id": 3,
-      "name": "Cold coffee ",
-      "category": "Beverage",
-      "price": 50,
-      "taxRate": 0,
-      "available": true,
-      "description": "Chilled soft coffee",
-      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_mKVSVjZ3PneZeA33dW8Wk1WzTf65YP_ScA&s"
-    },
-    {
-      "id": 4,
-      "name": "Pizza",
-      "category": "Main",
-      "price": 199,
-      "taxRate": 5,
-      "available": true,
-      "description": "Tasty pizza",
-      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTs13kyoQZGlwBCUi73VW5UJvtV93NT5iEonQ&s"
-    },
-    {
-      "id": 5,
-      "name": "Dosa",
-      "category": "Main",
-      "price": 150,
-      "taxRate": 0,
-      "available": true,
-      "description": "Masala & cheese dosa",
-      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9tXNH_xCEYOU9wjkNFLKfCHUf1mvc8QmR4g&s"
-    },
-    {
-      "name": "idle",
-      "category": "Main",
-      "price": 70,
-      "taxRate": 5,
-      "available": true,
-      "description": "spicy",
-      "image": "https://media.istockphoto.com/id/638506124/photo/idli-with-coconut-chutney-and-sambhar.jpg?s=612x612&w=0&k=20&c=ze1ngBM0LY4w9aqWx_tGe2vTAr4uf36elveTDZ83fgw=",
-      "id": 6
-    },
-    {
-      "name": "aaloopuri",
-      "category": "Starter",
-      "price": 30,
-      "taxRate": 5,
-      "available": true,
-      "description": "cheese",
-      "image": "",
-      "id": 8
-    },
-    {
-      "name": "coffee",
-      "category": "Starter",
-      "price": 70,
-      "taxRate": 5,
-      "available": true,
-      "description": "premuim coffee",
-      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZb632q3t-D6iN3TiW863qXQv_ObPEy_1gfQ&s",
-      "id": 9
-    }
-  ],
-  "tables": [
-    {
-      "id": 1,
-      "number": 1,
-      "assignedTo": 2,
-      "status": "available"
-    },
-    {
-      "id": 2,
-      "number": 2,
-      "assignedTo": 3,
-      "status": "available"
-    },
-    {
-      "id": 3,
-      "number": 3,
-      "assignedTo": 4,
-      "status": "available"
-    },
-    {
-      "number": 4,
-      "assignedTo": 2,
-      "id": 4
-    },
-    {
-      "number": 5,
-      "assignedTo": 3,
-      "id": 5
-    },
-    {
-      "number": 6,
-      "assignedTo": 4,
-      "id": 6
-    }
-  ],
-  "orders": [
-    {
-      "id": "65615a90-33f0-4b61-a608-e249480a8cb0",
-      "customerName": "Gaurav Bhai",
-      "customerMobile": "9876543210",
-      "tableNumber": 7,
-      "items": [
-        {
-          "menuItemId": 6,
-          "name": "Garlic Naan",
-          "quantity": 1,
-          "price": 40,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold Drink",
-          "quantity": 3,
-          "price": 50,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 2,
-          "price": 250,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 690,
-      "gst": 34.5,
-      "serviceCharge": 34.5,
-      "discount": 0,
-      "totalAmount": 759,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-01T09:43:56.443Z"
-    },
-    {
-      "id": "fd27b2a2-ac39-4c56-bc0f-d6df6d60e75e",
-      "customerName": "Roshan Bhai",
-      "customerMobile": "9876543111",
-      "tableNumber": 12,
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 6,
-          "name": "Garlic Naan",
-          "quantity": 1,
-          "price": 40,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold Drink",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 340,
-      "gst": 17,
-      "serviceCharge": 17,
-      "discount": 0,
-      "totalAmount": 374,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-01T09:58:22.017Z"
-    },
-    {
-      "id": "aa81f83a-cbc0-43b0-9cbb-8d6d76fa3fbd",
-      "customerName": "aaaa",
-      "customerMobile": "1234567890",
-      "tableNumber": 8,
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold Drink",
-          "quantity": 2,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 350,
-      "gst": 17.5,
-      "serviceCharge": 17.5,
-      "discount": 0,
-      "totalAmount": 385,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-01T11:07:04.961Z"
-    },
-    {
-      "id": "f3a90931-41d5-4a36-8720-cfbf36118c73",
-      "customerName": "bbbbbbbbbbb",
-      "customerMobile": "1234567890",
-      "tableNumber": 3,
-      "items": [
-        {
-          "menuItemId": 6,
-          "name": "Garlic Naan",
-          "quantity": 2,
-          "price": 40,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 2,
-          "price": 250,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 580,
-      "gst": 29,
-      "serviceCharge": 29,
-      "discount": 0,
-      "totalAmount": 638,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-01T11:09:27.951Z"
-    },
-    {
-      "id": "5ec0e9b6-a5ed-48d4-aee1-cc560d81b37a",
-      "customerName": "ayush",
-      "customerMobile": "1234567890",
-      "tableNumber": 5,
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 1,
-          "price": 40,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold Drink",
-          "quantity": 2,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 390,
-      "gst": 19.5,
-      "serviceCharge": 19.5,
-      "discount": 0,
-      "totalAmount": 429,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-06-01T15:30:04.056Z"
-    },
-    {
-      "id": "001cf0f0-53de-4924-9e4d-9cb6f6031f23",
-      "customerName": "divya",
-      "customerMobile": "1234567890",
-      "tableNumber": 8,
-      "items": [
-        {
-          "menuItemId": 5,
-          "name": "Dosa",
-          "quantity": 1,
-          "price": 150,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 2,
-          "price": 40,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 1,
-          "price": 199,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 429,
-      "gst": 21.45,
-      "serviceCharge": 21.45,
-      "discount": 0,
-      "totalAmount": 471.9,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-06-01T15:35:45.042Z"
-    },
-    {
-      "id": "dbe8aa36-98c0-44d8-abca-0cc53e53db36",
-      "customerName": "qq",
-      "customerMobile": "1234567890",
-      "tableNumber": 3,
-      "items": [
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 1,
-          "price": 199,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold Drink",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 249,
-      "gst": 12.45,
-      "serviceCharge": 12.450000000000001,
-      "discount": 0,
-      "totalAmount": 273.9,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-01T16:17:06.840Z"
-    },
-    {
-      "id": "fb874942-c62d-4ff1-bc37-84e5ec333b83",
-      "customerName": "shivam",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "notes": "spicy",
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 1,
-          "price": 40,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 290,
-      "gst": 14.5,
-      "serviceCharge": 14.5,
-      "discount": 0,
-      "totalAmount": 319,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-02T07:01:51.786Z"
-    },
-    {
-      "id": "87dcaf81-50d7-4a66-b928-459c9763e209",
-      "customerName": "aaaaa",
-      "customerMobile": "1234567890",
-      "tableNumber": 4,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 6,
-          "name": "idle",
-          "quantity": 1,
-          "price": 70,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 1,
-          "price": 199,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 519,
-      "gst": 25.95,
-      "serviceCharge": 25.950000000000003,
-      "discount": 0,
-      "totalAmount": 570.9000000000001,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-02T08:20:14.558Z"
-    },
-    {
-      "id": "cc742618-587a-43fd-8250-cbe38a450f83",
-      "customerName": "yash",
-      "customerMobile": "1111234567890",
-      "tableNumber": 4,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 1,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 6,
-          "name": "idle",
-          "quantity": 1,
-          "price": 70,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 140,
-      "gst": 7,
-      "serviceCharge": 7,
-      "discount": 0,
-      "totalAmount": 154,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-02T08:44:04.566Z"
-    },
-    {
-      "id": "75ef3da4-e27a-43d2-91bb-5057c34d4d1f",
-      "customerName": "aman",
-      "customerMobile": "1234567890",
-      "tableNumber": 2,
-      "notes": "spicy",
-      "items": [
-        {
-          "menuItemId": 6,
-          "name": "idle",
-          "quantity": 1,
-          "price": 70,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 2,
-          "price": 199,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 518,
-      "gst": 25.9,
-      "serviceCharge": 25.900000000000002,
-      "discount": 0,
-      "totalAmount": 569.8,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-06-02T12:37:32.273Z"
-    },
-    {
-      "id": "b641f511-b0d3-4844-be3a-297c5df051ae",
-      "customerName": "prince",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "notes": "extra cheesy",
-      "items": [
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 3,
-          "price": 199,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 6,
-          "name": "idle",
-          "quantity": 2,
-          "price": 70,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 5,
-          "name": "Dosa",
-          "quantity": 3,
-          "price": 150,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 1237,
-      "gst": 61.85,
-      "serviceCharge": 61.85,
-      "discount": 0,
-      "totalAmount": 1360.6999999999998,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-02T13:22:38.248Z"
-    },
-    {
-      "id": "bf916009-2fe6-4045-b8e1-174bc070ec34",
-      "customerName": "ramu",
-      "customerMobile": "1234567890",
-      "tableNumber": 3,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 3,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 110,
-      "gst": 5.5,
-      "serviceCharge": 5.5,
-      "discount": 0,
-      "totalAmount": 121,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-06-02T16:03:04.137Z"
-    },
-    {
-      "id": "757f4898-ee74-44f6-8933-16f7eca50447",
-      "customerName": "bhavin ",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "notes": "extra cheese",
-      "items": [
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 2,
-          "price": 199,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 6,
-          "name": "idle",
-          "quantity": 1,
-          "price": 70,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 518,
-      "gst": 25.9,
-      "serviceCharge": 25.900000000000002,
-      "discount": 0,
-      "totalAmount": 569.8,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-03T06:02:43.992Z"
-    },
-    {
-      "id": "0011f761-bad8-49b3-ad0a-4cc89f464908",
-      "customerName": "krihna",
-      "customerMobile": "1234567890",
-      "tableNumber": 2,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 1,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 1,
-          "price": 199,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 2,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 319,
-      "gst": 15.95,
-      "serviceCharge": 15.950000000000001,
-      "discount": 0,
-      "totalAmount": 350.9,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-06-03T06:46:39.477Z"
-    },
-    {
-      "id": "8ad8ecae-70f1-44fe-83c2-d1f84c2564ee",
-      "customerName": "raushan ",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 2,
-          "price": 20,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 90,
-      "gst": 4.5,
-      "serviceCharge": 4.5,
-      "discount": 0,
-      "totalAmount": 99,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-03T07:48:51.875Z"
-    },
-    {
-      "id": "3a87caed-18a2-4fd6-bd56-19674068f81a",
-      "customerName": "custummer",
-      "customerMobile": "1234567899",
-      "tableNumber": 1,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 2,
-          "price": 50,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 5,
-          "name": "Dosa",
-          "quantity": 2,
-          "price": 150,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 400,
-      "gst": 20,
-      "serviceCharge": 20,
-      "discount": 0,
-      "totalAmount": 440,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-03T09:22:48.890Z"
-    },
-    {
-      "id": "a3321dac-8e85-4b0b-b4e7-0802d23a44a8",
-      "customerName": "sachin",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 1,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 8,
-          "name": "aaloopuri",
-          "quantity": 2,
-          "price": 30,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 80,
-      "gst": 4,
-      "serviceCharge": 4,
-      "discount": 0,
-      "totalAmount": 88,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-03T11:44:24.174Z"
-    },
-    {
-      "id": "e4b0b77a-3cff-4c65-83ed-ec0989310d4a",
-      "customerName": "customer-1",
-      "customerMobile": "1234567890",
-      "tableNumber": 4,
-      "notes": "extra cheese",
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 3,
-          "price": 20,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 310,
-      "gst": 15.5,
-      "serviceCharge": 15.5,
-      "discount": 0,
-      "totalAmount": 341,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-03T13:52:30.298Z"
-    },
-    {
-      "id": "fba66754-d806-4a96-9e6b-1f35e5aa7ecf",
-      "customerName": "customer",
-      "customerMobile": "1234579000",
-      "tableNumber": 1,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 2,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 9,
-          "name": "coffee",
-          "quantity": 1,
-          "price": 70,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 360,
-      "gst": 18,
-      "serviceCharge": 18,
-      "discount": 0,
-      "totalAmount": 396,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-04T07:42:03.290Z"
-    },
-    {
-      "id": "dummy_apr_1",
-      "customerName": "Demo Single",
-      "customerMobile": "9999999991",
-      "tableNumber": 1,
-      "numberOfPeople": 1,
-      "items": [],
-      "subtotal": 450,
-      "gst": 22.5,
-      "serviceCharge": 22.5,
-      "discount": 0,
-      "totalAmount": 495,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-04-05T10:30:00.000Z"
-    },
-    {
-      "id": "dummy_apr_2",
-      "customerName": "Demo Couple",
-      "customerMobile": "9999999992",
-      "tableNumber": 2,
-      "numberOfPeople": 2,
-      "items": [],
-      "subtotal": 850,
-      "gst": 42.5,
-      "serviceCharge": 42.5,
-      "discount": 0,
-      "totalAmount": 935,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-04-12T12:00:00.000Z"
-    },
-    {
-      "id": "dummy_apr_3",
-      "customerName": "Demo Family",
-      "customerMobile": "9999999993",
-      "tableNumber": 3,
-      "numberOfPeople": 4,
-      "items": [],
-      "subtotal": 1250,
-      "gst": 62.5,
-      "serviceCharge": 62.5,
-      "discount": 0,
-      "totalAmount": 1375,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-04-18T13:15:00.000Z"
-    },
-    {
-      "id": "dummy_apr_4",
-      "customerName": "Demo Party",
-      "customerMobile": "9999999994",
-      "tableNumber": 4,
-      "numberOfPeople": 6,
-      "items": [],
-      "subtotal": 1850,
-      "gst": 92.5,
-      "serviceCharge": 92.5,
-      "discount": 0,
-      "totalAmount": 2035,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-04-25T14:45:00.000Z"
-    },
-    {
-      "id": "dummy_may_1",
-      "customerName": "May Single",
-      "customerMobile": "9999999995",
-      "tableNumber": 5,
-      "numberOfPeople": 1,
-      "items": [],
-      "subtotal": 480,
-      "gst": 24,
-      "serviceCharge": 24,
-      "discount": 0,
-      "totalAmount": 528,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-05-03T11:00:00.000Z"
-    },
-    {
-      "id": "dummy_may_2",
-      "customerName": "May Couple",
-      "customerMobile": "9999999996",
-      "tableNumber": 6,
-      "numberOfPeople": 2,
-      "items": [],
-      "subtotal": 920,
-      "gst": 46,
-      "serviceCharge": 46,
-      "discount": 0,
-      "totalAmount": 1012,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-05-10T13:30:00.000Z"
-    },
-    {
-      "id": "dummy_may_3",
-      "customerName": "May Family",
-      "customerMobile": "9999999997",
-      "tableNumber": 7,
-      "numberOfPeople": 4,
-      "items": [],
-      "subtotal": 1380,
-      "gst": 69,
-      "serviceCharge": 69,
-      "discount": 0,
-      "totalAmount": 1518,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-05-17T15:20:00.000Z"
-    },
-    {
-      "id": "dummy_may_4",
-      "customerName": "May Large",
-      "customerMobile": "9999999998",
-      "tableNumber": 8,
-      "numberOfPeople": 5,
-      "items": [],
-      "subtotal": 1650,
-      "gst": 82.5,
-      "serviceCharge": 82.5,
-      "discount": 0,
-      "totalAmount": 1815,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-05-24T16:00:00.000Z"
-    },
-    {
-      "id": "dummy_may_5",
-      "customerName": "May Big Group",
-      "customerMobile": "9999999999",
-      "tableNumber": 9,
-      "numberOfPeople": 8,
-      "items": [],
-      "subtotal": 2100,
-      "gst": 105,
-      "serviceCharge": 105,
-      "discount": 0,
-      "totalAmount": 2310,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-05-31T18:30:00.000Z"
-    },
-    {
-      "id": "dummy_jun_1",
-      "customerName": "June Single",
-      "customerMobile": "9999999990",
-      "tableNumber": 10,
-      "numberOfPeople": 1,
-      "items": [],
-      "subtotal": 520,
-      "gst": 26,
-      "serviceCharge": 26,
-      "discount": 0,
-      "totalAmount": 572,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-02T10:00:00.000Z"
-    },
-    {
-      "id": "dummy_jun_2",
-      "customerName": "June Couple",
-      "customerMobile": "9999999989",
-      "tableNumber": 11,
-      "numberOfPeople": 2,
-      "items": [],
-      "subtotal": 980,
-      "gst": 49,
-      "serviceCharge": 49,
-      "discount": 0,
-      "totalAmount": 1078,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-05T12:45:00.000Z"
-    },
-    {
-      "id": "dummy_jun_3",
-      "customerName": "June Family",
-      "customerMobile": "9999999988",
-      "tableNumber": 12,
-      "numberOfPeople": 4,
-      "items": [],
-      "subtotal": 1420,
-      "gst": 71,
-      "serviceCharge": 71,
-      "discount": 0,
-      "totalAmount": 1562,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 3,
-      "createdAt": "2026-06-07T14:30:00.000Z"
-    },
-    {
-      "id": "dummy_jun_4",
-      "customerName": "June Large",
-      "customerMobile": "9999999987",
-      "tableNumber": 13,
-      "numberOfPeople": 6,
-      "items": [],
-      "subtotal": 1950,
-      "gst": 97.5,
-      "serviceCharge": 97.5,
-      "discount": 0,
-      "totalAmount": 2145,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-08T17:00:00.000Z"
-    },
-    {
-      "id": "0c4ef8b8-8535-4e2c-a47f-7eec3e78ae3d",
-      "customerName": "customer-1",
-      "customerMobile": "1234567890",
-      "tableNumber": 4,
-      "numberOfPeople": 3,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 1,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 6,
-          "name": "idle",
-          "quantity": 2,
-          "price": 70,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 3,
-          "price": 199,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 1007,
-      "gst": 50.35,
-      "serviceCharge": 50.35,
-      "discount": 0,
-      "totalAmount": 1107.6999999999998,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-08T09:29:20.535Z"
-    },
-    {
-      "id": "fb1f406d-3886-4e41-9ef5-db1a91773547",
-      "customerName": "custmur2",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "numberOfPeople": 1,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 2,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 340,
-      "gst": 17,
-      "serviceCharge": 17,
-      "discount": 0,
-      "totalAmount": 374,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-08T10:18:22.809Z"
-    },
-    {
-      "id": "5074344d-611a-47b6-b3e0-d8b61d500c70",
-      "customerName": "helllo ",
-      "customerMobile": "1234567890",
-      "tableNumber": 4,
-      "numberOfPeople": 2,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 2,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 2,
-          "price": 50,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 9,
-          "name": "coffee",
-          "quantity": 2,
-          "price": 70,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 1,
-          "price": 199,
-          "taxRate": 5
-        }
-      ],
-      "subtotal": 939,
-      "gst": 46.95,
-      "serviceCharge": 46.95,
-      "discount": 93,
-      "totalAmount": 939.9000000000001,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-08T10:45:37.382Z"
-    },
-    {
-      "id": "7b10c99b-d3d6-4eda-a68b-fffacfee15f8",
-      "customerName": "first-cutmor",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "numberOfPeople": 3,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 3,
-          "price": 199,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 3,
-          "price": 50,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 1,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 5,
-          "name": "Dosa",
-          "quantity": 1,
-          "price": 150,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 1147,
-      "gst": 57.35,
-      "serviceCharge": 57.35,
-      "discount": 114,
-      "totalAmount": 1147.6999999999998,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-09T03:50:58.930Z"
-    },
-    {
-      "id": "73006a3c-5251-47d2-b1f3-2e49d7d1fae5",
-      "customerName": "alkesh sir",
-      "customerMobile": "9909856466",
-      "tableNumber": 1,
-      "numberOfPeople": 2,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 1,
-          "name": "Paneer Butter Masala",
-          "quantity": 2,
-          "price": 250,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 2,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 600,
-      "gst": 30,
-      "serviceCharge": 30,
-      "discount": 60,
-      "totalAmount": 600,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-10T10:19:21.890Z"
-    },
-    {
-      "id": "d5d3430a-75c2-41ad-bcbf-05653c7a4f23",
-      "customerName": "name",
-      "customerMobile": "1234567890",
-      "tableNumber": 1,
-      "numberOfPeople": 1,
-      "notes": "",
-      "items": [
-        {
-          "menuItemId": 2,
-          "name": "Samosa",
-          "quantity": 1,
-          "price": 20,
-          "taxRate": 0
-        },
-        {
-          "menuItemId": 4,
-          "name": "Pizza",
-          "quantity": 1,
-          "price": 199,
-          "taxRate": 5
-        },
-        {
-          "menuItemId": 3,
-          "name": "Cold coffee ",
-          "quantity": 1,
-          "price": 50,
-          "taxRate": 0
-        }
-      ],
-      "subtotal": 269,
-      "gst": 13.45,
-      "serviceCharge": 13.450000000000001,
-      "discount": 0,
-      "totalAmount": 295.9,
-      "status": "Completed",
-      "paymentMethod": "Cash",
-      "createdBy": 2,
-      "createdAt": "2026-06-17T10:03:29.326Z"
-    }
-  ],
-  "leaveRequests": [
-    {
-      "id": 1,
-      "employeeId": 3,
-      "employeeName": "dipu",
-      "fromDate": "2026-06-03",
-      "toDate": "2026-06-03",
-      "reason": "sick",
-      "status": "rejected",
-      "requestedAt": "2026-06-02T10:00:00.000Z"
-    }
-  ]
-}
+  {
+    "users": [
+      {
+        "id": 1,
+        "name": "Manager One",
+        "email": "manager@resto.com",
+        "password": "123",
+        "role": "manager",
+        "contact": "9876543210",
+        "salary": 50000,
+        "joiningDate": "2026-06-01",
+        "joiningTime": "09:00:00 AM"
+      },
+      {
+        "id": 2,
+        "name": "Waiter A",
+        "email": "waiter@resto.com",
+        "password": "123",
+        "role": "employee",
+        "contact": "9876543222",
+        "salary": 15000,
+        "joiningDate": "2026-06-01",
+        "joiningTime": "09:30:00 AM",
+        "isOnLeave": false
+      },
+      {
+        "id": 3,
+        "name": "dipu",
+        "email": "dipu@gmail.com",
+        "password": "123",
+        "role": "employee",
+        "contact": "1234567890",
+        "salary": 10000,
+        "joiningDate": "2026-06-01",
+        "joiningTime": "10:00:00 AM",
+        "isOnLeave": false
+      },
+      {
+        "name": "employe",
+        "email": "emp@gmail.com",
+        "password": "123",
+        "role": "employee",
+        "contact": "1234567890",
+        "salary": "15000",
+        "isOnLeave": false,
+        "joiningDate": "2026-06-03",
+        "joiningTime": "7:24:47 pm",
+        "id": 4
+      }
+    ],
+    "menu": [
+      {
+        "id": 1,
+        "name": "Paneer Butter Masala",
+        "category": "Main",
+        "price": 250,
+        "taxRate": 5,
+        "available": true,
+        "description": "Creamy tomato gravy with paneer",
+        "image": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=200&h=150&fit=crop"
+      },
+      {
+        "id": 2,
+        "name": "Samosa",
+        "category": "Starter",
+        "price": 20,
+        "taxRate": 0,
+        "available": true,
+        "description": "Crispy samosa",
+        "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200&h=150&fit=crop"
+      },
+      {
+        "id": 3,
+        "name": "Cold coffee ",
+        "category": "Beverage",
+        "price": 50,
+        "taxRate": 0,
+        "available": true,
+        "description": "Chilled soft coffee",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_mKVSVjZ3PneZeA33dW8Wk1WzTf65YP_ScA&s"
+      },
+      {
+        "id": 4,
+        "name": "Pizza",
+        "category": "Main",
+        "price": 199,
+        "taxRate": 5,
+        "available": true,
+        "description": "Tasty pizza",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTs13kyoQZGlwBCUi73VW5UJvtV93NT5iEonQ&s"
+      },
+      {
+        "id": 5,
+        "name": "Dosa",
+        "category": "Main",
+        "price": 150,
+        "taxRate": 0,
+        "available": true,
+        "description": "Masala & cheese dosa",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9tXNH_xCEYOU9wjkNFLKfCHUf1mvc8QmR4g&s"
+      },
+      {
+        "name": "idle",
+        "category": "Main",
+        "price": 70,
+        "taxRate": 5,
+        "available": true,
+        "description": "spicy",
+        "image": "https://media.istockphoto.com/id/638506124/photo/idli-with-coconut-chutney-and-sambhar.jpg?s=612x612&w=0&k=20&c=ze1ngBM0LY4w9aqWx_tGe2vTAr4uf36elveTDZ83fgw=",
+        "id": 6
+      },
+      {
+        "name": "aaloopuri",
+        "category": "Starter",
+        "price": 30,
+        "taxRate": 5,
+        "available": true,
+        "description": "cheese",
+        "image": "",
+        "id": 8
+      },
+      {
+        "name": "coffee",
+        "category": "Starter",
+        "price": 70,
+        "taxRate": 5,
+        "available": true,
+        "description": "premuim coffee",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZb632q3t-D6iN3TiW863qXQv_ObPEy_1gfQ&s",
+        "id": 9
+      }
+    ],
+    "tables": [
+      {
+        "id": 1,
+        "number": 1,
+        "assignedTo": 2,
+        "status": "available"
+      },
+      {
+        "id": 2,
+        "number": 2,
+        "assignedTo": 3,
+        "status": "available"
+      },
+      {
+        "id": 3,
+        "number": 3,
+        "assignedTo": 4,
+        "status": "available"
+      },
+      {
+        "number": 4,
+        "assignedTo": 2,
+        "id": 4
+      },
+      {
+        "number": 5,
+        "assignedTo": 3,
+        "id": 5
+      },
+      {
+        "number": 6,
+        "assignedTo": 4,
+        "id": 6
+      }
+    ],
+    "orders": [
+      {
+        "id": "65615a90-33f0-4b61-a608-e249480a8cb0",
+        "customerName": "Gaurav Bhai",
+        "customerMobile": "9876543210",
+        "tableNumber": 7,
+        "items": [
+          {
+            "menuItemId": 6,
+            "name": "Garlic Naan",
+            "quantity": 1,
+            "price": 40,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold Drink",
+            "quantity": 3,
+            "price": 50,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 2,
+            "price": 250,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 690,
+        "gst": 34.5,
+        "serviceCharge": 34.5,
+        "discount": 0,
+        "totalAmount": 759,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-01T09:43:56.443Z"
+      },
+      {
+        "id": "fd27b2a2-ac39-4c56-bc0f-d6df6d60e75e",
+        "customerName": "Roshan Bhai",
+        "customerMobile": "9876543111",
+        "tableNumber": 12,
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 6,
+            "name": "Garlic Naan",
+            "quantity": 1,
+            "price": 40,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold Drink",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 340,
+        "gst": 17,
+        "serviceCharge": 17,
+        "discount": 0,
+        "totalAmount": 374,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-01T09:58:22.017Z"
+      },
+      {
+        "id": "aa81f83a-cbc0-43b0-9cbb-8d6d76fa3fbd",
+        "customerName": "aaaa",
+        "customerMobile": "1234567890",
+        "tableNumber": 8,
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold Drink",
+            "quantity": 2,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 350,
+        "gst": 17.5,
+        "serviceCharge": 17.5,
+        "discount": 0,
+        "totalAmount": 385,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-01T11:07:04.961Z"
+      },
+      {
+        "id": "f3a90931-41d5-4a36-8720-cfbf36118c73",
+        "customerName": "bbbbbbbbbbb",
+        "customerMobile": "1234567890",
+        "tableNumber": 3,
+        "items": [
+          {
+            "menuItemId": 6,
+            "name": "Garlic Naan",
+            "quantity": 2,
+            "price": 40,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 2,
+            "price": 250,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 580,
+        "gst": 29,
+        "serviceCharge": 29,
+        "discount": 0,
+        "totalAmount": 638,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-01T11:09:27.951Z"
+      },
+      {
+        "id": "5ec0e9b6-a5ed-48d4-aee1-cc560d81b37a",
+        "customerName": "ayush",
+        "customerMobile": "1234567890",
+        "tableNumber": 5,
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 1,
+            "price": 40,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold Drink",
+            "quantity": 2,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 390,
+        "gst": 19.5,
+        "serviceCharge": 19.5,
+        "discount": 0,
+        "totalAmount": 429,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-06-01T15:30:04.056Z"
+      },
+      {
+        "id": "001cf0f0-53de-4924-9e4d-9cb6f6031f23",
+        "customerName": "divya",
+        "customerMobile": "1234567890",
+        "tableNumber": 8,
+        "items": [
+          {
+            "menuItemId": 5,
+            "name": "Dosa",
+            "quantity": 1,
+            "price": 150,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 2,
+            "price": 40,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 1,
+            "price": 199,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 429,
+        "gst": 21.45,
+        "serviceCharge": 21.45,
+        "discount": 0,
+        "totalAmount": 471.9,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-06-01T15:35:45.042Z"
+      },
+      {
+        "id": "dbe8aa36-98c0-44d8-abca-0cc53e53db36",
+        "customerName": "qq",
+        "customerMobile": "1234567890",
+        "tableNumber": 3,
+        "items": [
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 1,
+            "price": 199,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold Drink",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 249,
+        "gst": 12.45,
+        "serviceCharge": 12.450000000000001,
+        "discount": 0,
+        "totalAmount": 273.9,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-01T16:17:06.840Z"
+      },
+      {
+        "id": "fb874942-c62d-4ff1-bc37-84e5ec333b83",
+        "customerName": "shivam",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "notes": "spicy",
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 1,
+            "price": 40,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 290,
+        "gst": 14.5,
+        "serviceCharge": 14.5,
+        "discount": 0,
+        "totalAmount": 319,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-02T07:01:51.786Z"
+      },
+      {
+        "id": "87dcaf81-50d7-4a66-b928-459c9763e209",
+        "customerName": "aaaaa",
+        "customerMobile": "1234567890",
+        "tableNumber": 4,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 6,
+            "name": "idle",
+            "quantity": 1,
+            "price": 70,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 1,
+            "price": 199,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 519,
+        "gst": 25.95,
+        "serviceCharge": 25.950000000000003,
+        "discount": 0,
+        "totalAmount": 570.9000000000001,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-02T08:20:14.558Z"
+      },
+      {
+        "id": "cc742618-587a-43fd-8250-cbe38a450f83",
+        "customerName": "yash",
+        "customerMobile": "1111234567890",
+        "tableNumber": 4,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 1,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 6,
+            "name": "idle",
+            "quantity": 1,
+            "price": 70,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 140,
+        "gst": 7,
+        "serviceCharge": 7,
+        "discount": 0,
+        "totalAmount": 154,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-02T08:44:04.566Z"
+      },
+      {
+        "id": "75ef3da4-e27a-43d2-91bb-5057c34d4d1f",
+        "customerName": "aman",
+        "customerMobile": "1234567890",
+        "tableNumber": 2,
+        "notes": "spicy",
+        "items": [
+          {
+            "menuItemId": 6,
+            "name": "idle",
+            "quantity": 1,
+            "price": 70,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 2,
+            "price": 199,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 518,
+        "gst": 25.9,
+        "serviceCharge": 25.900000000000002,
+        "discount": 0,
+        "totalAmount": 569.8,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-06-02T12:37:32.273Z"
+      },
+      {
+        "id": "b641f511-b0d3-4844-be3a-297c5df051ae",
+        "customerName": "prince",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "notes": "extra cheesy",
+        "items": [
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 3,
+            "price": 199,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 6,
+            "name": "idle",
+            "quantity": 2,
+            "price": 70,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 5,
+            "name": "Dosa",
+            "quantity": 3,
+            "price": 150,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 1237,
+        "gst": 61.85,
+        "serviceCharge": 61.85,
+        "discount": 0,
+        "totalAmount": 1360.6999999999998,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-02T13:22:38.248Z"
+      },
+      {
+        "id": "bf916009-2fe6-4045-b8e1-174bc070ec34",
+        "customerName": "ramu",
+        "customerMobile": "1234567890",
+        "tableNumber": 3,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 3,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 110,
+        "gst": 5.5,
+        "serviceCharge": 5.5,
+        "discount": 0,
+        "totalAmount": 121,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-06-02T16:03:04.137Z"
+      },
+      {
+        "id": "757f4898-ee74-44f6-8933-16f7eca50447",
+        "customerName": "bhavin ",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "notes": "extra cheese",
+        "items": [
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 2,
+            "price": 199,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 6,
+            "name": "idle",
+            "quantity": 1,
+            "price": 70,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 518,
+        "gst": 25.9,
+        "serviceCharge": 25.900000000000002,
+        "discount": 0,
+        "totalAmount": 569.8,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-03T06:02:43.992Z"
+      },
+      {
+        "id": "0011f761-bad8-49b3-ad0a-4cc89f464908",
+        "customerName": "krihna",
+        "customerMobile": "1234567890",
+        "tableNumber": 2,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 1,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 1,
+            "price": 199,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 2,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 319,
+        "gst": 15.95,
+        "serviceCharge": 15.950000000000001,
+        "discount": 0,
+        "totalAmount": 350.9,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-06-03T06:46:39.477Z"
+      },
+      {
+        "id": "8ad8ecae-70f1-44fe-83c2-d1f84c2564ee",
+        "customerName": "raushan ",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 2,
+            "price": 20,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 90,
+        "gst": 4.5,
+        "serviceCharge": 4.5,
+        "discount": 0,
+        "totalAmount": 99,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-03T07:48:51.875Z"
+      },
+      {
+        "id": "3a87caed-18a2-4fd6-bd56-19674068f81a",
+        "customerName": "custummer",
+        "customerMobile": "1234567899",
+        "tableNumber": 1,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 2,
+            "price": 50,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 5,
+            "name": "Dosa",
+            "quantity": 2,
+            "price": 150,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 400,
+        "gst": 20,
+        "serviceCharge": 20,
+        "discount": 0,
+        "totalAmount": 440,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-03T09:22:48.890Z"
+      },
+      {
+        "id": "a3321dac-8e85-4b0b-b4e7-0802d23a44a8",
+        "customerName": "sachin",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 1,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 8,
+            "name": "aaloopuri",
+            "quantity": 2,
+            "price": 30,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 80,
+        "gst": 4,
+        "serviceCharge": 4,
+        "discount": 0,
+        "totalAmount": 88,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-03T11:44:24.174Z"
+      },
+      {
+        "id": "e4b0b77a-3cff-4c65-83ed-ec0989310d4a",
+        "customerName": "customer-1",
+        "customerMobile": "1234567890",
+        "tableNumber": 4,
+        "notes": "extra cheese",
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 3,
+            "price": 20,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 310,
+        "gst": 15.5,
+        "serviceCharge": 15.5,
+        "discount": 0,
+        "totalAmount": 341,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-03T13:52:30.298Z"
+      },
+      {
+        "id": "fba66754-d806-4a96-9e6b-1f35e5aa7ecf",
+        "customerName": "customer",
+        "customerMobile": "1234579000",
+        "tableNumber": 1,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 2,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 9,
+            "name": "coffee",
+            "quantity": 1,
+            "price": 70,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 360,
+        "gst": 18,
+        "serviceCharge": 18,
+        "discount": 0,
+        "totalAmount": 396,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-04T07:42:03.290Z"
+      },
+      {
+        "id": "dummy_apr_1",
+        "customerName": "Demo Single",
+        "customerMobile": "9999999991",
+        "tableNumber": 1,
+        "numberOfPeople": 1,
+        "items": [],
+        "subtotal": 450,
+        "gst": 22.5,
+        "serviceCharge": 22.5,
+        "discount": 0,
+        "totalAmount": 495,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-04-05T10:30:00.000Z"
+      },
+      {
+        "id": "dummy_apr_2",
+        "customerName": "Demo Couple",
+        "customerMobile": "9999999992",
+        "tableNumber": 2,
+        "numberOfPeople": 2,
+        "items": [],
+        "subtotal": 850,
+        "gst": 42.5,
+        "serviceCharge": 42.5,
+        "discount": 0,
+        "totalAmount": 935,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-04-12T12:00:00.000Z"
+      },
+      {
+        "id": "dummy_apr_3",
+        "customerName": "Demo Family",
+        "customerMobile": "9999999993",
+        "tableNumber": 3,
+        "numberOfPeople": 4,
+        "items": [],
+        "subtotal": 1250,
+        "gst": 62.5,
+        "serviceCharge": 62.5,
+        "discount": 0,
+        "totalAmount": 1375,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-04-18T13:15:00.000Z"
+      },
+      {
+        "id": "dummy_apr_4",
+        "customerName": "Demo Party",
+        "customerMobile": "9999999994",
+        "tableNumber": 4,
+        "numberOfPeople": 6,
+        "items": [],
+        "subtotal": 1850,
+        "gst": 92.5,
+        "serviceCharge": 92.5,
+        "discount": 0,
+        "totalAmount": 2035,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-04-25T14:45:00.000Z"
+      },
+      {
+        "id": "dummy_may_1",
+        "customerName": "May Single",
+        "customerMobile": "9999999995",
+        "tableNumber": 5,
+        "numberOfPeople": 1,
+        "items": [],
+        "subtotal": 480,
+        "gst": 24,
+        "serviceCharge": 24,
+        "discount": 0,
+        "totalAmount": 528,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-05-03T11:00:00.000Z"
+      },
+      {
+        "id": "dummy_may_2",
+        "customerName": "May Couple",
+        "customerMobile": "9999999996",
+        "tableNumber": 6,
+        "numberOfPeople": 2,
+        "items": [],
+        "subtotal": 920,
+        "gst": 46,
+        "serviceCharge": 46,
+        "discount": 0,
+        "totalAmount": 1012,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-05-10T13:30:00.000Z"
+      },
+      {
+        "id": "dummy_may_3",
+        "customerName": "May Family",
+        "customerMobile": "9999999997",
+        "tableNumber": 7,
+        "numberOfPeople": 4,
+        "items": [],
+        "subtotal": 1380,
+        "gst": 69,
+        "serviceCharge": 69,
+        "discount": 0,
+        "totalAmount": 1518,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-05-17T15:20:00.000Z"
+      },
+      {
+        "id": "dummy_may_4",
+        "customerName": "May Large",
+        "customerMobile": "9999999998",
+        "tableNumber": 8,
+        "numberOfPeople": 5,
+        "items": [],
+        "subtotal": 1650,
+        "gst": 82.5,
+        "serviceCharge": 82.5,
+        "discount": 0,
+        "totalAmount": 1815,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-05-24T16:00:00.000Z"
+      },
+      {
+        "id": "dummy_may_5",
+        "customerName": "May Big Group",
+        "customerMobile": "9999999999",
+        "tableNumber": 9,
+        "numberOfPeople": 8,
+        "items": [],
+        "subtotal": 2100,
+        "gst": 105,
+        "serviceCharge": 105,
+        "discount": 0,
+        "totalAmount": 2310,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-05-31T18:30:00.000Z"
+      },
+      {
+        "id": "dummy_jun_1",
+        "customerName": "June Single",
+        "customerMobile": "9999999990",
+        "tableNumber": 10,
+        "numberOfPeople": 1,
+        "items": [],
+        "subtotal": 520,
+        "gst": 26,
+        "serviceCharge": 26,
+        "discount": 0,
+        "totalAmount": 572,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-02T10:00:00.000Z"
+      },
+      {
+        "id": "dummy_jun_2",
+        "customerName": "June Couple",
+        "customerMobile": "9999999989",
+        "tableNumber": 11,
+        "numberOfPeople": 2,
+        "items": [],
+        "subtotal": 980,
+        "gst": 49,
+        "serviceCharge": 49,
+        "discount": 0,
+        "totalAmount": 1078,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-05T12:45:00.000Z"
+      },
+      {
+        "id": "dummy_jun_3",
+        "customerName": "June Family",
+        "customerMobile": "9999999988",
+        "tableNumber": 12,
+        "numberOfPeople": 4,
+        "items": [],
+        "subtotal": 1420,
+        "gst": 71,
+        "serviceCharge": 71,
+        "discount": 0,
+        "totalAmount": 1562,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 3,
+        "createdAt": "2026-06-07T14:30:00.000Z"
+      },
+      {
+        "id": "dummy_jun_4",
+        "customerName": "June Large",
+        "customerMobile": "9999999987",
+        "tableNumber": 13,
+        "numberOfPeople": 6,
+        "items": [],
+        "subtotal": 1950,
+        "gst": 97.5,
+        "serviceCharge": 97.5,
+        "discount": 0,
+        "totalAmount": 2145,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-08T17:00:00.000Z"
+      },
+      {
+        "id": "0c4ef8b8-8535-4e2c-a47f-7eec3e78ae3d",
+        "customerName": "customer-1",
+        "customerMobile": "1234567890",
+        "tableNumber": 4,
+        "numberOfPeople": 3,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 1,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 6,
+            "name": "idle",
+            "quantity": 2,
+            "price": 70,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 3,
+            "price": 199,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 1007,
+        "gst": 50.35,
+        "serviceCharge": 50.35,
+        "discount": 0,
+        "totalAmount": 1107.6999999999998,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-08T09:29:20.535Z"
+      },
+      {
+        "id": "fb1f406d-3886-4e41-9ef5-db1a91773547",
+        "customerName": "custmur2",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "numberOfPeople": 1,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 2,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 340,
+        "gst": 17,
+        "serviceCharge": 17,
+        "discount": 0,
+        "totalAmount": 374,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-08T10:18:22.809Z"
+      },
+      {
+        "id": "5074344d-611a-47b6-b3e0-d8b61d500c70",
+        "customerName": "helllo ",
+        "customerMobile": "1234567890",
+        "tableNumber": 4,
+        "numberOfPeople": 2,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 2,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 2,
+            "price": 50,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 9,
+            "name": "coffee",
+            "quantity": 2,
+            "price": 70,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 1,
+            "price": 199,
+            "taxRate": 5
+          }
+        ],
+        "subtotal": 939,
+        "gst": 46.95,
+        "serviceCharge": 46.95,
+        "discount": 93,
+        "totalAmount": 939.9000000000001,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-08T10:45:37.382Z"
+      },
+      {
+        "id": "7b10c99b-d3d6-4eda-a68b-fffacfee15f8",
+        "customerName": "first-cutmor",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "numberOfPeople": 3,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 3,
+            "price": 199,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 3,
+            "price": 50,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 1,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 5,
+            "name": "Dosa",
+            "quantity": 1,
+            "price": 150,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 1147,
+        "gst": 57.35,
+        "serviceCharge": 57.35,
+        "discount": 114,
+        "totalAmount": 1147.6999999999998,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-09T03:50:58.930Z"
+      },
+      {
+        "id": "73006a3c-5251-47d2-b1f3-2e49d7d1fae5",
+        "customerName": "alkesh sir",
+        "customerMobile": "9909856466",
+        "tableNumber": 1,
+        "numberOfPeople": 2,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 1,
+            "name": "Paneer Butter Masala",
+            "quantity": 2,
+            "price": 250,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 2,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 600,
+        "gst": 30,
+        "serviceCharge": 30,
+        "discount": 60,
+        "totalAmount": 600,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-10T10:19:21.890Z"
+      },
+      {
+        "id": "d5d3430a-75c2-41ad-bcbf-05653c7a4f23",
+        "customerName": "name",
+        "customerMobile": "1234567890",
+        "tableNumber": 1,
+        "numberOfPeople": 1,
+        "notes": "",
+        "items": [
+          {
+            "menuItemId": 2,
+            "name": "Samosa",
+            "quantity": 1,
+            "price": 20,
+            "taxRate": 0
+          },
+          {
+            "menuItemId": 4,
+            "name": "Pizza",
+            "quantity": 1,
+            "price": 199,
+            "taxRate": 5
+          },
+          {
+            "menuItemId": 3,
+            "name": "Cold coffee ",
+            "quantity": 1,
+            "price": 50,
+            "taxRate": 0
+          }
+        ],
+        "subtotal": 269,
+        "gst": 13.45,
+        "serviceCharge": 13.450000000000001,
+        "discount": 0,
+        "totalAmount": 295.9,
+        "status": "Completed",
+        "paymentMethod": "Cash",
+        "createdBy": 2,
+        "createdAt": "2026-06-17T10:03:29.326Z"
+      }
+    ],
+    "leaveRequests": [
+      {
+        "id": 1,
+        "employeeId": 3,
+        "employeeName": "dipu",
+        "fromDate": "2026-06-03",
+        "toDate": "2026-06-03",
+        "reason": "sick",
+        "status": "rejected",
+        "requestedAt": "2026-06-02T10:00:00.000Z"
+      }
+    ]
+  }
