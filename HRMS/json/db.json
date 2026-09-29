@@ -395,6 +395,18 @@
       "days": 1,
       "status": "approved",
       "id": 13
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "reason": "joihg",
+      "type": "paid",
+      "start": "2026-09-29",
+      "end": "2026-09-30",
+      "days": 2,
+      "status": "approved",
+      "id": 14
     }
   ],
   "attendance": [
@@ -1372,6 +1384,17 @@
       "checkIn": "12:54 PM",
       "checkOut": "",
       "id": 96
+    },
+    {
+      "userId": 2,
+      "name": "Amit",
+      "contact": "1000000001",
+      "department": "AI/ML",
+      "salary": 60000,
+      "date": "9/29/2026",
+      "checkIn": "08:06 PM",
+      "checkOut": "Auto Checkout",
+      "id": 97
     }
   ],
   "holidays": [
